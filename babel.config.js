@@ -1,6 +1,34 @@
-module.exports = function(api) {
-  api.cache(true);
-  return {
-    presets: ['babel-preset-expo']
-  };
+module.exports = function (api) {
+    api.cache(true);
+    return {
+        presets: ['babel-preset-expo'],
+        plugins: [
+            [
+                'module-resolver',
+                {
+                    root: ['.'],
+                    extensions: [
+                        '.ts',
+                        '.js',
+                        '.jsx',
+                        '.json',
+                        '.svg',
+                        '.jpg',
+                        '.tsx',
+                    ],
+                    alias: {
+                        '*': './src',
+                        '@components': './src/components',
+                        '@assets': './src/assets',
+                        '@common': './src/common',
+                        '@containers': './src/containers',
+                        '@navigators': './src/navigators',
+                        '@reducers': './src/reducers',
+                        '@theme': './src/theme',
+                        '@utils': './src/utils',
+                    },
+                },
+            ],
+        ],
+    };
 };

@@ -1,4 +1,17 @@
 {
-  "compilerOptions": {},
-  "extends": "expo/tsconfig.base"
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "*": ["./src"],
+            "@components": ["./src/components"],
+            "@assets": ["./src/assets"],
+            "@common": ["./src/common"],
+            "@containers": ["./src/containers"],
+            "@navigators": ["./src/navigators"],
+            "@reduces": ["./src/reduces"],
+            "@theme": ["./src/theme"],
+            "@utils": ["./src/utils"]
+        }
+    },
+    "extends": "expo/tsconfig.base"
 }
