@@ -8,7 +8,7 @@
         "android": "expo run:android",
         "ios": "expo run:ios",
         "web": "expo start --web",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "lint-staged": "echo \"Error: no test specified\" && exit 1"
     },
     "lint-staged": {
         "*.{js,json,scss}": "prettier --single-quote --trailing-comma all --tab-width 4 --write"
@@ -27,7 +27,7 @@
         "react-native": "0.74.1",
         "typescript": "~5.3.3"
     },
-    "                   devDependencies": {
+    "devDependencies": {
         "@babel/core": "^7.20.0",
         "babel-plugin-module-resolver": "^5.0.2",
         "husky": "^9.0.11",
