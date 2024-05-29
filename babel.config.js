@@ -17,8 +17,9 @@ module.exports = function (api) {
                         '.tsx',
                     ],
                     alias: {
-                        '*': './src',
+                        '~': './src',
                         '@components': './src/components',
+                        '@screens': './src/components/screens',
                         '@assets': './src/assets',
                         '@common': './src/common',
                         '@containers': './src/containers',

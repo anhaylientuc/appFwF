@@ -1,6 +1,6 @@
 //
 import { StyleSheet } from 'react-native';
-import Main from '@components';
+
 const StyleMain = StyleSheet.create({
   button2: {
     backgroundColor: 'green',
