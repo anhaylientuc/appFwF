@@ -1,7 +1,7 @@
 import React from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Colors from 'src/constants/Colors'
-import MyTabs from './shopPage/'
+import MyTabs from '../../../navigators/ShopPageTabNavigation'
 const ShopPage = ({ navigation: { goBack } }) => {
   return (
     <View style={{ backgroundColor: '#fff', width: '100%', height: '100%' }}>

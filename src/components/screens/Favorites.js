@@ -3,8 +3,8 @@ import { StyleSheet, Text, View } from 'react-native'
 
 const Favorites = () => {
   return (
-    <View>
-      <Text>Favorites</Text>
+    <View style={{ justifyContent: 'center', width: '100%', height: '100%' }}>
+      <Text style={{ textAlign: 'center' }}>Favorites</Text>
     </View>
   )
 }

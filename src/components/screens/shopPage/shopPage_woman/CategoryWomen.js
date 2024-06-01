@@ -1,13 +1,24 @@
 import React from 'react'
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import {
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
 
 import Colors from 'src/constants/Colors'
 
 const CategoryWomen = props => {
   const { navigation } = props
+
+  // renderItemList Category Women
   const renderItem = ({ item }) => {
     const { _id, category_name } = item
     return (
+      // onClick to ItemCategory Women
       <TouchableOpacity
         style={{ marginBottom: 15 }}
         onPress={() => props.navigation.navigate('ItemCategoryWomen')}
@@ -29,7 +40,9 @@ const CategoryWomen = props => {
   }
 
   return (
-    <View style={{ backgroundColor: Colors.white, width: '100%', height: '100%' }}>
+    <View
+      style={{ backgroundColor: Colors.white, width: '100%', height: '100%' }}
+    >
       <View style={styles.view_search}>
         <TouchableOpacity onPress={() => props.navigation.navigate('Women')}>
           <Image style={styles.icons} source={require('@assets/ic_back.png')} />
@@ -38,7 +51,7 @@ const CategoryWomen = props => {
         <Image style={styles.icons} source={require('@assets/ic_search.png')} />
       </View>
 
-      <ScrollView style={{ backgroundColor: '#F9F9F9' }}>
+      <ScrollView style={{ backgroundColor: Colors.grayBg }}>
         <TouchableOpacity
           style={{
             backgroundColor: Colors.red,

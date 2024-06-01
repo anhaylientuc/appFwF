@@ -19,6 +19,7 @@
     }
   },
   "dependencies": {
+    "@devvie/bottom-sheet": "^0.3.0",
     "@react-native-masked-view/masked-view": "0.3.1",
     "@react-native-vector-icons/material-icons": "^0.0.1-alpha.9",
     "@react-navigation/bottom-tabs": "^6.5.20",
@@ -32,7 +33,7 @@
     "expo": "~51.0.8",
     "expo-dev-client": "~4.0.14",
     "expo-status-bar": "~1.12.1",
-    "react": "18.2.0",
+    "react": "^18.2.0",
     "react-native": "0.74.1",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-pager-view": "6.3.0",

@@ -1,11 +1,23 @@
-import React, { useState } from 'react'
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-
+import BottomSheet from '@devvie/bottom-sheet'
+import React, { useRef, useState } from 'react'
+import {
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
 import Colors from 'src/constants/Colors'
 
 const ItemCategoryWomen = props => {
+  const { navigation } = props
+  const sheetRef = useRef(null)
   // const numColumns = 2
   const [numColumns, setNumColumns] = useState()
+
+  // logic onClick set View Flatlist
   const handleColum = () => {
     if (numColumns) {
       setNumColumns(null)
@@ -13,28 +25,15 @@ const ItemCategoryWomen = props => {
       setNumColumns(2)
     }
   }
+
+  // if numColumns = null  => render
   const renderItemColumTo = ({ item }) => {
     const { _id, category_name, product_name, price, review, image } = item
     return (
-      <View
-        style={{
-          flex: 1,
-          height: '100%',
-          backgroundColor: '#F9F9F9',
-          borderRadius: 8,
-          marginHorizontal: 16,
-          marginTop: 17,
-          marginBottom: 12
-        }}
-      >
+      <View style={styles.renderItemColumTo.container}>
         <View>
           <Image
-            style={{
-              width: '100%',
-              height: 184,
-
-              borderRadius: 8
-            }}
+            style={styles.renderItemColumTo.image}
             source={{ uri: image }}
           />
           <View
@@ -63,12 +62,29 @@ const ItemCategoryWomen = props => {
           </View>
         </View>
         <View style={{ marginStart: 4 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 7 }}>
-            <Image style={{ width: 14, height: 14 }} source={require('@assets/activated.png')} />
-            <Image style={{ width: 14, height: 14 }} source={require('@assets/activated.png')} />
-            <Image style={{ width: 14, height: 14 }} source={require('@assets/activated.png')} />
-            <Image style={{ width: 14, height: 14 }} source={require('@assets/activated.png')} />
-            <Image style={{ width: 14, height: 14 }} source={require('@assets/activated.png')} />
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', marginTop: 7 }}
+          >
+            <Image
+              style={styles.renderItemColumTo.img_activated}
+              source={require('@assets/activated.png')}
+            />
+            <Image
+              style={styles.renderItemColumTo.img_activated}
+              source={require('@assets/activated.png')}
+            />
+            <Image
+              style={styles.renderItemColumTo.img_activated}
+              source={require('@assets/activated.png')}
+            />
+            <Image
+              style={styles.renderItemColumTo.img_activated}
+              source={require('@assets/activated.png')}
+            />
+            <Image
+              style={styles.renderItemColumTo.img_activated}
+              source={require('@assets/activated.png')}
+            />
             <Text
               style={{
                 fontSize: 10,
@@ -80,113 +96,61 @@ const ItemCategoryWomen = props => {
               ( {review})
             </Text>
           </View>
-          <Text
-            style={{
-              fontSize: 11,
-              fontWeight: '400',
-              color: Colors.gray,
-              fontStyle: 'normal',
-              marginTop: 6
-            }}
-          >
+          <Text style={styles.renderItemColumTo.txt_category_name}>
             {category_name}
           </Text>
-          <Text
-            style={{
-              fontSize: 16,
-              marginTop: 5,
-              color: Colors.black,
-              fontWeight: '500',
-              fontStyle: 'normal'
-            }}
-          >
+          <Text style={styles.renderItemColumTo.txt_product_name}>
             {product_name}
           </Text>
-          <Text
-            style={{
-              fontSize: 14,
-              color: Colors.black,
-              lineHeight: 20,
-              fontWeight: '400',
-              marginTop: 3
-            }}
-          >
-            {price}$
-          </Text>
+          <Text style={styles.renderItemColumTo.txt_price}>{price}$</Text>
         </View>
       </View>
     )
   }
 
+  // if numColums = 2 => render
   const renderItemColumOne = ({ item }) => {
     const { _id, category_name, product_name, price, review, image } = item
     return (
       <View style={{ marginBottom: 26 }}>
-        <View
-          style={{
-            marginTop: 16,
-            marginHorizontal: 16,
-            borderRadius: 8,
-            elevation: 4,
-            shadowColor: '#52006A',
-            justifyContent: 'center',
-            backgroundColor: Colors.white
-          }}
-        >
+        <View style={styles.renderItemColumOne.container}>
           <View style={{ flexDirection: 'row', height: 124 }}>
             <Image
-              style={{
-                flex: 1,
-                height: '100%',
-
-                width: '100%',
-                borderTopLeftRadius: 8,
-                borderBottomLeftRadius: 8
-              }}
+              style={styles.renderItemColumOne.image}
               source={{ uri: image }}
             />
             <View style={{ flex: 2, marginStart: 16 }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  marginTop: 10,
-                  color: Colors.black,
-                  fontWeight: '500',
-                  fontStyle: 'normal'
-                }}
-              >
+              <Text style={styles.renderItemColumOne.txt_product_name}>
                 {product_name}
               </Text>
-              <Text
-                style={{
-                  fontSize: 11,
-                  fontWeight: '400',
-                  color: Colors.gray,
-                  fontStyle: 'normal',
-                  marginTop: 4
-                }}
-              >
+              <Text style={styles.renderItemColumOne.txt_category_name}>
                 {category_name}
               </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginTop: 8
+                }}
+              >
                 <Image
-                  style={{ width: 14, height: 14 }}
+                  style={styles.renderItemColumOne.img_activated}
                   source={require('@assets/activated.png')}
                 />
                 <Image
-                  style={{ width: 14, height: 14 }}
+                  style={styles.renderItemColumOne.img_activated}
                   source={require('@assets/activated.png')}
                 />
                 <Image
-                  style={{ width: 14, height: 14 }}
+                  style={styles.renderItemColumOne.img_activated}
                   source={require('@assets/activated.png')}
                 />
                 <Image
-                  style={{ width: 14, height: 14 }}
+                  style={styles.renderItemColumOne.img_activated}
                   source={require('@assets/activated.png')}
                 />
                 <Image
-                  style={{ width: 14, height: 14 }}
+                  style={styles.renderItemColumOne.img_activated}
                   source={require('@assets/activated.png')}
                 />
                 <Text
@@ -200,17 +164,7 @@ const ItemCategoryWomen = props => {
                   ( {review})
                 </Text>
               </View>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: Colors.black,
-                  lineHeight: 20,
-                  fontWeight: '400',
-                  marginTop: 8
-                }}
-              >
-                {price}$
-              </Text>
+              <Text style={styles.renderItemColumOne.txt_price}>{price}$</Text>
               <View
                 style={{
                   backgroundColor: Colors.white,
@@ -242,22 +196,48 @@ const ItemCategoryWomen = props => {
     )
   }
 
-  const { navigation } = props
+  // logic handle state bottom sheet
+  const [selected, setSelected] = useState(DataBottomSheet)
+  const handleSelect = (item, index) => {
+    const newItem = selected.map((e, index) => {
+      if (e.id == item.id) {
+        console.log('selectItem: ', item.subject)
+        return { ...e, selected: true }
+      } else {
+        return { ...e, selected: false }
+      }
+    })
+    setSelected(newItem)
+  }
   return (
     <View style={{ width: '100%', height: '100%' }}>
-      <View style={{ backgroundColor: Colors.white, elevation: 8, shadowColor: Colors.gray }}>
+      <View
+        style={{
+          backgroundColor: Colors.white,
+          elevation: 8,
+          shadowColor: Colors.gray
+        }}
+      >
         <View style={styles.view_search}>
-          <TouchableOpacity onPress={() => props.navigation.navigate('CategoryWomen')}>
-            <Image style={styles.icons} source={require('@assets/ic_back.png')} />
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate('CategoryWomen')}
+          >
+            <Image
+              style={styles.icons}
+              source={require('@assets/ic_back.png')}
+            />
           </TouchableOpacity>
-          <Image style={styles.icons} source={require('@assets/ic_search.png')} />
+          <Text style={styles.txt_title}>Women’s tops</Text>
+          <Image
+            style={styles.icons}
+            source={require('@assets/ic_search.png')}
+          />
         </View>
-        <Text style={styles.txt_title}>Women’s tops</Text>
+
         <View>
           <TouchableOpacity
             style={{
               backgroundColor: Colors.black,
-              marginTop: 12,
               marginStart: 16,
               borderRadius: 29,
               height: 30,
@@ -265,7 +245,9 @@ const ItemCategoryWomen = props => {
               justifyContent: 'center'
             }}
           >
-            <Text style={{ color: Colors.white, textAlign: 'center' }}>T-shirts</Text>
+            <Text style={{ color: Colors.white, textAlign: 'center' }}>
+              T-shirts
+            </Text>
           </TouchableOpacity>
           <View
             style={{
@@ -278,32 +260,92 @@ const ItemCategoryWomen = props => {
             }}
           >
             <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-              <Image style={styles.icons} source={require('@assets/ic_baseline_filter_list.png')} />
+              <Image
+                style={styles.icons}
+                source={require('@assets/ic_baseline_filter_list.png')}
+              />
               <Text style={styles.txt_filters}>Filters</Text>
             </View>
-            <View style={{ flexDirection: 'row' }}>
-              <Image style={styles.icons} source={require('@assets/id_baseline_swap_vert.png')} />
+            <TouchableOpacity
+              style={{ flexDirection: 'row' }}
+              onPress={() => sheetRef.current?.open()}
+            >
+              <Image
+                style={styles.icons}
+                source={require('@assets/id_baseline_swap_vert.png')}
+              />
               <Text style={styles.txt_filters}>Price: lowest to high</Text>
-            </View>
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => handleColum()}>
-              <Image style={styles.icons} source={require('@assets/ic_View_modules.png')} />
+              <Image
+                style={styles.icons}
+                source={require('@assets/ic_View_modules.png')}
+              />
             </TouchableOpacity>
           </View>
         </View>
       </View>
-      <ScrollView style={{ backgroundColor: '#F9F9F9' }}>
+      <ScrollView style={{ backgroundColor: Colors.grayBg }}>
         <FlatList
           style={{ marginBottom: '25%' }}
           scrollEnabled={false}
           numColumns={numColumns}
           key={numColumns}
           showsVerticalScrollIndicator={false} // thanh cuộn
-          showsHorizontalScrollIndicator={false}
           data={DataItemCategoryWomen}
           renderItem={numColumns ? renderItemColumTo : renderItemColumOne}
           keyExtractor={item => item.id}
         />
       </ScrollView>
+      <View>
+        <BottomSheet
+          // bottom sheet
+          ref={sheetRef}
+          style={{
+            backgroundColor: Colors.white,
+            marginBottom: '10%'
+          }}
+        >
+          <Text
+            style={{
+              color: Colors.black,
+              textAlign: 'center',
+              fontSize: 18,
+              fontWeight: '500',
+              marginBottom: 33
+            }}
+          >
+            Sort by
+          </Text>
+
+          <FlatList
+            data={selected}
+            keyExtractor={item => item.id}
+            renderItem={({ item, index }) => {
+              return (
+                <TouchableOpacity onPress={() => handleSelect(item, index)}>
+                  <View
+                    style={{
+                      backgroundColor: item.selected ? Colors.red : Colors.white
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        padding: 16,
+                        fontWeight: item.selected ? '500' : '400',
+                        color: item.selected ? Colors.white : Colors.black
+                      }}
+                    >
+                      {item.subject}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )
+            }}
+          />
+        </BottomSheet>
+      </View>
     </View>
   )
 }
@@ -311,6 +353,98 @@ const ItemCategoryWomen = props => {
 export default ItemCategoryWomen
 
 const styles = StyleSheet.create({
+  renderItemColumTo: {
+    container: {
+      flex: 1,
+      height: '100%',
+      backgroundColor: Colors.grayBg,
+      borderRadius: 8,
+      marginHorizontal: 16,
+      marginTop: 17,
+      marginBottom: 12
+    },
+    image: {
+      width: '100%',
+      height: 184,
+      borderRadius: 8
+    },
+    txt_product_name: {
+      fontSize: 16,
+      marginTop: 5,
+      color: Colors.black,
+      fontWeight: '500',
+      fontStyle: 'normal'
+    },
+    txt_category_name: {
+      fontSize: 11,
+      fontWeight: '400',
+      color: Colors.gray,
+      fontStyle: 'normal',
+      marginTop: 6
+    },
+    img_activated: {
+      width: 14,
+      height: 14
+    },
+    txt_price: {
+      fontSize: 14,
+      color: Colors.black,
+      lineHeight: 20,
+      fontWeight: '400',
+      marginTop: 3
+    }
+  },
+  renderItemColumOne: {
+    container: {
+      marginTop: 16,
+      marginHorizontal: 16,
+      borderRadius: 8,
+      elevation: 4,
+      shadowColor: '#52006A',
+      justifyContent: 'center',
+      backgroundColor: Colors.white
+    },
+    image: {
+      flex: 1,
+      height: '100%',
+      width: '100%',
+      borderTopLeftRadius: 8,
+      borderBottomLeftRadius: 8
+    },
+    txt_product_name: {
+      fontSize: 16,
+      marginTop: 10,
+      color: Colors.black,
+      fontWeight: '500',
+      fontStyle: 'normal'
+    },
+    txt_category_name: {
+      fontSize: 12,
+      fontWeight: '400',
+      color: Colors.gray,
+      fontStyle: 'normal',
+      marginTop: 4
+    },
+    img_activated: {
+      width: 14,
+      height: 14
+    },
+    txt_price: {
+      fontSize: 14,
+      color: Colors.black,
+      lineHeight: 20,
+      fontWeight: '400',
+      marginTop: 8
+    }
+  },
+  txt_bottom_sheet: {
+    fontSize: 16,
+    marginTop: 32,
+    justifyContent: 'center',
+    alignContent: 'center',
+    fontWeight: '400',
+    color: Colors.black
+  },
   txt_filters: {
     fontSize: 11,
     fontWeight: '400',
@@ -322,17 +456,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white
   },
   txt_title: {
-    fontSize: 34,
+    fontSize: 18,
     Colors: Colors.black,
-    fontWeight: '700',
-    marginStart: 14
+    fontWeight: '500',
+    lineHeight: 22
   },
 
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 8,
-    marginTop: 44
+    height: 88
   }
 })
 const DataItemCategoryWomen = [
@@ -428,128 +563,35 @@ const DataItemCategoryWomen = [
   }
 ]
 
-/**
- *  const renderItem = ({ item }) => {
-    const { _id, category_name, product_name, price, review, image } = item
-    return (
-      <View style={{ marginBottom: 26 }}>
-        <View
-          style={{
-            marginTop: 16,
-            marginHorizontal: 16,
-            borderRadius: 8,
-            elevation: 4,
-            shadowColor: '#52006A',
-            justifyContent: 'center',
-            backgroundColor: Colors.white
-          }}
-        >
-          <View style={{ flexDirection: 'row', height: 124 }}>
-            <Image
-              style={{
-                flex: 1,
-                height: '100%',
-
-                width: '100%',
-                borderTopLeftRadius: 8,
-                borderBottomLeftRadius: 8
-              }}
-              source={{ uri: image }}
-            />
-            <View style={{ flex: 2, marginStart: 16 }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  marginTop: 10,
-                  color: Colors.black,
-                  fontWeight: '500',
-                  fontStyle: 'normal'
-                }}
-              >
-                {product_name}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 11,
-                  fontWeight: '400',
-                  color: Colors.gray,
-                  fontStyle: 'normal',
-                  marginTop: 4
-                }}
-              >
-                {category_name}
-              </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
-                <Image
-                  style={{ width: 14, height: 14 }}
-                  source={require('@assets/activated.png')}
-                />
-                <Image
-                  style={{ width: 14, height: 14 }}
-                  source={require('@assets/activated.png')}
-                />
-                <Image
-                  style={{ width: 14, height: 14 }}
-                  source={require('@assets/activated.png')}
-                />
-                <Image
-                  style={{ width: 14, height: 14 }}
-                  source={require('@assets/activated.png')}
-                />
-                <Image
-                  style={{ width: 14, height: 14 }}
-                  source={require('@assets/activated.png')}
-                />
-                <Text
-                  style={{
-                    fontSize: 10,
-                    fontWeight: '400',
-                    color: Colors.gray,
-                    fontStyle: 'normal'
-                  }}
-                >
-                  ( {review})
-                </Text>
-              </View>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: Colors.black,
-                  lineHeight: 20,
-                  fontWeight: '400',
-                  marginTop: 8
-                }}
-              >
-                {price}$
-              </Text>
-              <View
-                style={{
-                  backgroundColor: Colors.white,
-                  width: 48,
-                  height: 48,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  position: 'absolute',
-                  borderRadius: 36,
-                  bottom: 10,
-                  top: 98,
-                  elevation: 4,
-                  shadowColor: '#52006A',
-                  right: 0
-                }}
-              >
-                <Image
-                  style={{
-                    width: 34,
-                    height: 34
-                  }}
-                  source={require('@assets/ic_add_favorite.png')}
-                />
-              </View>
-            </View>
-          </View>
-        </View>
-      </View>
-    )
+const DataBottomSheet = [
+  {
+    id: 1,
+    subject: 'Popular',
+    selected: false
+  },
+  {
+    id: 2,
+    subject: 'Newest',
+    selected: false
+  },
+  {
+    id: 3,
+    subject: 'Customer review',
+    selected: false
+  },
+  {
+    id: 4,
+    subject: 'Price: lowest to high',
+    selected: true
   }
- */
+  // {
+  //   id: 5,
+  //   subject: 'Price: highest to low',
+  //   selected: false
+  // },
+  // {
+  //   id: 6,
+  //   subject: 'Price: highest to low',
+  //   selected: false
+  // }
+]

@@ -5,49 +5,43 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View
 } from 'react-native'
 import Colors from 'src/constants/Colors'
-
-const Women = props => {
-  const renderItem = ({ item }) => {
-    const { _id, title, image } = item
-    return (
-      <TouchableOpacity
-        style={styles.category_cart}
-        onPress={() => props.navigation.navigate('CategoryWomen')}
-      >
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: '500',
-              lineHeight: 22,
-              color: Colors.black,
-              left: 23
-            }}
-          >
-            {title}
-          </Text>
-        </View>
-        <View style={{ flex: 1, position: 'relative' }}>
-          <Image
-            style={{
-              width: '100%',
-              height: 100,
-              position: 'absolute',
-              borderBottomRightRadius: 8,
-              borderTopRightRadius: 8
-            }}
-            source={{ uri: image }}
-            onError={() => console.warn('Image failed to load')}
-          />
-        </View>
-      </TouchableOpacity>
-    )
-  }
-  const { navigation } = props
+const renderItem = ({ item }) => {
+  const { _id, title, image } = item
+  return (
+    <View style={styles.category_cart}>
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: '400',
+            lineHeight: 22,
+            color: Colors.black,
+            left: 23
+          }}
+        >
+          {title}
+        </Text>
+      </View>
+      <View style={{ flex: 1, position: 'relative' }}>
+        <Image
+          style={{
+            width: '100%',
+            height: 100,
+            position: 'absolute',
+            borderBottomRightRadius: 8,
+            borderTopRightRadius: 8
+          }}
+          source={{ uri: image }}
+          onError={() => console.warn('Image failed to load')}
+        />
+      </View>
+    </View>
+  )
+}
+const Kids = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.box_1}>
@@ -67,8 +61,7 @@ const Women = props => {
   )
 }
 
-export default Women
-
+export default Kids
 const styles = StyleSheet.create({
   category_cart: {
     flexDirection: 'row',
@@ -104,7 +97,6 @@ const styles = StyleSheet.create({
     width: '100%'
   }
 })
-
 const DataWomen = [
   {
     _id: '1',

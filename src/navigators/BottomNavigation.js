@@ -6,10 +6,10 @@ import Favorites from '@screens/Favorites'
 // import HomePage from '@screens/HomePage';
 import Profile from '@screens/Profile'
 import Icons from 'src/components/icons/Icon'
-import ShopPage from 'src/components/screens/ShopPage'
 import HomePage from 'src/components/screens/homePages/HomePage'
-import CategoryWomen from 'src/components/screens/shopPage/womentPage/CategoryWomen'
-import ItemCategoryWomen from 'src/components/screens/shopPage/womentPage/ItemCategoryWomen'
+import ShopPage from 'src/components/screens/shopPage/ShopPage'
+import CategoryWomen from 'src/components/screens/shopPage/shopPage_woman/CategoryWomen'
+import ItemCategoryWomen from 'src/components/screens/shopPage/shopPage_woman/ItemCategoryWomen'
 import Colors from 'src/constants/Colors'
 
 const Stack = createNativeStackNavigator()
@@ -25,17 +25,17 @@ const ShopStack = () => {
       <Stack.Screen
         name="ShopPage"
         component={ShopPage}
-        options={{ title: 'Trang chủ' }}
+        options={{ title: 'Trang chủ Shop' }}
       ></Stack.Screen>
       <Stack.Screen
         name="ItemCategoryWomen"
         component={ItemCategoryWomen}
-        options={{ title: 'Trang con' }}
+        options={{ title: 'List Category Women' }}
       ></Stack.Screen>
       <Stack.Screen
         name="CategoryWomen"
         component={CategoryWomen}
-        options={{ title: 'Chi tiết sản phẩm' }}
+        options={{ title: 'Tab Category Women' }}
       ></Stack.Screen>
     </Stack.Navigator>
   )
@@ -52,10 +52,9 @@ function BottomTabNavigator() {
         borderTopRightRadius: 12,
         borderTopLeftRadius: 12,
         position: 'absolute',
-        paddingTop: 8,
+
         paddingEnd: 16,
-        paddingStart: 16,
-        paddingBottom: 8
+        paddingStart: 16
       }}
     >
       <Button.Screen
@@ -68,7 +67,7 @@ function BottomTabNavigator() {
             <Icons.MaterialCommunityIcons
               name={focused ? 'home' : 'home-outline'}
               color={!focused ? Colors.gray : Colors.red}
-              size={32}
+              size={30}
             />
           )
         }}
@@ -83,7 +82,7 @@ function BottomTabNavigator() {
             <Icons.MaterialIcons
               name={focused ? 'shopping-cart' : 'add-shopping-cart'}
               color={!focused ? Colors.gray : Colors.red}
-              size={32}
+              size={30}
             />
           )
         }}
@@ -99,7 +98,7 @@ function BottomTabNavigator() {
             <Icons.Ionicons
               name={focused ? 'bag-handle' : 'bag-handle-outline'}
               color={!focused ? Colors.gray : Colors.red}
-              size={32}
+              size={30}
             />
           )
         }}
@@ -114,7 +113,7 @@ function BottomTabNavigator() {
             <Icons.MaterialIcons
               name={focused ? 'favorite' : 'favorite-border'}
               color={!focused ? Colors.gray : Colors.red}
-              size={32}
+              size={30}
             />
           )
         }}
@@ -129,7 +128,7 @@ function BottomTabNavigator() {
             <Icons.FontAwesome
               name={focused ? 'user' : 'user-o'}
               color={!focused ? Colors.gray : Colors.red}
-              size={32}
+              size={30}
             />
           )
         }}
