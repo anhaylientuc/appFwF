@@ -1,5 +1,6 @@
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+// import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { createStackNavigator } from '@react-navigation/stack'
 
 import BagPage from '@screens/BagPage'
 import Favorites from '@screens/Favorites'
@@ -7,13 +8,14 @@ import Favorites from '@screens/Favorites'
 import Profile from '@screens/Profile'
 import Icons from 'src/components/icons/Icon'
 import HomePage from 'src/components/screens/homePages/HomePage'
-import ShopPage from 'src/components/screens/shopPage/ShopPage'
-import CategoryWomen from 'src/components/screens/shopPage/shopPage_woman/CategoryWomen'
-import ItemCategoryWomen from 'src/components/screens/shopPage/shopPage_woman/ItemCategoryWomen'
+import ShopPage from 'src/components/screens/shopPages/ShopPage'
+import CategoryWomen from 'src/components/screens/shopPages/shopPage_woman/CategoryWomen'
+import ItemCategoryWomen from 'src/components/screens/shopPages/shopPage_woman/ItemListCategoryWomen'
+import ProductWomen from 'src/components/screens/shopPages/shopPage_woman/ProductWomen'
+import SizeInfo from 'src/components/screens/shopPages/shopPage_woman/SizeInfo'
 import Colors from 'src/constants/Colors'
-
-const Stack = createNativeStackNavigator()
-const Button = createMaterialBottomTabNavigator()
+const Stack = createStackNavigator()
+const Button = createBottomTabNavigator()
 
 const ShopStack = () => {
   return (
@@ -37,6 +39,22 @@ const ShopStack = () => {
         component={CategoryWomen}
         options={{ title: 'Tab Category Women' }}
       ></Stack.Screen>
+      <Stack.Screen
+        name="ProductWomen"
+        component={ProductWomen}
+        options={{
+          title: 'ProductWomen',
+          tabBarStyle: { display: 'none' }
+        }}
+      ></Stack.Screen>
+      <Stack.Screen
+        name="SizeInfo"
+        component={SizeInfo}
+        options={{
+          title: 'SizeInfo',
+          
+        }}
+      ></Stack.Screen>
     </Stack.Navigator>
   )
 }
@@ -45,16 +63,20 @@ function BottomTabNavigator() {
   return (
     <Button.Navigator
       initialRouteName="Home"
-      activeColor={Colors.red}
-      inactiveColor={Colors.gray}
-      barStyle={{
-        backgroundColor: Colors.white,
-        borderTopRightRadius: 12,
-        borderTopLeftRadius: 12,
-        position: 'absolute',
-
-        paddingEnd: 16,
-        paddingStart: 16
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: Colors.red,
+        tabBarStyle: {
+          borderTopEndRadius: 12,
+          borderTopStartRadius: 12,
+          paddingTop: 10,
+          paddingBottom: 10,
+          height: '10%',
+          backgroundColor: Colors.white,
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute'
+        }
       }}
     >
       <Button.Screen
@@ -93,6 +115,7 @@ function BottomTabNavigator() {
         component={BagPage}
         options={{
           tabBarLabel: 'Bag',
+          // tabBarStyle: { display: 'none' },
           tabBarColor: Colors.white,
           tabBarIcon: ({ focused }) => (
             <Icons.Ionicons

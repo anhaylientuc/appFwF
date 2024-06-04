@@ -1,18 +1,16 @@
-import * as React from 'react';
-import { StyleSheet } from 'react-native';
-import AppNavigation from 'src/navigators/AppNavigation';
+import * as React from 'react'
+import { StyleSheet } from 'react-native'
+import AppNavigation from 'src/navigators/AppNavigation'
 
 export default function App() {
-    return (
-      <AppNavigation/>
-    );
+  return <AppNavigation />
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+})

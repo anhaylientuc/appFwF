@@ -9,6 +9,7 @@ import {
   View
 } from 'react-native'
 import Colors from 'src/constants/Colors'
+import Icons from 'src/components/icons/Icon'
 
 const Women = props => {
   const { navigation } = props
@@ -49,7 +50,7 @@ const Women = props => {
     )
   }
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.box_1}>
         <Text style={styles.txt1_box}>SUMMER SALES</Text>
         <Text style={styles.txt2_box}>Up to 50% off</Text>
