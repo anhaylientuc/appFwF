@@ -9,7 +9,6 @@ import {
   View
 } from 'react-native'
 import Colors from 'src/constants/Colors'
-import Icons from 'src/components/icons/Icon'
 
 const Women = props => {
   const { navigation } = props

@@ -15,9 +15,15 @@ import { DaTaSale } from 'src/constants/Databases'
 import ItemListNew from '../../homePages/ItemListNews'
 const ProductWomen = props => {
   const { navigation } = props
+
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
   }, [])
+
+  const [addFavorite, setAddFavorite] = useState(false)
+  const handleAddFavorite = () => {
+    setAddFavorite(!addFavorite)
+  }
 
   const handleOnBack = () => {
     {
@@ -126,23 +132,70 @@ const ProductWomen = props => {
     )
   }
 
+  const [isProductCare, setIsProductCare] = useState(false)
+  const ProductCare = () => {
+    return (
+      <View style={{ marginHorizontal: 16 }}>
+        <Text style={{ fontSize: 14 }}>
+          Bạn cũng có thể giúp bảo vệ môi trường cho một tương lai thời trang
+          bền vững hơn. Hãy mang đem bao quần áo cũ / hàng dệt may bất kỳ không
+          sử dụng nữa đến các cửa hàng H&amp;M tham gia tái chế thời trang.
+        </Text>
+        {/* <Text
+          style={{
+            marginTop: 8,
+            fontSize: 14,
+            borderBottomWidth: 1,
+            width: '90%'
+          }}
+        >
+          Đọc về cách bạn có thể giữ cho quần áo bền lâu hơn
+        </Text> */}
+        <Text style={{ marginTop: 8, fontSize: 16, fontWeight: '500' }}>
+          Hướng dẫn chăm sóc sản phẩm
+        </Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Icons.Entypo name={'dot-single'} size={20} />
+          <Text>Phơi khô</Text>
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          <Icons.Entypo name={'dot-single'} size={20} />
+          <Text>Chỉ tẩy bằng chất không chứa clo khi cần</Text>
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          <Icons.Entypo name={'dot-single'} size={20} />
+          <Text>Giặt máy ở 40°</Text>
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          <Icons.Entypo name={'dot-single'} size={20} />
+          <Text>Có thể giặt khô</Text>
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          <Icons.Entypo name={'dot-single'} size={20} />
+          <Text>Giặt chung với màu tương tự</Text>
+        </View>
+        <View style={{ flexDirection: 'row', marginBottom: 16 }}>
+          <Icons.Entypo name={'dot-single'} size={20} />
+          <Text>Là ủi nhiệt độ cao</Text>
+        </View>
+      </View>
+    )
+  }
+
   return (
     <View
       style={{
         width: '100%',
         height: '100%',
-        backgroundColor: Colors.white
+        backgroundColor: Colors.grayBg
       }}
     >
       <View style={styles.container_header}>
         <TouchableOpacity onPress={() => handleOnBack()}>
-          <Image style={styles.icons} source={require('@assets/ic_back.png')} />
+          <Icons.Ionicons name={'chevron-back-outline'} size={28} />
         </TouchableOpacity>
         <Text>Short dress</Text>
-        <Image
-          style={styles.icons}
-          source={require('@assets/ic_baseline_share.png')}
-        />
+        <Icons.Ionicons name={'share-social-sharp'} size={28} />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View>
@@ -162,15 +215,19 @@ const ProductWomen = props => {
               style={{ right: 8 }}
             />
           </TouchableOpacity>
-          <View style={styles.product.container_ic_add_favorite}>
-            <Image
+          <TouchableOpacity
+            style={styles.product.container_ic_add_favorite}
+            onPress={() => handleAddFavorite()}
+          >
+            <Icons.MaterialIcons
               style={{
-                width: 34,
-                height: 34
+                textAlign: 'center'
               }}
-              source={require('@assets/ic_add_favorite.png')}
+              name={!addFavorite ? 'favorite-outline' : 'favorite'}
+              size={24}
+              color={!addFavorite ? Colors.gray : Colors.red}
             />
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={{ marginTop: 22, marginHorizontal: 16, marginBottom: 10 }}>
           <View
@@ -184,7 +241,8 @@ const ProductWomen = props => {
             <Text style={styles.txt_price}>$19.99</Text>
           </View>
           <Text style={styles.txt_category_name}>Short black dress</Text>
-          <View
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate('ReviewProduct')}
             style={{
               flexDirection: 'row',
               marginBottom: 16,
@@ -204,7 +262,7 @@ const ProductWomen = props => {
               source={require('@assets/activated.png')}
             />
             <Text style={styles.txt_review}>(10)</Text>
-          </View>
+          </TouchableOpacity>
           <Text>
             Short dress in soft cotton jersey with decorative buttons down the
             front and a wide, frill-trimmed square neckline with concealed
@@ -224,12 +282,20 @@ const ProductWomen = props => {
               padding: 16
             }}
           >
-            <Text style={styles.txt_shipping_info}>Shipping info</Text>
+            <Text
+              style={
+                !isInfoProduct
+                  ? styles.txt_shipping_info
+                  : styles.txt_shipping_info_active
+              }
+            >
+              Description and fit
+            </Text>
             <TouchableOpacity onPress={() => setIsInfoProduct(!isInfoProduct)}>
-              <Icons.MaterialIcons
-                name={'navigate-next'}
-                size={20}
-                color={Colors.black}
+              <Icons.AntDesign
+                name={!isInfoProduct ? 'down' : 'up'}
+                size={16}
+                color={!isInfoProduct ? Colors.black : Colors.red}
               />
             </TouchableOpacity>
           </View>
@@ -249,15 +315,25 @@ const ProductWomen = props => {
               padding: 16
             }}
           >
-            <Text style={styles.txt_shipping_info}>Support</Text>
-            <TouchableOpacity>
-              <Icons.MaterialIcons
-                name={'navigate-next'}
-                size={20}
+            <Text
+              style={
+                !isProductCare
+                  ? styles.txt_shipping_info
+                  : styles.txt_shipping_info_active
+              }
+            >
+              Product care instructions
+            </Text>
+            <TouchableOpacity onPress={() => setIsProductCare(!isProductCare)}>
+              <Icons.AntDesign
+                name={!isProductCare ? 'down' : 'up'}
+                size={16}
                 color={Colors.black}
               />
             </TouchableOpacity>
           </View>
+
+          {isProductCare ? ProductCare() : null}
 
           {/**
            * image product
@@ -326,8 +402,9 @@ const ProductWomen = props => {
             ))}
           </ScrollView>
         </View>
+        <View style={{ height: 50 }} />
       </ScrollView>
-      <View></View>
+
       <View
         style={{
           flexDirection: 'row',
@@ -430,7 +507,7 @@ const ProductWomen = props => {
                 flexDirection: 'row'
               }}
             >
-              <Text>Size selection guide</Text>
+              <Text>Size info</Text>
 
               <Icons.MaterialIcons name={'navigate-next'} size={20} />
             </TouchableOpacity>
@@ -511,7 +588,12 @@ const styles = StyleSheet.create({
   txt_shipping_info: {
     fontSize: 16,
     color: Colors.black,
-    fontWeight: '400,'
+    fontWeight: '500'
+  },
+  txt_shipping_info_active: {
+    fontSize: 16,
+    color: Colors.red,
+    fontWeight: '500'
   },
   txt_addToCart: {
     color: Colors.white,
@@ -547,50 +629,13 @@ const styles = StyleSheet.create({
   container_header: {
     padding: 8,
     marginTop: 44,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.grayBg,
     width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row'
   }
 })
-// <View style={styles.hmBreadcrumbsNavBreadcr}>
-//   <View style={[styles.item, styles.itemPosition]}>
-//     <View style={styles.linkFlexBox}>
-//       <Text style={[styles.hmcom, styles.textFlexBox]}>HM.com</Text>
-//     </View>
-//     <Text style={[styles.text, styles.textFlexBox]}>/</Text>
-//   </View>
-//   <View style={[styles.item1, styles.itemPosition]}>
-//     <View style={styles.linkFlexBox}>
-//       <Text style={[styles.hmcom, styles.textFlexBox]}>Nam</Text>
-//     </View>
-//     <Text style={[styles.text, styles.textFlexBox]}>/</Text>
-//   </View>
-//   <View style={[styles.item2, styles.itemPosition]}>
-//     <View style={styles.linkFlexBox}>
-//       <Text
-//         style={[styles.hmcom, styles.textFlexBox]}
-//       >{`Áo & Áo thun`}</Text>
-//     </View>
-//     <Text style={[styles.text, styles.textFlexBox]}>/</Text>
-//   </View>
-//   <View style={[styles.item3, styles.itemPosition]}>
-//     <View style={styles.linkFlexBox}>
-//       <Text
-//         style={[styles.hmcom, styles.textFlexBox]}
-//       >{`Áo thun in hình & hoạ tiết`}</Text>
-//     </View>
-//     <Text style={[styles.text, styles.textFlexBox]}>/</Text>
-//   </View>
-//   <View style={[styles.item4, styles.linkFlexBox]}>
-//     <View style={styles.heading4}>
-//       <Text style={[styles.oBaL, styles.textFlexBox]}>
-//         Áo ba lỗ in hình Loose Fit
-//       </Text>
-//     </View>
-//   </View>
-// </View>
 
 const DataSize = [
   {

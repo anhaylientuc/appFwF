@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import {
+  Image,
   KeyboardAvoidingView,
   Pressable,
   ScrollView,
@@ -265,9 +266,98 @@ const SizeInfo = props => {
   const handleLongShape = () => {
     setIsShowSize(true)
   }
+
+  const [isShowMeasureSize, setIsShowMeasureSize] = useState(false)
+
+  const measureSize = () => {
+    return (
+      <View
+        style={{
+          backgroundColor: Colors.white,
+          paddingHorizontal: 16,
+          marginBottom: 16
+        }}
+      >
+        <View style={{ alignItems: 'center' }}>
+          <Image
+            style={{
+              marginVertical: 16,
+
+              width: 210,
+              height: 250
+            }}
+            source={require('@assets/image_size_body.png')}
+          />
+        </View>
+
+        <View style={{ flexDirection: 'row', marginBottom: 20 }}>
+          <View style={styles.container_ic_measure}>
+            <Icons.MaterialCommunityIcons name={'numeric-1'} size={30} />
+          </View>
+          <View>
+            <Text
+              style={{ fontSize: 16, color: Colors.black, fontWeight: '700' }}
+            >
+              Ngực
+            </Text>
+            <Text style={styles.txt_measure_title}>
+              Đo vòng ngực đầy đặn nhất khu vực xung quanh của ngực
+            </Text>
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', marginBottom: 20 }}>
+          <View style={styles.container_ic_measure}>
+            <Icons.MaterialCommunityIcons name={'numeric-2'} size={30} />
+          </View>
+          <View>
+            <Text
+              style={{ fontSize: 16, color: Colors.black, fontWeight: '700' }}
+            >
+              Eo
+            </Text>
+            <Text style={{ fontSize: 12, color: Colors.black, marginTop: 8 }}>
+              Đo vòng eo tại vị trí hẹp nhất
+            </Text>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: 'row', marginBottom: 20 }}>
+          <View style={styles.container_ic_measure}>
+            <Icons.MaterialCommunityIcons name={'numeric-3'} size={30} />
+          </View>
+          <View>
+            <Text
+              style={{ fontSize: 16, color: Colors.black, fontWeight: '700' }}
+            >
+              Chiều dài cánh tay
+            </Text>
+            <Text style={{ fontSize: 12, color: Colors.black, marginTop: 8 }}>
+              Đo từ vai đến cổ tay
+            </Text>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: 'row', marginBottom: 20 }}>
+          <View style={styles.container_ic_measure}>
+            <Icons.MaterialCommunityIcons name={'numeric-4'} size={30} />
+          </View>
+          <View>
+            <Text
+              style={{ fontSize: 16, color: Colors.black, fontWeight: '700' }}
+            >
+              Đường viền cổ áo
+            </Text>
+            <Text style={{ fontSize: 12, color: Colors.black, marginTop: 8 }}>
+              Để có kích thước chuẩn cho áo sơ mi khi đeo cà vạt
+            </Text>
+          </View>
+        </View>
+      </View>
+    )
+  }
   return (
     <KeyboardAvoidingView>
-      <ScrollView style={styles.wrapper}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.wrapper}>
         <View style={{ marginTop: 32, paddingHorizontal: 9 }}>
           <View
             style={{
@@ -288,18 +378,42 @@ const SizeInfo = props => {
           </View>
         </View>
         <View style={styles.container_measure}>
-          <Text style={{ fontSize: 16, fontWeight: '500' }}>Cách đo lường</Text>
-          <Icons.Entypo name={'chevron-small-down'} size={20} />
+          <Text
+            style={
+              isShowMeasureSize ? styles.txt_measure_active : styles.txt_measure
+            }
+          >
+            Cách đo lường
+          </Text>
+          <TouchableOpacity
+            onPress={() => setIsShowMeasureSize(!isShowMeasureSize)}
+          >
+            <Icons.Entypo
+              name={
+                !isShowMeasureSize ? 'chevron-small-down' : 'chevron-small-up'
+              }
+              size={20}
+            />
+          </TouchableOpacity>
         </View>
+        {isShowMeasureSize ? measureSize() : null}
         <View style={{ backgroundColor: Colors.white, paddingBottom: 50 }}>
           <Text style={styles.txt_size_range}>Chọn phạm vi kích cỡ</Text>
           <View style={styles.container_btn_tab}>
-            <View style={styles.btn_Active_Tab}>
+            <View
+              style={
+                !isShowSize ? styles.btn_Active_Tab : styles.btn_no_Active_Tab
+              }
+            >
               <TouchableOpacity onPress={() => handleNormally()}>
                 <Text style={{ textAlign: 'center' }}>Thông thường</Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.btn_no_Active_Tab}>
+            <View
+              style={
+                isShowSize ? styles.btn_Active_Tab : styles.btn_no_Active_Tab
+              }
+            >
               <TouchableOpacity onPress={() => handleLongShape()}>
                 <Text style={{ textAlign: 'center' }}>Dáng dài</Text>
               </TouchableOpacity>
@@ -321,6 +435,30 @@ const SizeInfo = props => {
 export default SizeInfo
 
 const styles = StyleSheet.create({
+  txt_measure_title: {
+    fontSize: 12,
+    color: Colors.black,
+    marginTop: 8,
+    maxWidth: '95%'
+  },
+  container_ic_measure: {
+    borderWidth: 2,
+    alignItems: 'center',
+    height: 38,
+    padding: 2,
+    marginEnd: 16,
+    borderRadius: 30
+  },
+  txt_measure_active: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: Colors.red
+  },
+  txt_measure: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: Colors.black
+  },
   container_measure: {
     flexDirection: 'row',
     justifyContent: 'space-between',

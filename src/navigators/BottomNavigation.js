@@ -9,10 +9,11 @@ import Profile from '@screens/Profile'
 import Icons from 'src/components/icons/Icon'
 import HomePage from 'src/components/screens/homePages/HomePage'
 import ShopPage from 'src/components/screens/shopPages/ShopPage'
-import CategoryWomen from 'src/components/screens/shopPages/shopPage_woman/CategoryWomen'
-import ItemCategoryWomen from 'src/components/screens/shopPages/shopPage_woman/ItemListCategoryWomen'
-import ProductWomen from 'src/components/screens/shopPages/shopPage_woman/ProductWomen'
-import SizeInfo from 'src/components/screens/shopPages/shopPage_woman/SizeInfo'
+import CategoryWomen from 'src/components/screens/shopPages/shopPageWoman/CategoryWomen'
+import ItemCategoryWomen from 'src/components/screens/shopPages/shopPageWoman/ItemListCategoryWomen'
+import ProductWomen from 'src/components/screens/shopPages/shopPageWoman/ProductWomen'
+import ReviewProduct from 'src/components/screens/shopPages/shopPageWoman/ReviewProduct'
+import SizeInfo from 'src/components/screens/shopPages/shopPageWoman/SizeInfo'
 import Colors from 'src/constants/Colors'
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
@@ -48,11 +49,18 @@ const ShopStack = () => {
         }}
       ></Stack.Screen>
       <Stack.Screen
+        name="ReviewProduct"
+        component={ReviewProduct}
+        options={{
+          title: 'ReviewProduct',
+          tabBarStyle: { display: 'none' }
+        }}
+      ></Stack.Screen>
+      <Stack.Screen
         name="SizeInfo"
         component={SizeInfo}
         options={{
-          title: 'SizeInfo',
-          
+          title: 'SizeInfo'
         }}
       ></Stack.Screen>
     </Stack.Navigator>
@@ -147,6 +155,7 @@ function BottomTabNavigator() {
         component={Profile}
         options={{
           tabBarLabel: 'Profile',
+
           tabBarIcon: ({ focused }) => (
             <Icons.FontAwesome
               name={focused ? 'user' : 'user-o'}

@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import Men from 'src/components/screens/shopPages/shopPage_man/Men'
-import Kids from '../components/screens/shopPages/shopPage_kids/Kids'
-import Women from '../components/screens/shopPages/shopPage_woman/Women'
+import Men from 'src/components/screens/shopPages/shopPageMan/Men'
+import Kids from '../components/screens/shopPages/shopPageKids/Kids'
+import Women from '../components/screens/shopPages/shopPageWoman/Women'
 
 const Tab = createMaterialTopTabNavigator()
 

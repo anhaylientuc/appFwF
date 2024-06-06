@@ -19,6 +19,10 @@ const ItemCategoryWomen = props => {
   // set useRef
   const sheetRef = useRef(null)
 
+  const [addFavorite, setAddFavorite] = useState(false)
+  const handleAddFavorite = () => {
+    setAddFavorite(!addFavorite)
+  }
   // const numColumns = 2
   const [numColumns, setNumColumns] = useState()
 
@@ -57,12 +61,13 @@ const ItemCategoryWomen = props => {
               right: 0
             }}
           >
-            <Image
+            <Icons.MaterialIcons
               style={{
-                width: 34,
-                height: 34
+                textAlign: 'center'
               }}
-              source={require('@assets/ic_add_favorite.png')}
+              name={'favorite-outline'}
+              size={24}
+              color={Colors.gray}
             />
           </View>
         </View>
@@ -135,24 +140,29 @@ const ItemCategoryWomen = props => {
               right: 0
             }}
           >
-            <Image
-              style={{
-                width: 34,
-                height: 34
-              }}
-              source={require('@assets/ic_add_favorite.png')}
-            />
+            <TouchableOpacity onPress={() => handleAddFavorite()}>
+              <Icons.MaterialIcons
+                style={{
+                  textAlign: 'center'
+                }}
+                name={addFavorite ? 'favorite-outline' : 'favorite'}
+                size={24}
+                color={addFavorite ? Colors.gray : Colors.red}
+              />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={{ flexDirection: 'row', height: 124 }}
-            onPress={() =>
-              props.navigation.navigate('ProductWomen', { productId: _id })
-            }
-          >
-            <Image
+          <View style={{ flexDirection: 'row', height: 124 }}>
+            <TouchableOpacity
               style={styles.renderItemColumOne.image}
-              source={{ uri: image }}
-            />
+              onPress={() =>
+                props.navigation.navigate('ProductWomen', { productId: _id })
+              }
+            >
+              <Image
+                style={styles.renderItemColumOne.image}
+                source={{ uri: image }}
+              />
+            </TouchableOpacity>
             <View style={{ flex: 2, marginStart: 16 }}>
               <Text style={styles.renderItemColumOne.txt_product_name}>
                 {product_name}
@@ -200,7 +210,7 @@ const ItemCategoryWomen = props => {
               </View>
               <Text style={styles.renderItemColumOne.txt_price}>{price}$</Text>
             </View>
-          </TouchableOpacity>
+          </View>
         </View>
       </View>
     )
@@ -314,15 +324,14 @@ const ItemCategoryWomen = props => {
                 sheetRef.current?.open()
               }}
             >
-              <Icons.MaterialCommunityIcons
-                name={'sort'}
-                size={28}
-                // source={require('@assets/id_baseline_swap_vert.png')}
-              />
+              <Icons.MaterialCommunityIcons name={'sort'} size={28} />
               <Text style={styles.txt_filters}>Sort by to</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleColum()}>
-              <Icons.MaterialCommunityIcons name={'view-module'} size={28} />
+              <Icons.MaterialCommunityIcons
+                name={!numColumns ? 'view-module' : 'view-list'}
+                size={28}
+              />
             </TouchableOpacity>
           </View>
         </View>
