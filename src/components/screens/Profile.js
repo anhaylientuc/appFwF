@@ -3,8 +3,8 @@ import { StyleSheet, Text, View } from 'react-native'
 
 const Profile = () => {
   return (
-    <View>
-      <Text>Profile</Text>
+    <View style={{ justifyContent: 'center', width: '100%', height: '100%' }}>
+      <Text style={{ textAlign: 'center' }}>Profile</Text>
     </View>
   )
 }

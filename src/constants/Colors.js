@@ -21,6 +21,7 @@ export default {
   gold: 'gold',
   line: '#282C35',
   darkHeaderColor: '#0e1616',
+
   powderBlue: 'powderblue',
   skyBlue: 'skyblue',
   grayBg: '#F9F9F9',

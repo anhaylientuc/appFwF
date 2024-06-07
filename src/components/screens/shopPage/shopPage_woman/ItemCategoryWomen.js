@@ -9,20 +9,11 @@ import {
   TouchableOpacity,
   View
 } from 'react-native'
-import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import { DataItemCategoryWomen } from 'src/constants/Databases'
 
 const ItemCategoryWomen = props => {
   const { navigation } = props
-
-  // set useRef
   const sheetRef = useRef(null)
-
-  const [addFavorite, setAddFavorite] = useState(false)
-  const handleAddFavorite = () => {
-    setAddFavorite(!addFavorite)
-  }
   // const numColumns = 2
   const [numColumns, setNumColumns] = useState()
 
@@ -61,13 +52,12 @@ const ItemCategoryWomen = props => {
               right: 0
             }}
           >
-            <Icons.MaterialIcons
+            <Image
               style={{
-                textAlign: 'center'
+                width: 34,
+                height: 34
               }}
-              name={'favorite-outline'}
-              size={24}
-              color={Colors.gray}
+              source={require('@assets/ic_add_favorite.png')}
             />
           </View>
         </View>
@@ -124,45 +114,11 @@ const ItemCategoryWomen = props => {
     return (
       <View style={{ marginBottom: 26 }}>
         <View style={styles.renderItemColumOne.container}>
-          <View
-            style={{
-              backgroundColor: Colors.white,
-              width: 48,
-              height: 48,
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'absolute',
-              borderRadius: 36,
-              bottom: 10,
-              top: 98,
-              elevation: 4,
-              shadowColor: '#52006A',
-              right: 0
-            }}
-          >
-            <TouchableOpacity onPress={() => handleAddFavorite()}>
-              <Icons.MaterialIcons
-                style={{
-                  textAlign: 'center'
-                }}
-                name={addFavorite ? 'favorite-outline' : 'favorite'}
-                size={24}
-                color={addFavorite ? Colors.gray : Colors.red}
-              />
-            </TouchableOpacity>
-          </View>
           <View style={{ flexDirection: 'row', height: 124 }}>
-            <TouchableOpacity
+            <Image
               style={styles.renderItemColumOne.image}
-              onPress={() =>
-                props.navigation.navigate('ProductWomen', { productId: _id })
-              }
-            >
-              <Image
-                style={styles.renderItemColumOne.image}
-                source={{ uri: image }}
-              />
-            </TouchableOpacity>
+              source={{ uri: image }}
+            />
             <View style={{ flex: 2, marginStart: 16 }}>
               <Text style={styles.renderItemColumOne.txt_product_name}>
                 {product_name}
@@ -209,6 +165,30 @@ const ItemCategoryWomen = props => {
                 </Text>
               </View>
               <Text style={styles.renderItemColumOne.txt_price}>{price}$</Text>
+              <View
+                style={{
+                  backgroundColor: Colors.white,
+                  width: 48,
+                  height: 48,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  position: 'absolute',
+                  borderRadius: 36,
+                  bottom: 10,
+                  top: 98,
+                  elevation: 4,
+                  shadowColor: '#52006A',
+                  right: 0
+                }}
+              >
+                <Image
+                  style={{
+                    width: 34,
+                    height: 34
+                  }}
+                  source={require('@assets/ic_add_favorite.png')}
+                />
+              </View>
             </View>
           </View>
         </View>
@@ -217,25 +197,7 @@ const ItemCategoryWomen = props => {
   }
 
   // logic handle state bottom sheet
-  const [selected, setSelected] = useState(DataSortBy)
-
-  const setBottomBar = () => {
-    navigation.getParent().setOptions({
-      tabBarStyle: {
-        borderTopEndRadius: 12,
-        borderTopStartRadius: 12,
-        paddingTop: 10,
-        paddingBottom: 10,
-        height: '10%',
-        backgroundColor: Colors.white,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute'
-      }
-    })
-  }
-
-  // logic handle select Items bottom sheet
+  const [selected, setSelected] = useState(DataBottomSheet)
   const handleSelect = (item, index) => {
     const newItem = selected.map((e, index) => {
       if (e.id == item.id) {
@@ -245,12 +207,8 @@ const ItemCategoryWomen = props => {
         return { ...e, selected: false }
       }
     })
-
     setSelected(newItem)
-    sheetRef.current.close()
-    setBottomBar()
   }
-
   return (
     <View style={{ width: '100%', height: '100%' }}>
       <View
@@ -262,17 +220,18 @@ const ItemCategoryWomen = props => {
       >
         <View style={styles.view_search}>
           <TouchableOpacity
-            // Logic: onClick -> back về Screen trước và set on BottomNavigation Bar
-            onPress={() => {
-              setBottomBar()
-              props.navigation.goBack()
-            }}
+            onPress={() => props.navigation.navigate('CategoryWomen')}
           >
-            <Icons.Ionicons name={'chevron-back'} size={24} />
+            <Image
+              style={styles.icons}
+              source={require('@assets/ic_back.png')}
+            />
           </TouchableOpacity>
           <Text style={styles.txt_title}>Women’s tops</Text>
-
-          <Icons.Ionicons name={'search'} size={24} />
+          <Image
+            style={styles.icons}
+            source={require('@assets/ic_search.png')}
+          />
         </View>
 
         <View>
@@ -283,7 +242,6 @@ const ItemCategoryWomen = props => {
               borderRadius: 29,
               height: 30,
               width: 100,
-
               justifyContent: 'center'
             }}
           >
@@ -295,53 +253,40 @@ const ItemCategoryWomen = props => {
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
-              marginVertical: 18,
+              marginTop: 18,
               elevation: 8,
               shadowColor: Colors.gray,
               marginHorizontal: 16
             }}
           >
-            <TouchableOpacity
-              style={{
-                flexDirection: 'row',
-
-                alignItems: 'center'
-              }}
-            >
-              <Icons.MaterialIcons name={'filter-list'} size={28} />
+            <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+              <Image
+                style={styles.icons}
+                source={require('@assets/ic_baseline_filter_list.png')}
+              />
               <Text style={styles.txt_filters}>Filters</Text>
-            </TouchableOpacity>
+            </View>
             <TouchableOpacity
-              // Logic: Open Bottom Sheet and set BottomNavigation -> off
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center'
-              }}
-              onPress={() => {
-                navigation
-                  .getParent()
-                  .setOptions({ tabBarStyle: { display: 'none' } })
-                sheetRef.current?.open()
-              }}
+              style={{ flexDirection: 'row' }}
+              onPress={() => sheetRef.current?.open()}
             >
-              <Icons.MaterialCommunityIcons name={'sort'} size={28} />
-              <Text style={styles.txt_filters}>Sort by to</Text>
+              <Image
+                style={styles.icons}
+                source={require('@assets/id_baseline_swap_vert.png')}
+              />
+              <Text style={styles.txt_filters}>Price: lowest to high</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleColum()}>
-              <Icons.MaterialCommunityIcons
-                name={!numColumns ? 'view-module' : 'view-list'}
-                size={28}
+              <Image
+                style={styles.icons}
+                source={require('@assets/ic_View_modules.png')}
               />
             </TouchableOpacity>
           </View>
         </View>
       </View>
-      <ScrollView
-        style={{ backgroundColor: Colors.grayBg }}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView style={{ backgroundColor: Colors.grayBg }}>
         <FlatList
-          // render Item Product by Category
           style={{ marginBottom: '25%' }}
           scrollEnabled={false}
           numColumns={numColumns}
@@ -355,11 +300,10 @@ const ItemCategoryWomen = props => {
       <View>
         <BottomSheet
           // bottom sheet
-          onClose={() => setBottomBar()}
           ref={sheetRef}
-          height={'60%'}
           style={{
-            backgroundColor: Colors.white
+            backgroundColor: Colors.white,
+            marginBottom: '10%'
           }}
         >
           <Text
@@ -368,23 +312,18 @@ const ItemCategoryWomen = props => {
               textAlign: 'center',
               fontSize: 18,
               fontWeight: '500',
-              marginBottom: 32
+              marginBottom: 33
             }}
           >
             Sort by
           </Text>
 
           <FlatList
-            // render Item Data Sort by
             data={selected}
             keyExtractor={item => item.id}
             renderItem={({ item, index }) => {
               return (
-                <TouchableOpacity
-                  onPress={() => {
-                    handleSelect(item, index)
-                  }}
-                >
+                <TouchableOpacity onPress={() => handleSelect(item, index)}>
                   <View
                     style={{
                       backgroundColor: item.selected ? Colors.red : Colors.white
@@ -507,7 +446,6 @@ const styles = StyleSheet.create({
     color: Colors.black
   },
   txt_filters: {
-    marginStart: 6,
     fontSize: 11,
     fontWeight: '400',
     color: Colors.black
@@ -529,12 +467,103 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 8,
-    marginTop: 44,
-    marginBottom: 8
+    height: 88
   }
 })
+const DataItemCategoryWomen = [
+  {
+    id: 1,
+    category_name: 'Bordy',
+    product_name: 'Rigler',
+    review: 1,
+    price: 1,
+    image:
+      'https://lp2.hm.com/hmgoepprod?set=source[/b8/3d/b83db12f18a434b25bddc027d4b3bf3b329b2e36.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
+  },
+  {
+    id: 2,
+    category_name: 'Talbert',
+    product_name: 'Presidey',
+    review: 2,
+    price: 2,
+    image:
+      'https://lp2.hm.com/hmgoepprod?set=source[/b8/54/b8547cb07c52deb4a896206184c63c0a50429c20.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
+  },
+  {
+    id: 3,
+    category_name: 'Bogey',
+    product_name: 'Lawly',
+    review: 3,
+    price: 3,
+    image:
+      'https://lp2.hm.com/hmgoepprod?set=source[/f6/7a/f67afb0615e9deecb932ae28402005b90ec0204e.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
+  },
+  {
+    id: 4,
+    category_name: 'Eziechiele',
+    product_name: 'Urian',
+    review: 4,
+    price: 4,
+    image:
+      'https://lp2.hm.com/hmgoepprod?set=source[/3b/c0/3bc0c8ff7e99160e8866b8679fb35eb5743dfcc5.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
+  },
+  {
+    id: 5,
+    category_name: 'Mozelle',
+    product_name: 'Alford',
+    review: 5,
+    price: 5,
+    image:
+      'https://lp2.hm.com/hmgoepprod?set=source[/1f/43/1f4313abf007bc5bb43ea8bb702b1b9b084a6918.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
+  },
+  {
+    id: 6,
+    category_name: 'Corty',
+    product_name: 'Luscott',
+    review: 6,
+    price: 6,
+    image:
+      'https://lp2.hm.com/hmgoepprod?set=source[/ec/e7/ece7091b40965fb145e949e44f9275c03e2b86f1.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
+  },
+  {
+    id: 7,
+    category_name: 'Britta',
+    product_name: 'Cumpton',
+    review: 7,
+    price: 7,
+    image:
+      'https://lp2.hm.com/hmgoepprod?set=source[/8f/c6/8fc64fc9d49b5d25f37b47390a9495f5a4131372.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[3]&call=url[file:/product/main]'
+  },
+  {
+    id: 8,
+    category_name: 'Kilian',
+    product_name: "D'Ugo",
+    review: 8,
+    price: 8,
+    image:
+      'https://lp2.hm.com/hmgoepprod?set=source[/7b/6c/7b6c113062e1090395d56288adf0086d4f3ca1ae.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
+  },
+  {
+    id: 9,
+    category_name: 'Viole',
+    product_name: 'Dello',
+    review: 9,
+    price: 9,
+    image:
+      'https://lp2.hm.com/hmgoepprod?set=source[/73/ba/73bacc99e706d4309edd3b444884b600795c4814.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
+  },
+  {
+    id: 10,
+    category_name: 'Philbert',
+    product_name: 'Donalson',
+    review: 10,
+    price: 10,
+    image:
+      'https://lp2.hm.com/hmgoepprod?set=source[/fc/11/fc1120ed0bcaca0af81d050655932e1e9ff1312a.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
+  }
+]
 
-const DataSortBy = [
+const DataBottomSheet = [
   {
     id: 1,
     subject: 'Popular',
@@ -554,10 +583,15 @@ const DataSortBy = [
     id: 4,
     subject: 'Price: lowest to high',
     selected: true
-  },
-  {
-    id: 5,
-    subject: 'Price: lowest to low',
-    selected: false
   }
+  // {
+  //   id: 5,
+  //   subject: 'Price: highest to low',
+  //   selected: false
+  // },
+  // {
+  //   id: 6,
+  //   subject: 'Price: highest to low',
+  //   selected: false
+  // }
 ]

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native'
-import Icons from 'src/components/icons/Icon'
+
 import Colors from 'src/constants/Colors'
 
 const CategoryWomen = props => {
@@ -45,16 +45,13 @@ const CategoryWomen = props => {
     >
       <View style={styles.view_search}>
         <TouchableOpacity onPress={() => props.navigation.navigate('Women')}>
-          <Icons.Ionicons name={'chevron-back'} size={24} />
+          <Image style={styles.icons} source={require('@assets/ic_back.png')} />
         </TouchableOpacity>
         <Text style={styles.txt_search}>Categories</Text>
-        <Icons.Ionicons name={'search'} size={24} />
+        <Image style={styles.icons} source={require('@assets/ic_search.png')} />
       </View>
 
-      <ScrollView
-        style={{ backgroundColor: Colors.grayBg }}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView style={{ backgroundColor: Colors.grayBg }}>
         <TouchableOpacity
           style={{
             backgroundColor: Colors.red,

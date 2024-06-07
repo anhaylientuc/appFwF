@@ -5,7 +5,6 @@
       "~": ["./src"],
       "@components": ["./src/components"],
       "@screens": ["./src/components/screens"],
-      "@shopPages": ["./src/components/screens/shopPages"],
       "@assets": ["./src/assets"],
       "@common": ["./src/common"],
       "@containers": ["./src/containers"],
