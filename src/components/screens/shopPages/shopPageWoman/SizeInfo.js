@@ -255,7 +255,9 @@ const Tab2 = () => {
   )
 }
 const SizeInfo = props => {
-  const { navigation } = props
+  const {
+    navigation: { goBack }
+  } = props
   const [isShowSize, setIsShowSize] = useState(false)
 
   // Logic: Onclick show size parameters  thông thường
@@ -370,9 +372,7 @@ const SizeInfo = props => {
             <Text style={{ fontSize: 24, fontWeight: '600' }}>
               Áo và áo khoác
             </Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ProductWomen')}
-            >
+            <TouchableOpacity onPress={() => goBack()}>
               <Icons.EvilIcons name={'close'} size={30} />
             </TouchableOpacity>
           </View>

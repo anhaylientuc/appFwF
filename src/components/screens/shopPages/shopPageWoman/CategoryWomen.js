@@ -1,7 +1,6 @@
 import React from 'react'
 import {
   FlatList,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
