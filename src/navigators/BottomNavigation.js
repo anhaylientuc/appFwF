@@ -7,9 +7,12 @@ import Favorites from '@screens/Favorites'
 import Profile from '@screens/Profile'
 import Icons from 'src/components/icons/Icon'
 import HomePage from 'src/components/screens/homePages/HomePage'
-import ShopPage from 'src/components/screens/shopPage/ShopPage'
-import CategoryWomen from 'src/components/screens/shopPage/shopPage_woman/CategoryWomen'
-import ItemCategoryWomen from 'src/components/screens/shopPage/shopPage_woman/ItemCategoryWomen'
+import ShopPage from 'src/components/screens/shopPages/ShopPage'
+import CategoryWomen from 'src/components/screens/shopPages/shopPageWoman/CategoryWomen'
+import ItemCategoryWomen from 'src/components/screens/shopPages/shopPageWoman/ItemListCategoryWomen'
+import ProductWomen from 'src/components/screens/shopPages/shopPageWoman/ProductWomen'
+import ReviewProduct from 'src/components/screens/shopPages/shopPageWoman/ReviewProduct'
+import SizeInfo from 'src/components/screens/shopPages/shopPageWoman/SizeInfo'
 import Colors from 'src/constants/Colors'
 
 const Stack = createNativeStackNavigator()
@@ -22,11 +25,7 @@ const ShopStack = () => {
         headerShown: false
       }}
     >
-      <Stack.Screen
-        name="ShopPage"
-        component={ShopPage}
-        options={{ title: 'Trang chủ Shop' }}
-      ></Stack.Screen>
+      <Stack.Screen name="ShopPage" component={ShopPage} options={{ title: 'Trang chủ Shop' }}></Stack.Screen>
       <Stack.Screen
         name="ItemCategoryWomen"
         component={ItemCategoryWomen}
@@ -37,6 +36,30 @@ const ShopStack = () => {
         component={CategoryWomen}
         options={{ title: 'Tab Category Women' }}
       ></Stack.Screen>
+    </Stack.Navigator>
+  )
+}
+const HomeStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false
+      }}
+    >
+      <Stack.Screen name="Home" component={HomePage} options={{ title: 'Trang chủ Shop' }}></Stack.Screen>
+      <Stack.Screen name="Favorites" component={Favorites} options={{ title: 'Favorite' }}></Stack.Screen>
+    </Stack.Navigator>
+  )
+}
+const FavoriteStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false
+      }}
+    >
+      <Stack.Screen name="Favorites" component={Favorites} options={{ title: 'Favorite' }}></Stack.Screen>
+      <Stack.Screen name="SizeInfo" component={SizeInfo} options={{ title: 'SizeInfo' }}></Stack.Screen>
     </Stack.Navigator>
   )
 }
@@ -58,8 +81,8 @@ function BottomTabNavigator() {
       }}
     >
       <Button.Screen
-        name="Home"
-        component={HomePage}
+        name="HomeStack"
+        component={HomeStack}
         options={{
           tabBarColor: Colors.white,
           tabBarLabel: 'Home',
@@ -105,10 +128,10 @@ function BottomTabNavigator() {
       />
 
       <Button.Screen
-        name="Favorites"
-        component={Favorites}
+        name="FavoriteStack"
+        component={FavoriteStack}
         options={{
-          tabBarLabel: 'Favorites',
+          tabBarLabel: 'Favorite',
           tabBarIcon: ({ focused }) => (
             <Icons.MaterialIcons
               name={focused ? 'favorite' : 'favorite-border'}
