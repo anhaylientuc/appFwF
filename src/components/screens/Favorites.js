@@ -34,9 +34,9 @@ const Favorites = props => {
       tabBarStyle: {
         borderTopEndRadius: 12,
         borderTopStartRadius: 12,
-      paddingTop: 10,
-          paddingBottom: 10,
-          height: 68,
+        paddingTop: 10,
+        paddingBottom: 10,
+        height: 68,
         backgroundColor: Colors.white,
         justifyContent: 'center',
         alignItems: 'center',

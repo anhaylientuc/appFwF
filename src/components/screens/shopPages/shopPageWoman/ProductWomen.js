@@ -46,7 +46,7 @@ const ProductWomen = props => {
           borderTopStartRadius: 12,
           paddingTop: 10,
           paddingBottom: 10,
-          height: '10%',
+          height: 68,
           backgroundColor: Colors.white,
           justifyContent: 'center',
           alignItems: 'center',

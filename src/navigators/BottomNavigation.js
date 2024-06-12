@@ -2,8 +2,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 // import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createStackNavigator } from '@react-navigation/stack'
 
-import BagPage from '@screens/BagPage'
 import Favorites from '@screens/Favorites'
+import BagPage from 'src/components/screens/bagPages/BagPage'
+import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
 // import HomePage from '@screens/HomePage';
 import Profile from '@screens/Profile'
 import Icons from 'src/components/icons/Icon'
@@ -108,6 +109,27 @@ const FavoriteStack = () => {
   )
 }
 
+const BagStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false
+      }}
+    >
+      <Stack.Screen
+        name="BagPage"
+        component={BagPage}
+        options={{ title: 'BagPage' }}
+      ></Stack.Screen>
+      <Stack.Screen
+        name="ReturnMethod"
+        component={ReturnMethod}
+        options={{ title: 'ReturnMethod' }}
+      ></Stack.Screen>
+    </Stack.Navigator>
+  )
+}
+
 function BottomTabNavigator() {
   return (
     <Button.Navigator
@@ -160,8 +182,8 @@ function BottomTabNavigator() {
       />
 
       <Button.Screen
-        name="BagPage"
-        component={BagPage}
+        name="BagStack"
+        component={BagStack}
         options={{
           tabBarLabel: 'Bag',
           // tabBarStyle: { display: 'none' },
