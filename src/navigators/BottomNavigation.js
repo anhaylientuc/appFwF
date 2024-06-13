@@ -14,6 +14,8 @@ import CategoryWomen from 'src/components/screens/shopPages/shopPageWoman/Catego
 import ItemCategoryWomen from 'src/components/screens/shopPages/shopPageWoman/ItemListCategoryWomen'
 import ProductWomen from 'src/components/screens/shopPages/shopPageWoman/ProductWomen'
 import ReviewProduct from 'src/components/screens/shopPages/shopPageWoman/ReviewProduct'
+import Register from 'src/components/screens/users/Register'
+import Login from 'src/components/screens/users/Login'
 
 import SizeInfo from 'src/components/screens/shopPages/shopPageWoman/SizeInfo'
 import Colors from 'src/constants/Colors'
@@ -104,6 +106,27 @@ const FavoriteStack = () => {
         name="SizeInfo"
         component={SizeInfo}
         options={{ title: 'SizeInfo' }}
+      ></Stack.Screen>
+    </Stack.Navigator>
+  )
+}
+
+const UserStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false
+      }}
+    >
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{ title: 'Login' }}
+      ></Stack.Screen>
+      <Stack.Screen
+        name="Register"
+        component={Register}
+        options={{ title: 'Register' }}
       ></Stack.Screen>
     </Stack.Navigator>
   )
@@ -218,6 +241,22 @@ function BottomTabNavigator() {
         component={Profile}
         options={{
           tabBarLabel: 'Profile',
+
+          tabBarIcon: ({ focused }) => (
+            <Icons.FontAwesome
+              name={focused ? 'user' : 'user-o'}
+              color={!focused ? Colors.gray : Colors.red}
+              size={30}
+            />
+          )
+        }}
+      />
+
+      <Button.Screen
+        name="UserStack"
+        component={UserStack}
+        options={{
+          tabBarLabel: 'UserStack',
 
           tabBarIcon: ({ focused }) => (
             <Icons.FontAwesome
