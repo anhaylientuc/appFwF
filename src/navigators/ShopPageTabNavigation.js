@@ -1,13 +1,18 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import Kids from '../components/screens/shopPage/shopPage_kids/Kids'
-import Men from '../components/screens/shopPage/shopPage_man/Men'
-import Women from '../components/screens/shopPage/shopPage_woman/Women'
+import Men from 'src/components/screens/shopPages/shopPageMan/Men'
+import Colors from 'src/constants/Colors'
+import Kids from '../components/screens/shopPages/shopPageKids/Kids'
+import Women from '../components/screens/shopPages/shopPageWoman/Women'
 
 const Tab = createMaterialTopTabNavigator()
 
 const MyTabs = () => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: { backgroundColor: Colors.white }
+      }}
+    >
       <Tab.Screen name="Women" component={Women} />
       <Tab.Screen name="Men" component={Men} />
       <Tab.Screen name="Kids" component={Kids} />

@@ -49,7 +49,7 @@ const Women = props => {
     )
   }
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.box_1}>
         <Text style={styles.txt1_box}>SUMMER SALES</Text>
         <Text style={styles.txt2_box}>Up to 50% off</Text>

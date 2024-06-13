@@ -7,7 +7,7 @@ import { StyleSheet } from 'react-native'
 const AppNavigation = () => {
   return (
     <NavigationContainer>
-      <BottomTabNavigator />
+      <BottomTabNavigator /> 
     </NavigationContainer>
   )
 }

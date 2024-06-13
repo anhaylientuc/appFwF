@@ -3,7 +3,7 @@ export default {
   primaryDark: '#2759ff',
   primaryLite: '#637aff99',
   black: '#222',
-  white: 'white',
+  white: '#FFF',
   accent: '#112233',
   green: '#60c5a8',
   green2: '#039a83',
@@ -21,7 +21,6 @@ export default {
   gold: 'gold',
   line: '#282C35',
   darkHeaderColor: '#0e1616',
-
   powderBlue: 'powderblue',
   skyBlue: 'skyblue',
   grayBg: '#F9F9F9',
@@ -36,7 +35,7 @@ export default {
   gray: '#9B9B9B',
   darkGray: '#22313a',
   darkGray2: '#718096',
-  white: 'white',
+  white: '#FFF',
   light: '#fcfcfc',
 
   darkOverlayColor: 'rgba(0, 0, 0, 0.4)',

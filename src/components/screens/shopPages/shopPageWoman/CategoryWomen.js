@@ -1,14 +1,13 @@
 import React from 'react'
 import {
   FlatList,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native'
-
+import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 
 const CategoryWomen = props => {
@@ -45,13 +44,16 @@ const CategoryWomen = props => {
     >
       <View style={styles.view_search}>
         <TouchableOpacity onPress={() => props.navigation.navigate('Women')}>
-          <Image style={styles.icons} source={require('@assets/ic_back.png')} />
+          <Icons.Ionicons name={'chevron-back'} size={24} />
         </TouchableOpacity>
         <Text style={styles.txt_search}>Categories</Text>
-        <Image style={styles.icons} source={require('@assets/ic_search.png')} />
+        <Icons.Ionicons name={'search'} size={24} />
       </View>
 
-      <ScrollView style={{ backgroundColor: Colors.grayBg }}>
+      <ScrollView
+        style={{ backgroundColor: Colors.grayBg }}
+        showsVerticalScrollIndicator={false}
+      >
         <TouchableOpacity
           style={{
             backgroundColor: Colors.red,
