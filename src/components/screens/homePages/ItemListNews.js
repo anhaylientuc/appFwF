@@ -1,6 +1,7 @@
 import React from 'react'
-import { Image, Text, View } from 'react-native'
+import { Image, View } from 'react-native'
 import Colors from 'src/constants/Colors'
+import MyText from 'src/constants/FontsStyle'
 
 const ItemListNew = props => {
   const { data } = props
@@ -35,7 +36,11 @@ const ItemListNew = props => {
               borderRadius: 29
             }}
           >
-            <Text style={{ color: Colors.white, fontWeight: '500' }}>NEW</Text>
+            <MyText
+              style={{ color: Colors.white, fontWeight: '500', fontSize: 12 }}
+            >
+              NEW
+            </MyText>
           </View>
         </View>
         <View
@@ -43,32 +48,36 @@ const ItemListNew = props => {
         >
           <Image
             style={{ width: 24, height: 24 }}
-            source={require('@assets/activated.png')}
+            source={require('../../../assets/images/activated.png')}
           />
           <Image
             style={{ width: 24, height: 24 }}
-            source={require('@assets/activated.png')}
+            source={require('../../../assets/images/activated.png')}
           />
           <Image
             style={{ width: 24, height: 24 }}
-            source={require('@assets/activated.png')}
+            source={require('../../../assets/images/activated.png')}
           />
           <Image
             style={{ width: 24, height: 24 }}
-            source={require('@assets/activated.png')}
+            source={require('../../../assets/images/activated.png')}
           />
           <Image
             style={{ width: 24, height: 24 }}
-            source={require('@assets/activated.png')}
+            source={require('../../../assets/images/activated.png')}
           />
-          <Text style={{ textAlign: 'center', color: Colors.gray }}>(10)</Text>
+          <MyText style={{ textAlign: 'center', color: Colors.gray }}>
+            (10)
+          </MyText>
         </View>
-        <Text style={{ color: Colors.gray }}>Dorothy Perkins</Text>
-        <Text style={{ color: Colors.black, fontSize: 16, fontWeight: '400' }}>
+        <MyText style={{ color: Colors.gray }}>Dorothy Perkins</MyText>
+        <MyText
+          style={{ color: Colors.black, fontSize: 16, fontWeight: '400' }}
+        >
           Evening Dress
-        </Text>
+        </MyText>
         <View style={{ flexDirection: 'row' }}>
-          <Text
+          <MyText
             style={{
               fontSize: 14,
               fontWeight: '500',
@@ -77,10 +86,12 @@ const ItemListNew = props => {
             }}
           >
             15$
-          </Text>
-          <Text style={{ fontSize: 14, fontWeight: '500', color: Colors.red }}>
+          </MyText>
+          <MyText
+            style={{ fontSize: 14, fontWeight: '500', color: Colors.red }}
+          >
             12$
-          </Text>
+          </MyText>
         </View>
       </View>
     </View>

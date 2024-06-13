@@ -16,6 +16,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import { DaTaSale } from 'src/constants/Databases'
+import MyText from 'src/constants/FontsStyle'
 import ItemListNew from '../../homePages/ItemListNews'
 const ProductWomen = props => {
   const { navigation } = props
@@ -76,67 +77,73 @@ const ProductWomen = props => {
   const infoProduct = () => {
     return (
       <View style={{ marginHorizontal: 16 }}>
-        <Text style={{ fontSize: 16 }}>
+        <MyText style={{ fontSize: 14 }}>
           Áo sơ mi dáng vừa vải cotton Oxford có cổ áo cài khuy, nẹp khuy kiểu
           truyền thống, cầu vai phía sau và một túi ngực mở. Tay dài với măng
           sét cài khuy và nẹp tay áo có khuy nối. Vạt hơi tròn.
-        </Text>
+        </MyText>
         <View style={{ flexDirection: 'row', marginTop: 8 }}>
-          <Text style={{ fontSize: 12, color: Colors.black }}>
+          <MyText style={{ fontSize: 12, color: Colors.black }}>
             Mã số sản phẩm:
-          </Text>
+          </MyText>
           <Text style={{ fontSize: 12, color: Colors.black }}>1012</Text>
         </View>
         <View style={{ marginTop: 16 }}>
-          <Text
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
             style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
           >
             Kích cỡ:
-          </Text>
+          </MyText>
 
-          <Text>
+          <MyText style={{ fontSize: 14 }}>
             Tay áo: Chiều dài: 66.5 cm (Kích cỡ L/L), Mặt sau: Chiều dài: 79.0
             cm (Kích cỡ L/L)
-          </Text>
+          </MyText>
           <View style={{ flexDirection: 'row', marginTop: 4 }}>
-            <Text
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
               style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
             >
               Chiều cao:
-            </Text>
-            <Text> Chiều dài bình thường</Text>
+            </MyText>
+            <MyText> Chiều dài bình thường</MyText>
           </View>
           <View style={{ flexDirection: 'row', marginTop: 4 }}>
-            <Text
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
               style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
             >
               Chiều dài tay áo:
-            </Text>
-            <Text> Tay dài</Text>
+            </MyText>
+            <MyText> Tay dài</MyText>
           </View>
           <View style={{ flexDirection: 'row', marginTop: 4 }}>
-            <Text
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
               style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
             >
               Độ vừa vặn:
-            </Text>
-            <Text> Chiều dài bình thường</Text>
+            </MyText>
+            <MyText> Chiều dài bình thường</MyText>
           </View>
           <View style={{ flexDirection: 'row', marginTop: 4 }}>
-            <Text
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
               style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
             >
               Cổ cao:
-            </Text>
-            <Text> Cổ áo cài khuy</Text>
+            </MyText>
+            <MyText> Cổ áo cài khuy</MyText>
           </View>
           <View style={{ flexDirection: 'row', marginTop: 4 }}>
-            <Text
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
               style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
             >
               Mô tả:
-            </Text>
-            <Text> Màu be, Màu trơn</Text>
+            </MyText>
+            <MyText> Màu be, Màu trơn</MyText>
           </View>
         </View>
       </View>
@@ -147,12 +154,12 @@ const ProductWomen = props => {
   const ProductCare = () => {
     return (
       <View style={{ marginHorizontal: 16 }}>
-        <Text style={{ fontSize: 14 }}>
+        <MyText style={{ fontSize: 14 }}>
           Bạn cũng có thể giúp bảo vệ môi trường cho một tương lai thời trang
           bền vững hơn. Hãy mang đem bao quần áo cũ / hàng dệt may bất kỳ không
           sử dụng nữa đến các cửa hàng H&amp;M tham gia tái chế thời trang.
-        </Text>
-        {/* <Text
+        </MyText>
+        {/* <MyText
           style={{
             marginTop: 8,
             fontSize: 14,
@@ -161,33 +168,36 @@ const ProductWomen = props => {
           }}
         >
           Đọc về cách bạn có thể giữ cho quần áo bền lâu hơn
-        </Text> */}
-        <Text style={{ marginTop: 8, fontSize: 16, fontWeight: '500' }}>
+        </MyText> */}
+        <MyText
+          fontFamily={'Montserrat-SemiBold'}
+          style={{ marginTop: 8, fontSize: 16, fontWeight: '500' }}
+        >
           Hướng dẫn chăm sóc sản phẩm
-        </Text>
+        </MyText>
         <View style={{ flexDirection: 'row' }}>
           <Icons.Entypo name={'dot-single'} size={20} />
-          <Text>Phơi khô</Text>
+          <MyText>Phơi khô</MyText>
         </View>
         <View style={{ flexDirection: 'row' }}>
           <Icons.Entypo name={'dot-single'} size={20} />
-          <Text>Chỉ tẩy bằng chất không chứa clo khi cần</Text>
+          <MyText>Chỉ tẩy bằng chất không chứa clo khi cần</MyText>
         </View>
         <View style={{ flexDirection: 'row' }}>
           <Icons.Entypo name={'dot-single'} size={20} />
-          <Text>Giặt máy ở 40°</Text>
+          <MyText>Giặt máy ở 40°</MyText>
         </View>
         <View style={{ flexDirection: 'row' }}>
           <Icons.Entypo name={'dot-single'} size={20} />
-          <Text>Có thể giặt khô</Text>
+          <MyText>Có thể giặt khô</MyText>
         </View>
         <View style={{ flexDirection: 'row' }}>
           <Icons.Entypo name={'dot-single'} size={20} />
-          <Text>Giặt chung với màu tương tự</Text>
+          <MyText>Giặt chung với màu tương tự</MyText>
         </View>
         <View style={{ flexDirection: 'row', marginBottom: 16 }}>
           <Icons.Entypo name={'dot-single'} size={20} />
-          <Text>Là ủi nhiệt độ cao</Text>
+          <MyText>Là ủi nhiệt độ cao</MyText>
         </View>
       </View>
     )
@@ -207,7 +217,7 @@ const ProductWomen = props => {
             <TouchableOpacity onPress={() => handleOnBack()}>
               <Icons.Ionicons name={'chevron-back-outline'} size={28} />
             </TouchableOpacity>
-            <Text>Short dress</Text>
+            <MyText>Short dress</MyText>
             <Icons.Ionicons name={'share-social-sharp'} size={28} />
           </View>
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -221,10 +231,12 @@ const ProductWomen = props => {
                 paddingVertical: 24
               }}
             >
-              <Text style={{ textAlign: 'center' }}>
+              <MyText style={{ textAlign: 'center' }}>
                 Nam / Áo sơ mi / Dài tay /
-              </Text>
-              <Text style={styles.txt_category_name}> Short black dress</Text>
+              </MyText>
+              <MyText style={styles.txt_category_name}>
+                Short black dress
+              </MyText>
             </View>
 
             <View>
@@ -259,14 +271,22 @@ const ProductWomen = props => {
                   alignItems: 'center'
                 }}
               >
-                <Text style={styles.txt_price}>
+                <MyText
+                  fontFamily={'Montserrat-SemiBold'}
+                  style={styles.txt_price}
+                >
                   Áo sơ mi Oxford Regular Fit
-                </Text>
-                <Text style={styles.txt_price}>đ499.000</Text>
+                </MyText>
+                <MyText
+                  // fontFamily={'Montserrat-Regular'}
+                  style={styles.txt_price}
+                >
+                  đ499.000
+                </MyText>
               </View>
 
               <View style={styles.product.wrapper_container_size_color}>
-                <Text style={styles.product.txt_size}>Màu be</Text>
+                <MyText style={styles.product.txt_size}>Màu be</MyText>
 
                 <FlatList
                   horizontal
@@ -288,14 +308,16 @@ const ProductWomen = props => {
                 style={{ flexDirection: 'row', marginEnd: 20, marginTop: 16 }}
               >
                 <Icons.FontAwesome5 name={'shopify'} size={16} />
-                <Text style={{ fontSize: 14, fontWeight: 500, marginStart: 8 }}>
+                <MyText
+                  style={{ fontSize: 14, fontWeight: 500, marginStart: 8 }}
+                >
                   Giá sản phẩm đã bao gồm VAT, không bao gồm phí giao hàng. Thời
                   gian giao hàng dự kiến 3-7 ngày làm việc. Mọi thắc mắc vui
                   lòng xem thêm tại trang Dịch vụ khách hàng. Tất cả hàng hóa
                   trên website này đều do Công ty TNHH H&amp;M Hennes
                   &amp;Mauritz Việt Nam (trụ sở 235 Đồng Khởi, Bến Nghé, Quận 1,
                   TPHCM) chịu trách nhiệm.
-                </Text>
+                </MyText>
               </View>
               <TouchableOpacity
                 onPress={() => props.navigation.navigate('ReviewProduct')}
@@ -308,17 +330,17 @@ const ProductWomen = props => {
               >
                 <Image
                   style={{ width: 20, height: 20 }}
-                  source={require('@assets/activated.png')}
+                  source={require('@assets/images/activated.png')}
                 />
                 <Image
                   style={{ width: 20, height: 20 }}
-                  source={require('@assets/activated.png')}
+                  source={require('@assets/images/activated.png')}
                 />
                 <Image
                   style={{ width: 20, height: 20 }}
-                  source={require('@assets/activated.png')}
+                  source={require('@assets/images/activated.png')}
                 />
-                <Text style={styles.txt_review}>(10 đánh giá)</Text>
+                <MyText style={styles.txt_review}>(10 đánh giá)</MyText>
               </TouchableOpacity>
             </View>
             <View>
@@ -333,7 +355,8 @@ const ProductWomen = props => {
                   padding: 16
                 }}
               >
-                <Text
+                <MyText
+                  fontFamily={'Montserrat-SemiBold'}
                   style={
                     !isInfoProduct
                       ? styles.txt_shipping_info
@@ -341,7 +364,7 @@ const ProductWomen = props => {
                   }
                 >
                   Mô tả & độ vừa vặn
-                </Text>
+                </MyText>
                 <TouchableOpacity
                   onPress={() => setIsInfoProduct(!isInfoProduct)}
                 >
@@ -368,7 +391,8 @@ const ProductWomen = props => {
                   padding: 16
                 }}
               >
-                <Text
+                <MyText
+                  fontFamily={'Montserrat-SemiBold'}
                   style={
                     !isProductCare
                       ? styles.txt_shipping_info
@@ -376,7 +400,7 @@ const ProductWomen = props => {
                   }
                 >
                   Hướng dẫn chăm sóc sản phẩm
-                </Text>
+                </MyText>
                 <TouchableOpacity
                   onPress={() => setIsProductCare(!isProductCare)}
                 >
@@ -445,12 +469,13 @@ const ProductWomen = props => {
                     justifyContent: 'space-between'
                   }}
                 >
-                  <Text
+                  <MyText
+                    fontFamily={'Montserrat-SemiBold'}
                     style={{ fontSize: 18, fontWeight: '500', lineHeight: 22 }}
                   >
                     You can also like this
-                  </Text>
-                  <Text style={styles.txt_review}>12 items</Text>
+                  </MyText>
+                  <MyText style={styles.txt_review}>12 items</MyText>
                 </View>
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -474,9 +499,12 @@ const ProductWomen = props => {
               style={styles.product.container_txt_size}
               onPress={() => handlePresentModal()}
             >
-              <Text style={{ textAlign: 'center', left: 8, fontWeight: '500' }}>
-                Size
-              </Text>
+              <MyText
+                fontFamily={'Montserrat-SemiBold'}
+                style={{ textAlign: 'center', left: 8, fontWeight: '500' }}
+              >
+                Kích cỡ
+              </MyText>
 
               <Icons.Entypo
                 name={'chevron-small-down'}
@@ -491,7 +519,12 @@ const ProductWomen = props => {
                 size={16}
                 color={Colors.white}
               />
-              <Text style={styles.txt_addToCart}>ADD TO CART</Text>
+              <MyText
+                fontFamily={'Montserrat-SemiBold'}
+                style={styles.txt_addToCart}
+              >
+                Thêm vào giỏ hàng
+              </MyText>
             </TouchableOpacity>
           </View>
 
@@ -508,7 +541,8 @@ const ProductWomen = props => {
               setIsOpen(false)
             }}
           >
-            <Text
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
               style={{
                 color: Colors.black,
                 textAlign: 'center',
@@ -516,8 +550,8 @@ const ProductWomen = props => {
                 fontWeight: '500'
               }}
             >
-              Select size
-            </Text>
+              Chọn kích cỡ
+            </MyText>
             <View style={{ marginHorizontal: 16 }}>
               <FlatList
                 // render Item Data Sort by
@@ -548,7 +582,8 @@ const ProductWomen = props => {
                           backgroundColor: Colors.white
                         }}
                       >
-                        <Text
+                        <MyText
+                          fontFamily={'Montserrat-SemiBold'}
                           style={{
                             fontSize: 16,
                             fontWeight: '500',
@@ -557,7 +592,7 @@ const ProductWomen = props => {
                           }}
                         >
                           {item.subject}
-                        </Text>
+                        </MyText>
                       </View>
                     </TouchableOpacity>
                   )
@@ -570,7 +605,7 @@ const ProductWomen = props => {
                   flexDirection: 'row'
                 }}
               >
-                <Text>Size info</Text>
+                <MyText>Hướng dẫn chọn kích cỡ</MyText>
 
                 <Icons.MaterialIcons name={'navigate-next'} size={20} />
               </TouchableOpacity>

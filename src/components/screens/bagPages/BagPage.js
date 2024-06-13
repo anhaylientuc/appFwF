@@ -1,4 +1,5 @@
 import {
+  BottomSheetFlatList,
   BottomSheetModal,
   BottomSheetModalProvider
 } from '@gorhom/bottom-sheet'
@@ -9,12 +10,12 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View
 } from 'react-native'
 import Colors from 'src/constants/Colors'
+import MyText from 'src/constants/FontsStyle'
 import Icons from '../../icons/Icon'
 
 const BagPage = props => {
@@ -25,7 +26,7 @@ const BagPage = props => {
   const [selected, setSelected] = useState(DataCodeSale)
   const [selectedCodeSale, setSelectedCodeSale] = useState()
   const [isOpen, setIsOpen] = useState(false)
-  const snapPoints = ['60%']
+  const snapPoints = ['60%', '80%']
   // set sate Bottom sheet to useRef
   const BottomSheetRef = useRef(null)
   // Logic: onclick Open Bottom Sheet Modal
@@ -50,6 +51,7 @@ const BagPage = props => {
         setVisiblePopupMenu(false)
       }, 2000)
   }
+
   // Logic: onClick delete Item from List
   const [deleteFromList, setDeleteFromList] = useState(false)
   const handleDeleteFromList = () => {
@@ -63,7 +65,7 @@ const BagPage = props => {
     return (
       <View
         style={{
-          backgroundColor: Colors.white,
+          backgroundColor: isOpen ? Colors.gray : Colors.white,
           elevation: 16,
           shadowColor: Colors.black,
           right: 32,
@@ -93,7 +95,9 @@ const BagPage = props => {
               <Icons.MaterialIcons name={'favorite-border'} size={24} />
             )}
           </View>
-          <Text style={{ textAlign: 'center', marginStart: 8 }}>Yêu thích</Text>
+          <MyText style={{ textAlign: 'center', marginStart: 8 }}>
+            Yêu thích
+          </MyText>
         </TouchableOpacity>
         <View
           style={{
@@ -114,9 +118,9 @@ const BagPage = props => {
         >
           <Icons.Feather name={'trash-2'} size={24} />
 
-          <Text style={{ textAlign: 'center', marginStart: 8 }}>
+          <MyText style={{ textAlign: 'center', marginStart: 8 }}>
             Xóa khỏi danh sách
-          </Text>
+          </MyText>
         </TouchableOpacity>
       </View>
     )
@@ -138,13 +142,30 @@ const BagPage = props => {
       }
     })
   }
+  // Logic: onclick item code sale
+  const handleSelectCodeSale = (item, index) => {
+    const updatedSelected = [...selected]
+    // Efficiently update the selected property using find and spread
+    const updatedItem = updatedSelected.find(
+      selectedItem => selectedItem.id === item.id
+    )
+    if (updatedItem) {
+      updatedItem.selected = true
+      console.log(updatedItem.code_saleOff)
+    }
+    const selectedCodeSale = updatedItem.code_saleOff
 
+    // Update state with the modified array
+    setSelected(updatedSelected)
+    setSelectedCodeSale(selectedCodeSale)
+  }
   // No cart to Bag
   const noCart = () => {
     return (
       <View>
         <View style={{ backgroundColor: Colors.white, paddingHorizontal: 16 }}>
-          <Text
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
             style={{
               textAlign: 'center',
               padding: 24,
@@ -153,12 +174,13 @@ const BagPage = props => {
             }}
           >
             Không có sản phẩm trong giỏ hàng của bạn
-          </Text>
+          </MyText>
 
           <TouchableOpacity
             style={{ backgroundColor: Colors.red, paddingVertical: 16 }}
           >
-            <Text
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
               style={{
                 color: Colors.white,
                 textAlign: 'center',
@@ -167,14 +189,14 @@ const BagPage = props => {
               }}
             >
               Đăng Nhập
-            </Text>
+            </MyText>
           </TouchableOpacity>
         </View>
-        <Text
+        <MyText
           style={{ textAlign: 'left', marginTop: 16, marginHorizontal: 16 }}
         >
           Đăng nhập để sử dụng các ưu đãi cá nhân!
-        </Text>
+        </MyText>
         <View
           style={{
             paddingVertical: 24,
@@ -184,7 +206,7 @@ const BagPage = props => {
             alignItems: 'center'
           }}
         >
-          <Text
+          <MyText
             style={{
               backgroundColor: Colors.gray,
               flex: 1,
@@ -192,10 +214,10 @@ const BagPage = props => {
               textAlign: 'center'
             }}
           />
-          <Text style={{ textAlign: 'center', marginHorizontal: 10 }}>
+          <MyText style={{ textAlign: 'center', marginHorizontal: 10 }}>
             Hoặc
-          </Text>
-          <Text
+          </MyText>
+          <MyText
             style={{
               backgroundColor: Colors.gray,
               flex: 1,
@@ -212,7 +234,8 @@ const BagPage = props => {
             borderWidth: 1
           }}
         >
-          <Text
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
             style={{
               color: Colors.black,
               textAlign: 'center',
@@ -221,7 +244,7 @@ const BagPage = props => {
             }}
           >
             Tạo tài khoản mới
-          </Text>
+          </MyText>
         </TouchableOpacity>
       </View>
     )
@@ -254,20 +277,21 @@ const BagPage = props => {
             style={{
               flex: 1,
               paddingHorizontal: 16,
-              paddingVertical: 12
+              paddingVertical: 12,
+              backgroundColor: isOpen ? Colors.gray : Colors.white
             }}
           >
-            <Text style={styles.txt_price}>{product_name}</Text>
+            <MyText style={styles.txt_price}>{product_name}</MyText>
             <View style={{ flexDirection: 'row' }}>
               <View style={{ flexDirection: 'row' }}>
-                <Text style={{ color: Colors.gray }}>Màu sắc:</Text>
-                <Text style={{ color: Colors.black }}> {color}</Text>
+                <MyText style={{ color: Colors.gray }}>Màu sắc:</MyText>
+                <MyText style={{ color: Colors.black }}> {color}</MyText>
               </View>
               <View style={{ flexDirection: 'row' }}>
-                <Text style={{ marginStart: 13, color: Colors.gray }}>
+                <MyText style={{ marginStart: 13, color: Colors.gray }}>
                   Size:
-                </Text>
-                <Text style={{ color: Colors.black }}> {size}</Text>
+                </MyText>
+                <MyText style={{ color: Colors.black }}> {size}</MyText>
               </View>
             </View>
             <View
@@ -287,7 +311,7 @@ const BagPage = props => {
                 <TouchableOpacity
                   style={{
                     padding: 6,
-                    backgroundColor: Colors.white,
+                    backgroundColor: isOpen ? Colors.gray : Colors.white,
                     borderRadius: 50,
                     elevation: 8,
                     shadowColor: Colors.gray
@@ -295,13 +319,13 @@ const BagPage = props => {
                 >
                   <Icons.AntDesign name={'plus'} size={18} />
                 </TouchableOpacity>
-                <Text style={{ textAlign: 'center', marginHorizontal: 15 }}>
+                <MyText style={{ textAlign: 'center', marginHorizontal: 15 }}>
                   99
-                </Text>
+                </MyText>
                 <TouchableOpacity
                   style={{
                     padding: 6,
-                    backgroundColor: Colors.white,
+                    backgroundColor: isOpen ? Colors.gray : Colors.white,
                     borderRadius: 50,
                     elevation: 8,
                     shadowColor: Colors.gray
@@ -310,9 +334,9 @@ const BagPage = props => {
                   <Icons.AntDesign name={'minus'} size={18} />
                 </TouchableOpacity>
               </View>
-              <Text style={{ fontSize: 16, fontWeight: '500' }}>
+              <MyText style={{ fontSize: 14, fontWeight: '500' }}>
                 {price}.000đ
-              </Text>
+              </MyText>
             </View>
             {visiblePopupMenu ? popupMenu() : null}
           </View>
@@ -338,6 +362,7 @@ const BagPage = props => {
       </SafeAreaView>
     )
   }
+
   // render List product
   const ListItemCart = () => {
     return (
@@ -354,7 +379,7 @@ const BagPage = props => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            backgroundColor: Colors.white,
+            backgroundColor: isOpen ? Colors.gray : Colors.white,
             marginTop: 24,
             padding: 12,
 
@@ -362,28 +387,29 @@ const BagPage = props => {
             shadowColor: Colors.gray
           }}
         >
-          <Text
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
             style={{
               marginStart: 8,
               color: Colors.black,
               fontWeight: '600',
-              fontSize: 16
+              fontSize: 14
             }}
           >
-            Giá giảm:
-          </Text>
+            Mã giảm giá:
+          </MyText>
           {!selectedCodeSale ? (
             <TouchableOpacity onPress={() => handlePresentModal()}>
-              <Text
+              <MyText
                 style={{
                   color: Colors.black,
                   fontWeight: '600',
-                  fontSize: 16,
+                  fontSize: 14,
                   borderBottomWidth: 1
                 }}
               >
                 Thêm mã giảm giá
-              </Text>
+              </MyText>
             </TouchableOpacity>
           ) : (
             <View
@@ -394,15 +420,15 @@ const BagPage = props => {
                 width: 100
               }}
             >
-              <Text
+              <MyText
                 style={{
                   color: Colors.red,
                   fontWeight: '600',
-                  fontSize: 16
+                  fontSize: 14
                 }}
               >
                 {selectedCodeSale}
-              </Text>
+              </MyText>
               <TouchableOpacity
                 onPress={() => setSelectedCodeSale(!selectedCodeSale)}
               >
@@ -420,8 +446,8 @@ const BagPage = props => {
             marginHorizontal: 16
           }}
         >
-          <Text style={{ color: Colors.gray }}>Thành tiền:</Text>
-          <Text style={styles.txt_price}>299.000 đ</Text>
+          <MyText style={{ color: Colors.gray }}>Thành tiền:</MyText>
+          <MyText style={styles.txt_price}>299.000 đ</MyText>
         </View>
 
         <TouchableOpacity
@@ -433,38 +459,19 @@ const BagPage = props => {
             marginTop: 24
           }}
         >
-          <Text
+          <MyText
             style={{
               color: Colors.white,
               textAlign: 'center',
               fontWeight: '500',
-              fontSize: 16
+              fontSize: 14
             }}
           >
             Tiến hành thanh toán
-          </Text>
+          </MyText>
         </TouchableOpacity>
       </View>
     )
-  }
-
-  // Logic: onclick item code sale
-  const handleSelectCodeSale = (item, index) => {
-    const updatedSelected = [...selected]
-
-    // Efficiently update the selected property using find and spread
-    const updatedItem = updatedSelected.find(
-      selectedItem => selectedItem.id === item.id
-    )
-    if (updatedItem) {
-      updatedItem.selected = true
-      console.log(updatedItem.code_saleOff)
-    }
-    const selectedCodeSale = updatedItem.code_saleOff
-
-    // Update state with the modified array
-    setSelected(updatedSelected)
-    setSelectedCodeSale(selectedCodeSale)
   }
   // render item list Product
   const renderItem = ({ item, index }) => {
@@ -497,24 +504,25 @@ const BagPage = props => {
               alignItems: 'flex-start'
             }}
           >
-            <Text
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
               style={{
                 color: Colors.black,
                 fontWeight: '600',
-                fontSize: 16
+                fontSize: 14
               }}
             >
               {name_saleOff}
-            </Text>
-            <Text style={{ marginTop: 4, color: Colors.black, fontSize: 14 }}>
+            </MyText>
+            <MyText style={{ marginTop: 4, color: Colors.black, fontSize: 14 }}>
               {code_saleOff}
-            </Text>
+            </MyText>
           </View>
 
           <View style={styles.wrapper_btn_apply}>
-            <Text style={{ color: Colors.gray, textAlign: 'center' }}>
+            <MyText style={{ color: Colors.gray, textAlign: 'center' }}>
               còn {date_saleOff} ngày
-            </Text>
+            </MyText>
             <View style={{ height: 10 }} />
             <TouchableOpacity
               style={styles.btn_apply}
@@ -523,7 +531,12 @@ const BagPage = props => {
               }}
             >
               {subject}
-              <Text style={styles.btn_apply_txt}>Áp dụng</Text>
+              <MyText
+                fontFamily={'Montserrat-SemiBold'}
+                style={styles.btn_apply_txt}
+              >
+                Áp dụng
+              </MyText>
             </TouchableOpacity>
           </View>
         </View>
@@ -537,7 +550,7 @@ const BagPage = props => {
         style={{
           width: '100%',
           height: '100%',
-          backgroundColor: Colors.grayBg
+          backgroundColor: isOpen ? Colors.gray : Colors.grayBg
         }}
       >
         <View style={styles.header}>
@@ -548,24 +561,27 @@ const BagPage = props => {
               color={Colors.black}
             />
           </TouchableOpacity>
-          <Text style={styles.txt_header}>Giỏ hàng của tôi</Text>
+          <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_header}>
+            Giỏ hàng của tôi
+          </MyText>
         </View>
-        <Text style={{ textAlign: 'center', marginVertical: 32 }}>
+        <MyText style={{ textAlign: 'center', marginVertical: 32 }}>
           Miễn phí giao hàng cho Member với đơn từ 499k
-        </Text>
+        </MyText>
         {noCart()}
         {ListItemCart()}
         <View style={{ marginVertical: 16 }}>
-          <Text
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
             style={{
               fontWeight: '500',
               color: Colors.black,
-              fontSize: 16,
+              fontSize: 14,
               marginHorizontal: 16
             }}
           >
             Chúng tôi chấp nhận
-          </Text>
+          </MyText>
           <View
             style={{
               flexDirection: 'row',
@@ -577,21 +593,21 @@ const BagPage = props => {
             }}
           >
             <View>
-              <Text style={{ textAlign: 'center' }}>Thanh toán khi</Text>
-              <Text style={{ textAlign: 'center' }}>nhận hàng</Text>
+              <MyText style={{ textAlign: 'center' }}>Thanh toán khi</MyText>
+              <MyText style={{ textAlign: 'center' }}>nhận hàng</MyText>
             </View>
 
             <Image
               style={{ width: 120, height: 36 }}
-              source={require('@assets/logo_primary.png')}
+              source={require('@assets/images/logo_primary.png')}
             />
             <Image
               style={{ width: 36, height: 36 }}
-              source={require('@assets/ic_momo.png')}
+              source={require('@assets/images/ic_momo.png')}
             />
             <Image
               style={{ width: 52, height: 32 }}
-              source={require('@assets/ic_master_card.png')}
+              source={require('@assets/images/ic_master_card.png')}
             />
             <View />
           </View>
@@ -602,15 +618,19 @@ const BagPage = props => {
               paddingHorizontal: 16
             }}
           >
-            <Text>
+            <MyText style={{ fontSize: 12 }}>
               Giá cả và chi phí giao hàng này chưa phải là cuối cùng cho đến khi
               bạn tới phần thanh toán.
-            </Text>
+            </MyText>
             <View style={{ flexDirection: 'row', marginTop: 8 }}>
-              <Text>Miễn phí trả hàng trong 30 ngày.</Text>
-              <Text style={{ borderBottomWidth: 0.5, marginStart: 4 }}>
+              <MyText style={{ fontSize: 12 }}>
+                Miễn phí trả hàng trong 30 ngày.
+              </MyText>
+              <MyText
+                style={{ borderBottomWidth: 0.5, marginStart: 4, fontSize: 12 }}
+              >
                 trả hàng và hoàn tiền
-              </Text>
+              </MyText>
             </View>
           </View>
           <TouchableOpacity
@@ -627,11 +647,11 @@ const BagPage = props => {
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Icons.Feather name={'box'} size={32} />
-              <Text style={{ marginStart: 16, fontWeight: '500' }}>
+              <MyText style={{ marginStart: 16, fontWeight: '500' }}>
                 Giao hàng và chọn phương thức đổi trả
-              </Text>
+              </MyText>
             </View>
-            <Icons.MaterialIcons name={'navigate-next'} size={32} />
+            <Icons.MaterialIcons name={'navigate-next'} size={24} />
           </TouchableOpacity>
         </View>
         <View style={{ height: 100 }} />
@@ -641,7 +661,7 @@ const BagPage = props => {
         index={0}
         style={{ backgroundColor: Colors.grayBg, borderRadius: 32 }}
         ref={BottomSheetRef}
-        onDismiss={() => setBottomBar()}
+        onDismiss={() => setBottomBar() & setIsOpen(!isOpen)}
       >
         <View>
           <View
@@ -671,21 +691,22 @@ const BagPage = props => {
             </TouchableOpacity>
           </View>
 
-          <View style={{ marginTop: 32, marginHorizontal: 16 }}>
-            <Text style={{ fontSize: 18, fontWeight: '500' }}>
+          <ScrollView style={{ marginTop: 32, marginHorizontal: 16 }}>
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
+              style={{ fontSize: 18, fontWeight: '500' }}
+            >
               Mã khuyến mãi của bạn
-            </Text>
+            </MyText>
 
-            <FlatList
+            <BottomSheetFlatList
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
               renderItem={renderItem}
               data={DataCodeSale}
               keyExtractor={item => item.id}
             />
-
-            <View style={{ height: 100 }} />
-          </View>
+          </ScrollView>
         </View>
       </BottomSheetModal>
     </BottomSheetModalProvider>
@@ -696,7 +717,7 @@ export default BagPage
 
 const styles = StyleSheet.create({
   txt_price: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500'
   },
   txt_header: {
@@ -823,25 +844,41 @@ const DataMyBag = [
 const DataCodeSale = [
   {
     id: 1,
-    image_saleOff: require('@assets/sale10%.png'),
+    image_saleOff: require('@assets/images/sale10%.png'),
     name_saleOff: 'Ưu đãi cá nhân',
-    code_saleOff: 'giam10%',
+    code_saleOff: 'giam 10%',
     date_saleOff: 6,
     selected: false
   },
   {
     id: 2,
-    image_saleOff: require('@assets/bg_sale15%.png'),
+    image_saleOff: require('@assets/images/bg_sale15%.png'),
     name_saleOff: 'Summer sales',
-    code_saleOff: 'giam15%',
+    code_saleOff: 'giam 15%',
     date_saleOff: 21,
     selected: false
   },
   {
     id: 3,
-    image_saleOff: require('@assets/sale_50%.png'),
+    image_saleOff: require('@assets/images/sale_50%.png'),
     name_saleOff: 'Ưu đãi cá nhân',
-    code_saleOff: 'giam50%',
+    code_saleOff: 'giam 50%',
+    date_saleOff: 6,
+    selected: false
+  },
+  {
+    id: 4,
+    image_saleOff: require('@assets/images/sale_50%.png'),
+    name_saleOff: 'Ưu đãi cá nhân',
+    code_saleOff: 'giam 50%',
+    date_saleOff: 6,
+    selected: false
+  },
+  {
+    id: 5,
+    image_saleOff: require('@assets/images/sale_50%.png'),
+    name_saleOff: 'Ưu đãi cá nhân',
+    code_saleOff: 'giam 50%',
     date_saleOff: 6,
     selected: false
   }

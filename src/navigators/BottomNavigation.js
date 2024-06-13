@@ -1,11 +1,8 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-// import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createStackNavigator } from '@react-navigation/stack'
-
 import Favorites from '@screens/Favorites'
 import BagPage from 'src/components/screens/bagPages/BagPage'
 import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
-// import HomePage from '@screens/HomePage';
 import Profile from '@screens/Profile'
 import Icons from 'src/components/icons/Icon'
 import HomePage from 'src/components/screens/homePages/HomePage'
@@ -14,7 +11,6 @@ import CategoryWomen from 'src/components/screens/shopPages/shopPageWoman/Catego
 import ItemCategoryWomen from 'src/components/screens/shopPages/shopPageWoman/ItemListCategoryWomen'
 import ProductWomen from 'src/components/screens/shopPages/shopPageWoman/ProductWomen'
 import ReviewProduct from 'src/components/screens/shopPages/shopPageWoman/ReviewProduct'
-
 import SizeInfo from 'src/components/screens/shopPages/shopPageWoman/SizeInfo'
 import Colors from 'src/constants/Colors'
 const Stack = createStackNavigator()

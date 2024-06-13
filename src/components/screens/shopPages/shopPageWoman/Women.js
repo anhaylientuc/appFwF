@@ -4,11 +4,11 @@ import {
   Image,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from 'react-native'
 import Colors from 'src/constants/Colors'
+import MyText from 'src/constants/FontsStyle'
 
 const Women = props => {
   const { navigation } = props
@@ -20,7 +20,7 @@ const Women = props => {
         onPress={() => props.navigation.navigate('CategoryWomen')}
       >
         <View style={{ flex: 1, justifyContent: 'center' }}>
-          <Text
+          <MyText
             style={{
               fontSize: 18,
               fontWeight: '500',
@@ -30,7 +30,7 @@ const Women = props => {
             }}
           >
             {title}
-          </Text>
+          </MyText>
         </View>
         <View style={{ flex: 1, position: 'relative' }}>
           <Image
@@ -51,8 +51,12 @@ const Women = props => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.box_1}>
-        <Text style={styles.txt1_box}>SUMMER SALES</Text>
-        <Text style={styles.txt2_box}>Up to 50% off</Text>
+        <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt1_box}>
+          SUMMER SALES
+        </MyText>
+        <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt2_box}>
+          Up to 50% off
+        </MyText>
       </View>
       <FlatList
         style={{ marginBottom: '25%' }}

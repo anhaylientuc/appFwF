@@ -1,7 +1,8 @@
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
+import MyText from 'src/constants/FontsStyle'
 import MyTabs from '../../../navigators/ShopPageTabNavigation'
 const ShopPage = ({ navigation: { goBack } }) => {
   return (
@@ -10,7 +11,9 @@ const ShopPage = ({ navigation: { goBack } }) => {
         <TouchableOpacity onPress={() => goBack()}>
           <Icons.Ionicons name={'chevron-back'} size={24} />
         </TouchableOpacity>
-        <Text style={styles.txt_search}>Categories</Text>
+        <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_search}>
+          Categories
+        </MyText>
         <Icons.Ionicons name={'search'} size={24} />
       </View>
       <MyTabs />

@@ -9,7 +9,7 @@ import {
   Image,
   ScrollView,
   StyleSheet,
-  Text,
+
   TouchableOpacity,
   View
 } from 'react-native'
@@ -17,6 +17,7 @@ import {
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import { DataItemCategoryWomen } from 'src/constants/Databases'
+import MyText from 'src/constants/FontsStyle'
 
 const ItemCategoryWomen = props => {
   const { navigation } = props
@@ -131,25 +132,25 @@ const ItemCategoryWomen = props => {
           >
             <Image
               style={styles.renderItemColumTo.img_activated}
-              source={require('@assets/activated.png')}
+              source={require('@assets/images/activated.png')}
             />
             <Image
               style={styles.renderItemColumTo.img_activated}
-              source={require('@assets/activated.png')}
+              source={require('@assets/images/activated.png')}
             />
             <Image
               style={styles.renderItemColumTo.img_activated}
-              source={require('@assets/activated.png')}
+              source={require('@assets/images/activated.png')}
             />
             <Image
               style={styles.renderItemColumTo.img_activated}
-              source={require('@assets/activated.png')}
+              source={require('@assets/images/activated.png')}
             />
             <Image
               style={styles.renderItemColumTo.img_activated}
-              source={require('@assets/activated.png')}
+              source={require('@assets/images/activated.png')}
             />
-            <Text
+            <MyText
               style={{
                 fontSize: 10,
                 fontWeight: '400',
@@ -158,15 +159,15 @@ const ItemCategoryWomen = props => {
               }}
             >
               ( {review})
-            </Text>
+            </MyText>
           </View>
-          <Text style={styles.renderItemColumTo.txt_category_name}>
+          <MyText style={styles.renderItemColumTo.txt_category_name}>
             {category_name}
-          </Text>
-          <Text style={styles.renderItemColumTo.txt_product_name}>
+          </MyText>
+          <MyText style={styles.renderItemColumTo.txt_product_name}>
             {product_name}
-          </Text>
-          <Text style={styles.renderItemColumTo.txt_price}>{price}$</Text>
+          </MyText>
+          <MyText style={styles.renderItemColumTo.txt_price}>{price}$</MyText>
         </View>
       </View>
     )
@@ -225,12 +226,12 @@ const ItemCategoryWomen = props => {
               />
             </TouchableOpacity>
             <View style={{ flex: 2, marginStart: 16 }}>
-              <Text style={styles.renderItemColumOne.txt_product_name}>
+              <MyText style={styles.renderItemColumOne.txt_product_name}>
                 {product_name}
-              </Text>
-              <Text style={styles.renderItemColumOne.txt_category_name}>
+              </MyText>
+              <MyText style={styles.renderItemColumOne.txt_category_name}>
                 {category_name}
-              </Text>
+              </MyText>
               <View
                 style={{
                   flexDirection: 'row',
@@ -240,25 +241,25 @@ const ItemCategoryWomen = props => {
               >
                 <Image
                   style={styles.renderItemColumOne.img_activated}
-                  source={require('@assets/activated.png')}
+                  source={require('@assets/images/activated.png')}
                 />
                 <Image
                   style={styles.renderItemColumOne.img_activated}
-                  source={require('@assets/activated.png')}
+                  source={require('@assets/images/activated.png')}
                 />
                 <Image
                   style={styles.renderItemColumOne.img_activated}
-                  source={require('@assets/activated.png')}
+                  source={require('@assets/images/activated.png')}
                 />
                 <Image
                   style={styles.renderItemColumOne.img_activated}
-                  source={require('@assets/activated.png')}
+                  source={require('@assets/images/activated.png')}
                 />
                 <Image
                   style={styles.renderItemColumOne.img_activated}
-                  source={require('@assets/activated.png')}
+                  source={require('@assets/images/activated.png')}
                 />
-                <Text
+                <MyText
                   style={{
                     fontSize: 10,
                     fontWeight: '400',
@@ -267,9 +268,9 @@ const ItemCategoryWomen = props => {
                   }}
                 >
                   ( {review})
-                </Text>
+                </MyText>
               </View>
-              <Text style={styles.renderItemColumOne.txt_price}>{price}$</Text>
+              <MyText style={styles.renderItemColumOne.txt_price}>{price}$</MyText>
             </View>
           </View>
         </View>
@@ -303,7 +304,7 @@ const ItemCategoryWomen = props => {
             >
               <Icons.Ionicons name={'chevron-back'} size={24} />
             </TouchableOpacity>
-            <Text style={styles.txt_title}>Women’s tops</Text>
+            <MyText style={styles.txt_title}>Women’s tops</MyText>
 
             <Icons.Ionicons name={'search'} size={24} />
           </View>
@@ -320,9 +321,9 @@ const ItemCategoryWomen = props => {
                 justifyContent: 'center'
               }}
             >
-              <Text style={{ color: Colors.white, textAlign: 'center' }}>
+              <MyText style={{ color: Colors.white, textAlign: 'center' }}>
                 T-shirts
-              </Text>
+              </MyText>
             </TouchableOpacity>
             <View
               style={{
@@ -342,7 +343,7 @@ const ItemCategoryWomen = props => {
                 }}
               >
                 <Icons.MaterialIcons name={'filter-list'} size={28} />
-                <Text style={styles.txt_filters}>Filters</Text>
+                <MyText style={styles.txt_filters}>Filters</MyText>
               </TouchableOpacity>
               <TouchableOpacity
                 // Logic: Open Bottom Sheet and set BottomNavigation -> off
@@ -353,7 +354,7 @@ const ItemCategoryWomen = props => {
                 onPress={() => handlePresentModal()}
               >
                 <Icons.MaterialCommunityIcons name={'sort'} size={28} />
-                <Text style={styles.txt_filters}>Sort by to</Text>
+                <MyText style={styles.txt_filters}>Sort by to</MyText>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleColum()}>
                 <Icons.MaterialCommunityIcons
@@ -396,7 +397,8 @@ const ItemCategoryWomen = props => {
               setIsOpen(false) & setBottomBar()
             }}
           >
-            <Text
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
               style={{
                 color: Colors.black,
                 textAlign: 'center',
@@ -406,7 +408,7 @@ const ItemCategoryWomen = props => {
               }}
             >
               Sort by
-            </Text>
+            </MyText>
             <FlatList
               // render Item Data Sort by
               data={selected}
@@ -425,7 +427,7 @@ const ItemCategoryWomen = props => {
                           : Colors.white
                       }}
                     >
-                      <Text
+                      <MyText
                         style={{
                           fontSize: 16,
                           padding: 16,
@@ -434,7 +436,7 @@ const ItemCategoryWomen = props => {
                         }}
                       >
                         {item.subject}
-                      </Text>
+                      </MyText>
                     </View>
                   </TouchableOpacity>
                 )

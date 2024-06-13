@@ -3,12 +3,12 @@ import {
   FlatList,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
+import MyText from 'src/constants/FontsStyle'
 
 const CategoryWomen = props => {
   const { navigation } = props
@@ -22,7 +22,7 @@ const CategoryWomen = props => {
         style={{ marginBottom: 15 }}
         onPress={() => props.navigation.navigate('ItemCategoryWomen')}
       >
-        <Text
+        <MyText
           style={{
             color: Colors.black,
             fontSize: 16,
@@ -32,7 +32,7 @@ const CategoryWomen = props => {
           }}
         >
           {category_name}
-        </Text>
+        </MyText>
         <View style={{ backgroundColor: Colors.gray }}></View>
       </TouchableOpacity>
     )
@@ -46,7 +46,9 @@ const CategoryWomen = props => {
         <TouchableOpacity onPress={() => props.navigation.navigate('Women')}>
           <Icons.Ionicons name={'chevron-back'} size={24} />
         </TouchableOpacity>
-        <Text style={styles.txt_search}>Categories</Text>
+        <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_search}>
+          Categories
+        </MyText>
         <Icons.Ionicons name={'search'} size={24} />
       </View>
 
@@ -65,10 +67,16 @@ const CategoryWomen = props => {
             shadowColor: Colors.gray
           }}
         >
-          <Text style={styles.txt_VIEW_ALL_ITEMS}>VIEW ALL ITEMS</Text>
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
+            style={styles.txt_VIEW_ALL_ITEMS}
+          >
+            VIEW ALL ITEMS
+          </MyText>
         </TouchableOpacity>
 
-        <Text
+        <MyText
+          fontFamily={'Montserrat-SemiBold'}
           style={{
             marginStart: 16,
             marginTop: 16,
@@ -78,7 +86,7 @@ const CategoryWomen = props => {
           }}
         >
           Choose category
-        </Text>
+        </MyText>
 
         <FlatList
           style={{ marginBottom: '25%' }}

@@ -1,15 +1,16 @@
-import AppStyle from '@common'
 import React, { useState } from 'react'
 import {
   Image,
   KeyboardAvoidingView,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native'
 import Colors from 'src/constants/Colors'
 import { DaTaNews, DaTaSale } from 'src/constants/Databases'
+import MyText from 'src/constants/FontsStyle'
 import ItemListNew from './ItemListNews'
 import ItemListSale from './ItemListSales'
 
@@ -20,7 +21,7 @@ const ListSale = () => {
         <View>
           <Image
             style={{ width: '100%', height: 250 }}
-            source={require('@assets/pexel_911677.png')}
+            source={require('@assets/images/pexel_911677.png')}
           />
           <View
             style={{
@@ -49,7 +50,8 @@ const ListSale = () => {
               alignItems: 'center'
             }}
           >
-            <Text
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
               style={{
                 color: Colors.black,
 
@@ -59,14 +61,14 @@ const ListSale = () => {
               }}
             >
               Sale
-            </Text>
+            </MyText>
 
-            <Text style={{ textAlign: 'center' }}>View all</Text>
+            <MyText style={{ textAlign: 'center' }}>View all</MyText>
           </View>
 
-          <Text style={{ color: Colors.red, fontWeight: 400 }}>
+          <MyText style={{ color: Colors.red, fontWeight: 400 }}>
             Super summer sale
-          </Text>
+          </MyText>
         </View>
       </View>
 
@@ -86,24 +88,21 @@ const ListSale = () => {
 const HomePage = props => {
   const [isShowSale, setIsShowSale] = useState(false)
   return (
-    <ScrollView
-      style={AppStyle.StyleHome.container}
-      showsVerticalScrollIndicator={false}
-    >
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View>
         <Image
           style={{ width: '100%', height: 628, position: 'relative' }}
-          source={require('@assets/image.png')}
+          source={require('@assets/images/image.png')}
         />
         <View style={{ position: 'absolute', left: 15, bottom: 40 }}>
-          <Text style={AppStyle.StyleHome.txt_fashion_sale}>Fashion</Text>
-          <Text style={AppStyle.StyleHome.txt_fashion_sale}>sale</Text>
+          <Text style={styles.txt_fashion_sale}>Fashion</Text>
+          <Text style={styles.txt_fashion_sale}>sale</Text>
           <TouchableOpacity
             onPress={() => {
               setIsShowSale(!isShowSale)
             }}
           >
-            <View style={AppStyle.StyleHome.btn_check}>
+            <View style={styles.btn_check}>
               <Text style={{ color: Colors.white, fontWeight: '500' }}>
                 Check
               </Text>
@@ -121,7 +120,7 @@ const HomePage = props => {
             alignItems: 'center'
           }}
         >
-          <Text
+          <MyText
             style={{
               color: Colors.black,
               fontSize: 34,
@@ -130,12 +129,12 @@ const HomePage = props => {
             }}
           >
             News
-          </Text>
-          <Text style={{ textAlign: 'center' }}>View all</Text>
+          </MyText>
+          <MyText style={{ textAlign: 'center' }}>View all</MyText>
         </View>
-        <Text style={{ color: Colors.red, fontWeight: '400' }}>
+        <MyText style={{ color: Colors.red, fontWeight: '400' }}>
           You’ve never seen it before!
-        </Text>
+        </MyText>
       </View>
       <ScrollView
         horizontal
@@ -151,31 +150,24 @@ const HomePage = props => {
         <View>
           <Image
             style={{ height: 366, width: '100%' }}
-            source={require('@assets/image5.png')}
+            source={require('@assets/images/image5.png')}
           />
-          <Text style={AppStyle.StyleHome.txt_new_collection}>
-            New collection
-          </Text>
+          <Text style={styles.txt_new_collection}>New collection</Text>
         </View>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flex: 1 }}>
             <View
               style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}
             >
-              <Text style={AppStyle.StyleHome.txt_Summer_sale}>Summer</Text>
-              <Text style={AppStyle.StyleHome.txt_Summer_sale}>sale</Text>
+              <Text style={styles.txt_Summer_sale}>Summer</Text>
+              <Text style={styles.txt_Summer_sale}>sale</Text>
             </View>
             <View>
               <Image
                 style={{ width: '100%', height: 187 }}
-                source={require('@assets/image7.png')}
+                source={require('@assets/images/image7.png')}
               />
-              <Text
-                style={[
-                  AppStyle.StyleHome.txt_new_collection,
-                  AppStyle.StyleHome.txt_black
-                ]}
-              >
+              <Text style={[styles.txt_new_collection, styles.txt_black]}>
                 Black
               </Text>
             </View>
@@ -186,7 +178,7 @@ const HomePage = props => {
           >
             <Image
               style={{ height: 374, width: '100%' }}
-              source={require('@assets/image6.png')}
+              source={require('@assets/images/image6.png')}
             />
             <Text
               style={{
@@ -206,3 +198,45 @@ const HomePage = props => {
 }
 
 export default HomePage
+
+const styles = StyleSheet.create({
+  txt_black: {
+    top: '60%',
+    left: 13
+  },
+  txt_new_collection: {
+    fontSize: 34,
+    color: Colors.white,
+    fontWeight: '700',
+    position: 'absolute',
+    bottom: 17,
+    right: 18
+  },
+  txt_Summer_sale: {
+    fontSize: 34,
+    fontWeight: '700',
+    color: Colors.red
+  },
+
+  btn_check: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.red,
+    width: 160,
+    height: 36,
+    top: 8,
+    borderRadius: 25
+  },
+  txt_fashion_sale: {
+    color: Colors.white,
+    fontSize: 48,
+    fontWeight: '900'
+    // fontFamily: 'Metropolis'
+  },
+  container: {
+    width: '100%',
+    height: '100%',
+    flex: 1,
+    backgroundColor: Colors.white
+  }
+})
