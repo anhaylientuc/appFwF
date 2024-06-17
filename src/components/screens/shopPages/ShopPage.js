@@ -1,14 +1,57 @@
-import React from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
+
 import MyText from 'src/constants/FontsStyle'
-import MyTabs from '../../../navigators/ShopPageTabNavigation'
-const ShopPage = ({ navigation: { goBack } }) => {
+import { getCategory } from 'src/utils/http/NewHTTP'
+const ShopPage = props => {
+  const { navigation, goBack } = props
+  const [categories, setCategories] = useState([])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getCategory()
+        setCategories(response)
+        console.log(response)
+      } catch (error) {
+        console.log('>>>' + error)
+        throw error
+      }
+    }
+    fetchData()
+  }, [])
+
+  const renderListCategory = ({ item }) => {
+    const { _id, name, image } = item
+    return (
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('CategoryWomen', {
+            categoryId: _id,
+            categoryName: name
+          })
+        }
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          marginTop: 16,
+          alignItems: 'center'
+        }}
+      >
+        <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16 }}>
+          {name}
+        </MyText>
+        <Icons.AntDesign name={'arrowright'} size={20} />
+      </TouchableOpacity>
+    )
+  }
+
   return (
     <View style={{ backgroundColor: '#fff', width: '100%', height: '100%' }}>
       <View style={styles.view_search}>
-        <TouchableOpacity onPress={() => goBack()}>
+        <TouchableOpacity onPress={() => props.navigation.goBack()}>
           <Icons.Ionicons name={'chevron-back'} size={24} />
         </TouchableOpacity>
         <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_search}>
@@ -16,7 +59,7 @@ const ShopPage = ({ navigation: { goBack } }) => {
         </MyText>
         <Icons.Ionicons name={'search'} size={24} />
       </View>
-      <MyTabs />
+      <FlatList renderItem={renderListCategory} data={categories} />
     </View>
   )
 }

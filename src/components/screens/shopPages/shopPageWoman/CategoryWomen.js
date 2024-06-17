@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   FlatList,
   ScrollView,
@@ -9,18 +9,48 @@ import {
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
+import { getCategoryById } from 'src/utils/http/NewHTTP'
 
 const CategoryWomen = props => {
-  const { navigation } = props
+  const {
+    navigation,
+    goBack,
 
+    route: {
+      params: { categoryId, categoryName }
+    }
+  } = props
+
+  const [categoriesId, setCategoriesId] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getCategoryById(categoryId)
+        setCategoriesId(response.child)
+
+        // console.log(response.child)
+      } catch (error) {
+        console.log(error)
+        throw error
+      }
+    }
+    fetchData()
+  }, [])
   // renderItemList Category Women
+  console.log(categoriesId)
   const renderItem = ({ item }) => {
-    const { _id, category_name } = item
+    const { _id, name } = item
     return (
       // onClick to ItemCategory Women
       <TouchableOpacity
         style={{ marginBottom: 15 }}
-        onPress={() => props.navigation.navigate('ItemCategoryWomen')}
+        onPress={() =>
+          props.navigation.navigate('ItemCategoryWomen', {
+            categoryById: _id,
+            categoryNameById: name
+          })
+        }
       >
         <MyText
           style={{
@@ -31,7 +61,7 @@ const CategoryWomen = props => {
             bottom: 17
           }}
         >
-          {category_name}
+          {name}
         </MyText>
         <View style={{ backgroundColor: Colors.gray }}></View>
       </TouchableOpacity>
@@ -43,11 +73,11 @@ const CategoryWomen = props => {
       style={{ backgroundColor: Colors.white, width: '100%', height: '100%' }}
     >
       <View style={styles.view_search}>
-        <TouchableOpacity onPress={() => props.navigation.navigate('Women')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icons.Ionicons name={'chevron-back'} size={24} />
         </TouchableOpacity>
         <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_search}>
-          Categories
+          {categoryName}
         </MyText>
         <Icons.Ionicons name={'search'} size={24} />
       </View>
@@ -93,9 +123,8 @@ const CategoryWomen = props => {
           scrollEnabled={false}
           showsVerticalScrollIndicator={false} // thanh cuộn
           showsHorizontalScrollIndicator={false}
-          data={DataCategoryWomen}
+          data={categoriesId}
           renderItem={renderItem}
-          keyExtractor={item => item._id}
         />
       </ScrollView>
     </View>

@@ -3,7 +3,6 @@ import Men from 'src/components/screens/shopPages/shopPageMan/Men'
 import Colors from 'src/constants/Colors'
 import Kids from '../components/screens/shopPages/shopPageKids/Kids'
 import Women from '../components/screens/shopPages/shopPageWoman/Women'
-
 const Tab = createMaterialTopTabNavigator()
 
 const MyTabs = () => {

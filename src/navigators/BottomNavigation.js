@@ -151,7 +151,7 @@ function BottomTabNavigator() {
         component={HomeStack}
         options={{
           tabBarColor: Colors.white,
-          tabBarLabel: 'Home',
+          tabBarLabel: 'Trang chủ',
           tabBarIcon: ({ focused }) => (
             <Icons.MaterialCommunityIcons
               name={focused ? 'home' : 'home-outline'}
@@ -166,7 +166,7 @@ function BottomTabNavigator() {
         name="ShopStack"
         component={ShopStack}
         options={{
-          tabBarLabel: 'Shop',
+          tabBarLabel: 'Cửa hàng',
           tabBarIcon: ({ focused }) => (
             <Icons.MaterialIcons
               name={focused ? 'shopping-cart' : 'add-shopping-cart'}
@@ -181,7 +181,7 @@ function BottomTabNavigator() {
         name="BagStack"
         component={BagStack}
         options={{
-          tabBarLabel: 'Bag',
+          tabBarLabel: 'Giỏ hàng',
           // tabBarStyle: { display: 'none' },
           tabBarColor: Colors.white,
           tabBarIcon: ({ focused }) => (
@@ -198,7 +198,7 @@ function BottomTabNavigator() {
         name="FavoriteStack"
         component={FavoriteStack}
         options={{
-          tabBarLabel: 'Favorite',
+          tabBarLabel: 'Yêu thích',
           tabBarIcon: ({ focused }) => (
             <Icons.MaterialIcons
               name={focused ? 'favorite' : 'favorite-border'}
@@ -213,7 +213,7 @@ function BottomTabNavigator() {
         name="Profile"
         component={Profile}
         options={{
-          tabBarLabel: 'Profile',
+          tabBarLabel: 'Hồ sơ',
 
           tabBarIcon: ({ focused }) => (
             <Icons.FontAwesome

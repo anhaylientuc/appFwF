@@ -2,14 +2,13 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider
 } from '@gorhom/bottom-sheet'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import {
   FlatList,
   Image,
   ScrollView,
   StyleSheet,
-
   TouchableOpacity,
   View
 } from 'react-native'
@@ -18,9 +17,33 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import { DataItemCategoryWomen } from 'src/constants/Databases'
 import MyText from 'src/constants/FontsStyle'
+import { getCategoryById } from 'src/utils/http/NewHTTP'
 
 const ItemCategoryWomen = props => {
-  const { navigation } = props
+  const {
+    navigation,
+    route: {
+      params: { categoryById, categoryNameById }
+    }
+  } = props
+
+  const [categoriesById, setCategoriesById] = useState([])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getCategoryById(categoryById)
+        setCategoriesById(response.child)
+
+        // console.log(response.child)
+      } catch (error) {
+        console.log(error)
+        throw error
+      }
+    }
+    fetchData()
+  }, [])
+
+  console.log(categoryNameById)
   const [isOpen, setIsOpen] = useState(false)
   const snapPoints = ['50%', '60%']
 
@@ -164,7 +187,10 @@ const ItemCategoryWomen = props => {
           <MyText style={styles.renderItemColumTo.txt_category_name}>
             {category_name}
           </MyText>
-          <MyText style={styles.renderItemColumTo.txt_product_name}>
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
+            style={styles.renderItemColumTo.txt_product_name}
+          >
             {product_name}
           </MyText>
           <MyText style={styles.renderItemColumTo.txt_price}>{price}$</MyText>
@@ -175,7 +201,7 @@ const ItemCategoryWomen = props => {
 
   // if numColums = 2 => render
   const renderItemColumOne = ({ item }) => {
-    const { _id, category_name, product_name, price, review, image } = item
+    const { _id, category_name, name, price, review, image } = item
     return (
       <View style={{ marginBottom: 26 }}>
         <View style={styles.renderItemColumOne.container}>
@@ -226,8 +252,11 @@ const ItemCategoryWomen = props => {
               />
             </TouchableOpacity>
             <View style={{ flex: 2, marginStart: 16 }}>
-              <MyText style={styles.renderItemColumOne.txt_product_name}>
-                {product_name}
+              <MyText
+                fontFamily={'Montserrat-SemiBold'}
+                style={styles.renderItemColumOne.txt_product_name}
+              >
+                {name}
               </MyText>
               <MyText style={styles.renderItemColumOne.txt_category_name}>
                 {category_name}
@@ -270,7 +299,9 @@ const ItemCategoryWomen = props => {
                   ( {review})
                 </MyText>
               </View>
-              <MyText style={styles.renderItemColumOne.txt_price}>{price}$</MyText>
+              <MyText style={styles.renderItemColumOne.txt_price}>
+                {price}$
+              </MyText>
             </View>
           </View>
         </View>
@@ -304,7 +335,7 @@ const ItemCategoryWomen = props => {
             >
               <Icons.Ionicons name={'chevron-back'} size={24} />
             </TouchableOpacity>
-            <MyText style={styles.txt_title}>Women’s tops</MyText>
+            <MyText style={styles.txt_title}>{categoryNameById}</MyText>
 
             <Icons.Ionicons name={'search'} size={24} />
           </View>
@@ -378,9 +409,9 @@ const ItemCategoryWomen = props => {
             numColumns={numColumns}
             key={numColumns}
             showsVerticalScrollIndicator={false} // thanh cuộn
-            data={DataItemCategoryWomen}
+            data={categoriesById}
             renderItem={numColumns ? renderItemColumTo : renderItemColumOne}
-            keyExtractor={item => item.id}
+            
           />
         </ScrollView>
         <View>
