@@ -9,8 +9,8 @@ const AppNavigation = () => {
 
   return (
     <NavigationContainer>
-      <MainNavigator />
-      <ToastComponent ref={toastRef} />
+      <MainNavigator /> 
+      <ToastComponent ref={toastRef}/>
     </NavigationContainer>
   )
 }
