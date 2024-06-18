@@ -1,5 +1,5 @@
-import { TouchableOpacity } from 'react-native'
-import Icons from 'src/components/icons/Icon'
+import { TouchableOpacity } from 'react-native';
+import Icons from 'src/components/icons/Icon';
 import {
   StyleSheet,
   Text,
@@ -7,13 +7,17 @@ import {
   Image,
   TextInput,
   ToastAndroid
-} from 'react-native'
-import React from 'react'
+} from 'react-native';
+import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 const Login = ({ navigation: { goBack } }) => {
+  const navigation = useNavigation();
+
   return (
     <View
       style={{
+        margin: 5,
         flexDirection: 'column',
         width: '100%',
         height: '100%',
@@ -78,74 +82,69 @@ const Login = ({ navigation: { goBack } }) => {
         >
           <TextInput placeholder="Password" />
         </View>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row' }}>
           <Text style={styles.txtforgot}>Forgot your password? </Text>
           <Image
-            style={{ width: '15', height: 10}}
+            style={{ width: '15', height: 10 }}
             source={require('@assets/Vector.png')}
           />
         </View>
-        
 
         <View style={styles.btnLogin}>
-          <TouchableOpacity style={{ alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => navigation.navigate('Register')} style={{ alignItems: 'center' }}>
             <Text style={styles.txtbtn}>LOGIN</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.txtSignWith}> Or sign up with social account</Text>
-        <View style={{flexDirection: 'row'}}>
-        <View
-          style={{
-            marginLeft:89,
-            marginTop: 10,
-            width: 80,
-            height: 64,
-            borderRadius: 24,
-            backgroundColor: '#FFFFFF',
-            shadowColor: 'rgba(0, 0, 0, 0.05)',
-            shadowOffset: {
-              width: 0,
-              height: 1
-            },
-            shadowRadius: 8,
-            shadowOpacity: 1
-          }}
-        >
-          <Image
-            style={{ width: '23.495864868164062', height: 50, position: 'relative' }}
+        <TouchableOpacity>
+          <Text style={styles.txtSignWith}>
+            Or sign up with social account
+          </Text>
+        </TouchableOpacity>
+        <View style={{ flexDirection: 'row' }}>
+        <Image
+            style={{
+              marginTop: 10,
+              marginLeft: 110,
+              width: 65,
+              height: 50,
+              borderRadius: 24,
+              backgroundColor: '#FFFFFF',
+              shadowColor: 'rgba(0, 0, 0, 0.05)',
+              shadowOffset: {
+                width: 0,
+                height: 1
+              },
+              shadowRadius: 8,
+              shadowOpacity: 1
+            }}
             source={require('@assets/gg_logo.png')}
           />
-        </View>
-        <View
-          style={{
-            marginLeft: 40,
-            marginTop: 5,
-            width: 65,
-            height: 64,
-            borderRadius: 24,
-            backgroundColor: '#FFFFFF',
-            shadowColor: 'rgba(0, 0, 0, 0.05)',
-            shadowOffset: {
-              width: 0,
-              height: 1
-            },
-            shadowRadius: 8,
-            shadowOpacity: 1
-          }}
-        >
+
           <Image
-            style={{ width: '23.495864868164062', height: 60, position: 'relative' }}
+            style={{
+              marginTop: 10,
+              marginLeft: 30,
+              width: 55,
+              height: 50,
+              borderRadius: 24,
+              backgroundColor: '#FFFFFF',
+              shadowColor: 'rgba(0, 0, 0, 0.05)',
+              shadowOffset: {
+                width: 0,
+                height: 1
+              },
+              shadowRadius: 8,
+              shadowOpacity: 1
+            }}
             source={require('@assets/fb_logo.png')}
           />
         </View>
-        </View>
-        
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
 
 const styles = StyleSheet.create({
   txtSignWith: {
@@ -153,7 +152,6 @@ const styles = StyleSheet.create({
     marginTop: 182,
     width: 200,
     height: 20,
-    fontFamily: 'Metropolis',
     fontSize: 14,
     fontWeight: '500',
     fontStyle: 'normal',
@@ -171,7 +169,6 @@ const styles = StyleSheet.create({
     marginLeft: 174,
     width: 158,
     height: 20,
-    fontFamily: 'Metropolis',
     fontSize: 14,
     fontWeight: '500',
     fontStyle: 'normal',
@@ -197,11 +194,10 @@ const styles = StyleSheet.create({
     marginVertical: 14,
     width: 44,
     height: 20,
-    fontFamily: 'Metropolis',
     fontSize: 14,
     fontWeight: '500',
     fontStyle: 'normal',
     lineHeight: 20,
     color: '#FFFFFF'
   }
-})
+});
