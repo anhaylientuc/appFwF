@@ -83,7 +83,7 @@ const Login = ({ navigation: { goBack } }) => {
           <TextInput placeholder="Password" />
         </View>
         <View style={{ flexDirection: 'row' }}>
-          <Text style={styles.txtforgot}>Forgot your password? </Text>
+          <Text onPress={() => navigation.navigate('ForgotPass')} style={styles.txtforgot}>Forgot your password? </Text>
           <Image
             style={{ width: '15', height: 10 }}
             source={require('@assets/Vector.png')}

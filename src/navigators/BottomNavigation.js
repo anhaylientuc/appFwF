@@ -19,6 +19,7 @@ import Login from 'src/components/screens/users/Login'
 
 import SizeInfo from 'src/components/screens/shopPages/shopPageWoman/SizeInfo'
 import Colors from 'src/constants/Colors'
+import ForgotPass from 'src/components/screens/users/ForgotPass'
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
 
@@ -127,6 +128,11 @@ const UserStack = () => {
         name="Register"
         component={Register}
         options={{ title: 'Register' }}
+      ></Stack.Screen>
+      <Stack.Screen
+        name="ForgotPass"
+        component={ForgotPass}
+        options={{ title: 'ForgotPass' }}
       ></Stack.Screen>
     </Stack.Navigator>
   )
