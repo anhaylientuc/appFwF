@@ -28,8 +28,6 @@ const CategoryWomen = props => {
       try {
         const response = await getCategoryById(categoryId)
         setCategoriesId(response.child)
-
-        // console.log(response.child)
       } catch (error) {
         console.log(error)
         throw error
@@ -38,7 +36,6 @@ const CategoryWomen = props => {
     fetchData()
   }, [])
   // renderItemList Category Women
-  console.log(categoriesId)
   const renderItem = ({ item }) => {
     const { _id, name } = item
     return (

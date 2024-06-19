@@ -1,10 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createStackNavigator } from '@react-navigation/stack'
 import Favorites from '@screens/Favorites'
-import BagPage from 'src/components/screens/bagPages/BagPage'
-import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
 import Profile from '@screens/Profile'
 import Icons from 'src/components/icons/Icon'
+import BagPage from 'src/components/screens/bagPages/BagPage'
+import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
 import HomePage from 'src/components/screens/homePages/HomePage'
 import ShopPage from 'src/components/screens/shopPages/ShopPage'
 import CategoryWomen from 'src/components/screens/shopPages/shopPageWoman/CategoryWomen'
@@ -59,6 +59,13 @@ const ShopStack = () => {
         component={SizeInfo}
         options={{
           title: 'SizeInfo'
+        }}
+      ></Stack.Screen>
+      <Stack.Screen
+        name="BagPage"
+        component={BagPage}
+        options={{
+          title: 'BagPage'
         }}
       ></Stack.Screen>
     </Stack.Navigator>

@@ -3,7 +3,8 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider
 } from '@gorhom/bottom-sheet'
-import { useRef, useState } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useEffect, useRef, useState } from 'react'
 import {
   FlatList,
   Image,
@@ -25,6 +26,8 @@ const BagPage = props => {
   // sate selected code sale off
   const [selected, setSelected] = useState(DataCodeSale)
   const [selectedCodeSale, setSelectedCodeSale] = useState()
+  const [productTocart, setproductTocart] = useState()
+
   const [isOpen, setIsOpen] = useState(false)
   const snapPoints = ['60%', '80%']
   // set sate Bottom sheet to useRef
@@ -159,6 +162,26 @@ const BagPage = props => {
     setSelected(updatedSelected)
     setSelectedCodeSale(selectedCodeSale)
   }
+
+  useEffect(() => {
+    getDataProduct()
+  }, [])
+
+  const getDataProduct = async () => {
+    try {
+      const value = await AsyncStorage.getItem('my-cart')
+      if (value !== null) {
+        const parsedValue = JSON.parse(value)
+        console.log('Value retrieved successfully:', parsedValue)
+        setproductTocart([parsedValue])
+        // Sử dụng giá trị đã phân tích cú pháp
+      } else {
+        console.log('No value found for key "my-cart"')
+      }
+    } catch (error) {
+      console.error('Error retrieving value:', error)
+    }
+  }
   // No cart to Bag
   const noCart = () => {
     return (
@@ -251,8 +274,33 @@ const BagPage = props => {
   }
 
   // Item list product
+  const [quantity, setQuantity] = useState(1)
+  const [price, setPrice] = useState()
+  console.log(price)
+
   const ItemCart = ({ item }) => {
-    const { id, image, product_name, color, size, price } = item
+    const {
+      product_Id,
+      product_Name,
+      images,
+      base_price,
+      category_id,
+      vaLueSelectSize,
+      description,
+      code,
+      discount_price
+    } = item
+
+    const handlePlus = () => {
+      setQuantity(quantity + 1)
+      setPrice(base_price * quantity)
+    }
+    const handleMinus = () => {
+      if (quantity >= 2) {
+        setQuantity(quantity - 1)
+        setPrice(base_price * quantity)
+      }
+    }
     return (
       <SafeAreaView style={{ marginBottom: 24 }}>
         <View
@@ -270,7 +318,7 @@ const BagPage = props => {
               borderTopLeftRadius: 8,
               borderBottomLeftRadius: 8
             }}
-            source={{ uri: image }}
+            source={{ uri: images[0].url }}
           />
 
           <View
@@ -281,17 +329,23 @@ const BagPage = props => {
               backgroundColor: isOpen ? Colors.gray : Colors.white
             }}
           >
-            <MyText style={styles.txt_price}>{product_name}</MyText>
-            <View style={{ flexDirection: 'row' }}>
+            <MyText style={styles.txt_price}>{product_Name}</MyText>
+            <View style={{ flexDirection: 'row', marginVertical: 8 }}>
               <View style={{ flexDirection: 'row' }}>
                 <MyText style={{ color: Colors.gray }}>Màu sắc:</MyText>
-                <MyText style={{ color: Colors.black }}> {color}</MyText>
+                {/* <MyText style={{ color: Colors.black }}> {color}</MyText> */}
               </View>
-              <View style={{ flexDirection: 'row' }}>
-                <MyText style={{ marginStart: 13, color: Colors.gray }}>
+              <View
+                style={{
+                  flexDirection: 'row'
+                }}
+              >
+                <MyText style={{ marginStart: 8, color: Colors.gray }}>
                   Size:
                 </MyText>
-                <MyText style={{ color: Colors.black }}> {size}</MyText>
+                <MyText style={{ color: Colors.black, marginStart: 8 }}>
+                  {vaLueSelectSize}
+                </MyText>
               </View>
             </View>
             <View
@@ -299,7 +353,7 @@ const BagPage = props => {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginTop: 12
+                marginTop: 16
               }}
             >
               <View
@@ -309,6 +363,7 @@ const BagPage = props => {
                 }}
               >
                 <TouchableOpacity
+                  onPress={() => handlePlus()}
                   style={{
                     padding: 6,
                     backgroundColor: isOpen ? Colors.gray : Colors.white,
@@ -320,9 +375,10 @@ const BagPage = props => {
                   <Icons.AntDesign name={'plus'} size={18} />
                 </TouchableOpacity>
                 <MyText style={{ textAlign: 'center', marginHorizontal: 15 }}>
-                  99
+                  {quantity}
                 </MyText>
                 <TouchableOpacity
+                  onPress={() => handleMinus()}
                   style={{
                     padding: 6,
                     backgroundColor: isOpen ? Colors.gray : Colors.white,
@@ -335,7 +391,7 @@ const BagPage = props => {
                 </TouchableOpacity>
               </View>
               <MyText style={{ fontSize: 14, fontWeight: '500' }}>
-                {price}.000đ
+                {price} VND
               </MyText>
             </View>
             {visiblePopupMenu ? popupMenu() : null}
@@ -370,8 +426,7 @@ const BagPage = props => {
         <FlatList
           showsVerticalScrollIndicator={false}
           scrollEnabled={false}
-          data={DataMyBag}
-          keyExtractor={item => item.id}
+          data={productTocart}
           renderItem={ItemCart}
         />
         <View
@@ -568,7 +623,7 @@ const BagPage = props => {
         <MyText style={{ textAlign: 'center', marginVertical: 32 }}>
           Miễn phí giao hàng cho Member với đơn từ 499k
         </MyText>
-        {noCart()}
+        {/* {noCart()} */}
         {ListItemCart()}
         <View style={{ marginVertical: 16 }}>
           <MyText

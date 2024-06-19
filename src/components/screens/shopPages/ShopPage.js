@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View
+} from 'react-native'
+import { createPicassoComponent } from 'react-native-picasso'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-
 import MyText from 'src/constants/FontsStyle'
 import { getCategory } from 'src/utils/http/NewHTTP'
 const ShopPage = props => {
+  const PicassoImage = createPicassoComponent(Image)
   const { navigation, goBack } = props
   const [categories, setCategories] = useState([])
   useEffect(() => {
@@ -13,7 +20,6 @@ const ShopPage = props => {
       try {
         const response = await getCategory()
         setCategories(response)
-        console.log(response)
       } catch (error) {
         console.log('>>>' + error)
         throw error
@@ -40,9 +46,19 @@ const ShopPage = props => {
           alignItems: 'center'
         }}
       >
-        <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16 }}>
-          {name}
-        </MyText>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <PicassoImage
+            style={{ height: 48, width: 48, borderRadius: 50 }}
+            source={{ uri: image }}
+          />
+
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
+            style={{ fontSize: 16, marginLeft: 16 }}
+          >
+            {name}
+          </MyText>
+        </View>
         <Icons.AntDesign name={'arrowright'} size={20} />
       </TouchableOpacity>
     )
@@ -81,7 +97,7 @@ const styles = StyleSheet.create({
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 8,
+    paddingHorizontal: 16,
     marginTop: 44
   }
 })

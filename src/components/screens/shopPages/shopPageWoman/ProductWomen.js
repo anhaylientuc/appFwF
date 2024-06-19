@@ -2,10 +2,14 @@ import {
   BottomSheetModal,
   BottomSheetModalProvider
 } from '@gorhom/bottom-sheet'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useRef, useState } from 'react'
 import {
+  Alert,
+  Dimensions,
   FlatList,
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,9 +21,30 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import { DaTaSale } from 'src/constants/Databases'
 import MyText from 'src/constants/FontsStyle'
+import { getProducts } from 'src/utils/http/NewHTTP'
 import ItemListNew from '../../homePages/ItemListNews'
+const windowWith = Dimensions.get('window').width
+const windowHeight = Dimensions.get('window').height
 const ProductWomen = props => {
-  const { navigation } = props
+  const {
+    navigation,
+    route: {
+      params: {
+        _id,
+        product_id,
+        product_Name,
+        images,
+        base_price,
+        category_id,
+
+        description,
+        code
+      }
+    }
+  } = props
+
+  const [attributes, setattributes] = useState([])
+
   const sheetRef = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
   useEffect(() => {
@@ -32,9 +57,46 @@ const ProductWomen = props => {
     }, 300)
   }
 
+  const [activated, setActivated] = useState(0)
+  change = ({ nativeEvent }) => {
+    const slide = Math.ceil(
+      nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width
+    )
+    if (slide != activated) {
+      setActivated(slide)
+    }
+  }
+
   const [addFavorite, setAddFavorite] = useState(false)
   const handleAddFavorite = () => {
     setAddFavorite(!addFavorite)
+  }
+
+  const handleAddToCart = async () => {
+    const valueToSave = {
+      product_id,
+      product_Name,
+      images,
+      base_price,
+      category_id,
+      vaLueSelectSize,
+      description,
+      code
+    }
+    const stringifiedValue = JSON.stringify(valueToSave)
+
+    try {
+      Alert.alert('Add successfully')
+      await AsyncStorage.setItem('my-cart', stringifiedValue)
+        .then(() => console.log('Value stored successfully'))
+        .catch(error => console.error('Error saving value:', error))
+      setTimeout(() => {
+        props.navigation.navigate('BagPage')
+      }, 2000)
+      // console.log(stringifiedValue)
+    } catch (error) {
+      console.log('Lỗi rồi cu')
+    }
   }
 
   const snapPoints = ['30%', '60%']
@@ -57,12 +119,52 @@ const ProductWomen = props => {
       props.navigation.goBack()
     }
   }
-  const [selected, setSelected] = useState(DataSize)
+  const [thumbs, setthumbs] = useState([])
+  // console.log('>>>' + thumbs)
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const version = 2
+      const product_id = product_id
+      try {
+        const thumb = await getProducts({ version, product_id })
+        console.log('Fetched thumb:', thumb)
+        setthumbs(thumb)
+      } catch (error) {
+        console.error('Error:', error)
+        // Handle errors appropriately in your application
+      }
+    }
+    fetchData()
+  }, [])
+
+  const handelPresenProductId = async item => {
+    ;(async () => {
+      const version = 2
+      const product_id = product_id
+      try {
+        console.log('>>>>>>>>>' + JSON.stringify(item.attributes))
+        const thumb = await getProducts({ version, product_id })
+        // console.log('Fetched thumb:', thumb)
+        setattributes(JSON.stringify(item.attributes[0]))
+        setthumbs(thumb)
+        setSelected(JSON.stringify(item.attributes[0]))
+      } catch (error) {
+        console.error('Error:', error)
+        // Handle errors appropriately in your application
+      }
+    })()
+  }
+  // const filteredData = attributes.filter(item => item.key === 'Size')
+  const [selected, setSelected] = useState([])
+  const [vaLueSelectSize, setVaLueSelectSize] = useState()
+
+  // console.log(filteredData)
   const handleSelect = (item, index) => {
-    const newItem = selected.map((e, index) => {
-      if (e.id == item.id) {
-        console.log('selectItem: ', item.subject)
+    const newItem = attributes.map((e, index) => {
+      if (e._id == item._id) {
+        console.log('selectItem: ', item.value)
+        setVaLueSelectSize(item.value)
         return { ...e, selected: true }
       } else {
         return { ...e, selected: false }
@@ -70,6 +172,7 @@ const ProductWomen = props => {
     })
 
     setSelected(newItem)
+
     sheetRef.current.close()
   }
 
@@ -77,11 +180,7 @@ const ProductWomen = props => {
   const infoProduct = () => {
     return (
       <View style={{ marginHorizontal: 16 }}>
-        <MyText style={{ fontSize: 14 }}>
-          Áo sơ mi dáng vừa vải cotton Oxford có cổ áo cài khuy, nẹp khuy kiểu
-          truyền thống, cầu vai phía sau và một túi ngực mở. Tay dài với măng
-          sét cài khuy và nẹp tay áo có khuy nối. Vạt hơi tròn.
-        </MyText>
+        <MyText style={{ fontSize: 14 }}>{description}</MyText>
         <View style={{ flexDirection: 'row', marginTop: 8 }}>
           <MyText style={{ fontSize: 12, color: Colors.black }}>
             Mã số sản phẩm:
@@ -215,10 +314,16 @@ const ProductWomen = props => {
         >
           <View style={styles.container_header}>
             <TouchableOpacity onPress={() => handleOnBack()}>
-              <Icons.Ionicons name={'chevron-back-outline'} size={28} />
+              <Icons.Ionicons name={'chevron-back-outline'} size={24} />
             </TouchableOpacity>
-            <MyText>Short dress</MyText>
-            <Icons.Ionicons name={'share-social-sharp'} size={28} />
+            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16 }}>
+              {/* {product_Name} */}
+            </MyText>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('BagPage')}
+            >
+              <Icons.SimpleLineIcons name={'handbag'} size={24} />
+            </TouchableOpacity>
           </View>
           <ScrollView showsVerticalScrollIndicator={false}>
             <View
@@ -226,26 +331,60 @@ const ProductWomen = props => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginHorizontal: 8,
-                paddingHorizontal: 16,
-                paddingVertical: 24
+                marginVertical: 16
               }}
             >
               <MyText style={{ textAlign: 'center' }}>
-                Nam / Áo sơ mi / Dài tay /
+                {/* Nam / Áo sơ mi / Dài tay / */}
               </MyText>
               <MyText style={styles.txt_category_name}>
-                Short black dress
+                Giảm đền 50% cho hàng ngàn sản phẩm
               </MyText>
             </View>
 
             <View>
-              <Image
-                style={styles.product.image}
-                source={{
-                  uri: 'https://lp2.hm.com/hmgoepprod?set=source[/2f/d4/2fd49e1d4ed15f740a9874b59758e025921fee7b.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
-                }}
+              <FlatList
+                pagingEnabled
+                onScroll={this.change}
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                style={{ width: windowWith }}
+                data={images}
+                renderItem={({ item, index }) => (
+                  <Pressable>
+                    <Image
+                      resizeMode="cover"
+                      key={index}
+                      style={{ width: windowWith, height: 600 }}
+                      source={{ uri: item.url }}
+                    />
+                  </Pressable>
+                )}
               />
+
+              <View
+                style={{
+                  position: 'absolute',
+                  flexDirection: 'row',
+                  bottom: 4,
+                  alignSelf: 'center',
+                  elevation: 8,
+                  shadowColor: Colors.black
+                }}
+              >
+                {images.map((i, k) => (
+                  <Text
+                    key={k}
+                    style={
+                      k == activated
+                        ? { color: Colors.white, margin: 3 }
+                        : { color: Colors.gray, margin: 3 }
+                    }
+                  >
+                    ⬤
+                  </Text>
+                ))}
+              </View>
             </View>
             <TouchableOpacity
               style={styles.product.container_ic_add_favorite}
@@ -275,13 +414,13 @@ const ProductWomen = props => {
                   fontFamily={'Montserrat-SemiBold'}
                   style={styles.txt_price}
                 >
-                  Áo sơ mi Oxford Regular Fit
+                  {product_Name}
                 </MyText>
                 <MyText
                   // fontFamily={'Montserrat-Regular'}
                   style={styles.txt_price}
                 >
-                  đ499.000
+                  {base_price} VND
                 </MyText>
               </View>
 
@@ -291,13 +430,15 @@ const ProductWomen = props => {
                 <FlatList
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  data={DataImgeColors}
-                  keyExtractor={item => item.id}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity>
+                  data={thumbs}
+                  renderItem={({ item, index }) => (
+                    <TouchableOpacity
+                      onPress={() => handelPresenProductId(item)}
+                      style={{ marginHorizontal: 4 }}
+                    >
                       <Image
                         style={{ width: 57, height: 86 }}
-                        source={{ uri: item.image }}
+                        source={{ uri: item.images[0].url }}
                       />
                     </TouchableOpacity>
                   )}
@@ -417,49 +558,59 @@ const ProductWomen = props => {
               {/**
                * image product
                */}
-              <View style={{ marginHorizontal: 16 }}>
-                <Image
-                  style={{ width: '100%', height: 600 }}
-                  source={{
-                    uri: 'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Faa%2Ff2%2Faaf2b7e60e78bbd721c7726a30aaa8fec442b21e.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/fullscreen]'
-                  }}
-                />
+              <View>
+                {images[0] && (
+                  <Image
+                    style={{ width: '100%', height: 600 }}
+                    source={{
+                      uri: images[0].url
+                    }}
+                  />
+                )}
 
                 <View style={{ flexDirection: 'row', marginTop: 4 }}>
                   <Image
                     style={{ width: '100%', height: 300, flex: 1 }}
                     source={{
-                      uri: 'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F6b%2F76%2F6b76d7f1979b559b3e45c00f27cd1afa2519da22.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/fullscreen]'
+                      uri: images[1].url
                     }}
                   />
                   <View style={{ width: 4 }} />
-                  <Image
-                    style={{ width: '100%', height: 300, flex: 1 }}
-                    source={{
-                      uri: 'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F4b%2F13%2F4b130c86a2fd47f2e86bcf70a3b3745a444d8d3c.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/fullscreen]'
-                    }}
-                  />
+                  {images[3] && (
+                    <Image
+                      style={{ width: '100%', height: 300, flex: 1 }}
+                      source={{
+                        uri: images[3].url
+                      }}
+                    />
+                  )}
                 </View>
-                <Image
-                  style={{ width: '100%', height: 600, marginTop: 4 }}
-                  source={{
-                    uri: 'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F91%2F3a%2F913a28d48aa6c96e9ddc4f08fbb5bb31360362bb.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/fullscreen]'
-                  }}
-                />
+                {images[4] && (
+                  <Image
+                    style={{ width: '100%', height: 600, marginTop: 4 }}
+                    source={{
+                      uri: images[4].url
+                    }}
+                  />
+                )}
                 <View style={{ flexDirection: 'row', marginTop: 4 }}>
-                  <Image
-                    style={{ width: '100%', height: 300, flex: 1 }}
-                    source={{
-                      uri: 'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F2f%2Fd4%2F2fd49e1d4ed15f740a9874b59758e025921fee7b.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/fullscreen]'
-                    }}
-                  />
+                  {images[2] && (
+                    <Image
+                      style={{ width: '100%', height: 300, flex: 1 }}
+                      source={{
+                        uri: images[2].url
+                      }}
+                    />
+                  )}
                   <View style={{ width: 4 }} />
-                  <Image
-                    style={{ width: '100%', height: 300, flex: 1 }}
-                    source={{
-                      uri: 'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Ffa%2F89%2Ffa89efa371a8fce072f4431fe8fc4028544225f4.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVEDETAIL%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/fullscreen]'
-                    }}
-                  />
+                  {images[3] && (
+                    <Image
+                      style={{ width: '100%', height: 300, flex: 1 }}
+                      source={{
+                        uri: images[3].url
+                      }}
+                    />
+                  )}
                 </View>
               </View>
               <View style={{ marginHorizontal: 16, marginTop: 16 }}>
@@ -503,7 +654,7 @@ const ProductWomen = props => {
                 fontFamily={'Montserrat-SemiBold'}
                 style={{ textAlign: 'center', left: 8, fontWeight: '500' }}
               >
-                Kích cỡ
+                {vaLueSelectSize ? vaLueSelectSize : <Text>Kích cỡ</Text>}
               </MyText>
 
               <Icons.Entypo
@@ -513,7 +664,10 @@ const ProductWomen = props => {
               />
             </TouchableOpacity>
             <View style={{ width: 10 }} />
-            <TouchableOpacity style={styles.add_to_cart.btn_container}>
+            <TouchableOpacity
+              style={styles.add_to_cart.btn_container}
+              onPress={() => handleAddToCart()}
+            >
               <Icons.SimpleLineIcons
                 name={'handbag'}
                 size={16}
@@ -523,7 +677,7 @@ const ProductWomen = props => {
                 fontFamily={'Montserrat-SemiBold'}
                 style={styles.txt_addToCart}
               >
-                Thêm vào giỏ hàng
+                Thêm
               </MyText>
             </TouchableOpacity>
           </View>
@@ -558,7 +712,6 @@ const ProductWomen = props => {
                 style={{ marginVertical: 22 }}
                 data={selected}
                 numColumns={3}
-                keyExtractor={item => item.id}
                 renderItem={({ item, index }) => {
                   return (
                     <TouchableOpacity
@@ -591,7 +744,7 @@ const ProductWomen = props => {
                             lineHeight: 20
                           }}
                         >
-                          {item.subject}
+                          {item.value}
                         </MyText>
                       </View>
                     </TouchableOpacity>
@@ -706,7 +859,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.red,
     fontWeight: '500',
-
     textAlign: 'center'
   },
   txt_review: {
@@ -731,8 +883,8 @@ const styles = StyleSheet.create({
     height: 24
   },
   container_header: {
-    padding: 8,
-    marginTop: 44,
+    padding: 16,
+    marginTop: 24,
     backgroundColor: Colors.grayBg,
     width: '100%',
     justifyContent: 'space-between',

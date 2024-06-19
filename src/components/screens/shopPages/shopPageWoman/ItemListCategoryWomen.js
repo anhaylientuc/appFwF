@@ -9,15 +9,15 @@ import {
   Image,
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View
 } from 'react-native'
 
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import { DataItemCategoryWomen } from 'src/constants/Databases'
 import MyText from 'src/constants/FontsStyle'
-import { getCategoryById } from 'src/utils/http/NewHTTP'
+import { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
 
 const ItemCategoryWomen = props => {
   const {
@@ -26,15 +26,21 @@ const ItemCategoryWomen = props => {
       params: { categoryById, categoryNameById }
     }
   } = props
-
+  console.log(categoryById)
   const [categoriesById, setCategoriesById] = useState([])
+  const [products, setproducts] = useState([])
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getCategoryById(categoryById)
-        setCategoriesById(response.child)
-
-        // console.log(response.child)
+        const { _id, name, parentID, image } = response
+        const arr = response.child
+        setCategoriesById([
+          { _id: _id, name: name, parentID: parentID, image: image },
+          ...arr
+        ])
+        setproducts(products)
       } catch (error) {
         console.log(error)
         throw error
@@ -43,7 +49,6 @@ const ItemCategoryWomen = props => {
     fetchData()
   }, [])
 
-  console.log(categoryNameById)
   const [isOpen, setIsOpen] = useState(false)
   const snapPoints = ['50%', '60%']
 
@@ -107,10 +112,71 @@ const ItemCategoryWomen = props => {
     BottomSheetRef.current.close()
     setBottomBar()
   }
+  const handlePressedCategoryId = async _id => {
+    // if (_id == categoryById) {
+    //   const response = await getCategoryById(_id)
+    //   const children = response.child
+    //   children.map(async (item, index) => {
+    //     const category_id = item._id
+    //     const responses = await getProducts(category_id)
+    //     if (responses != null) {
+    //       console.log(responses)
+    //     }
+    //     setproducts([...products, responses])
+    //   })
 
+    //   // const newProducts = await Promise.all(promises)
+    // }
+    ;(async () => {
+      const version = 2
+      const category_id = _id
+      try {
+        const products = await getProducts({ version, category_id })
+        console.log('Fetched products:', products)
+        setproducts(products)
+      } catch (error) {
+        console.error('Error:', error)
+        // Handle errors appropriately in your application
+      }
+    })()
+  }
+  const renderListCategoryById = ({ item }) => {
+    const { _id, name } = item
+    return (
+      <View>
+        <TouchableOpacity
+          onPress={() => handlePressedCategoryId(_id)}
+          style={{
+            backgroundColor: Colors.black,
+            marginStart: 16,
+            borderRadius: 29,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            justifyContent: 'center'
+          }}
+        >
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
+            style={{ color: Colors.white, textAlign: 'center' }}
+          >
+            {name}
+          </MyText>
+        </TouchableOpacity>
+      </View>
+    )
+  }
   // if numColumns = null  => render
   const renderItemColumTo = ({ item }) => {
-    const { _id, category_name, product_name, price, review, image } = item
+    const {
+      _id,
+      name,
+      images,
+      base_price,
+      discount_price,
+      category_id,
+      attributes,
+      description
+    } = item
     return (
       <View
         style={[
@@ -121,19 +187,19 @@ const ItemCategoryWomen = props => {
         <View>
           <Image
             style={styles.renderItemColumTo.image}
-            source={{ uri: image }}
+            source={{ uri: images[2].url }}
           />
           <View
             style={{
               backgroundColor: Colors.white,
-              width: 48,
-              height: 48,
+              width: 40,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center',
               position: 'absolute',
               borderRadius: 36,
               bottom: 1,
-              top: 160,
+              top: 164,
               elevation: 4,
               shadowColor: '#52006A',
               right: 0
@@ -149,7 +215,13 @@ const ItemCategoryWomen = props => {
             />
           </View>
         </View>
-        <View style={{ marginStart: 4 }}>
+        <View
+          style={{
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            paddingHorizontal: 16
+          }}
+        >
           <View
             style={{ flexDirection: 'row', alignItems: 'center', marginTop: 7 }}
           >
@@ -181,29 +253,52 @@ const ItemCategoryWomen = props => {
                 fontStyle: 'normal'
               }}
             >
-              ( {review})
+              {/* ( {review}) */}
             </MyText>
           </View>
           <MyText style={styles.renderItemColumTo.txt_category_name}>
-            {category_name}
+            {/* {category_name} */}
           </MyText>
           <MyText
+            numColumns={1}
             fontFamily={'Montserrat-SemiBold'}
             style={styles.renderItemColumTo.txt_product_name}
           >
-            {product_name}
+            {name}
           </MyText>
-          <MyText style={styles.renderItemColumTo.txt_price}>{price}$</MyText>
+          <MyText style={styles.renderItemColumTo.txt_price}>
+            {base_price} VND
+          </MyText>
         </View>
       </View>
     )
   }
-
+  const [activated, setActivated] = useState(0)
+  change = ({ nativeEvent }) => {
+    const slide = Math.ceil(
+      nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width
+    )
+    if (slide != activated) {
+      setActivated(slide)
+    }
+  }
   // if numColums = 2 => render
   const renderItemColumOne = ({ item }) => {
-    const { _id, category_name, name, price, review, image } = item
+    const {
+      _id,
+      name,
+      images,
+      base_price,
+      code,
+      discount_price,
+      category_id,
+      attributes,
+      product_id,
+      description
+    } = item
+
     return (
-      <View style={{ marginBottom: 26 }}>
+      <View style={{ marginBottom: 16 }}>
         <View style={styles.renderItemColumOne.container}>
           <View
             style={{
@@ -233,33 +328,78 @@ const ItemCategoryWomen = props => {
             </TouchableOpacity>
           </View>
           <View style={{ flexDirection: 'row', height: 124 }}>
+            <View>
+              <ScrollView
+                pagingEnabled
+                onScroll={this.change}
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                style={{ width: 124 }}
+              >
+                {images.map(
+                  (image, index) => (
+                    console.log(image.url),
+                    (
+                      <Image
+                        resizeMode="cover"
+                        key={index}
+                        style={{ width: 124 }}
+                        source={{ uri: image.url }}
+                      />
+                    )
+                  )
+                )}
+              </ScrollView>
+              <View
+                style={{
+                  position: 'absolute',
+                  flexDirection: 'row',
+                  bottom: 4,
+                  alignSelf: 'center',
+                  elevation: 8,
+                  shadowColor: Colors.black
+                }}
+              >
+                {images.map((i, k) => (
+                  <Text
+                    key={k}
+                    style={
+                      k == activated
+                        ? { color: Colors.white, margin: 3 }
+                        : { color: Colors.gray, margin: 3 }
+                    }
+                  >
+                    ⬤
+                  </Text>
+                ))}
+              </View>
+            </View>
+
             <TouchableOpacity
-              style={styles.renderItemColumOne.image}
+              style={{ flex: 2, marginStart: 16 }}
               onPress={() =>
-                props.navigation.navigate('ProductWomen', { productId: _id })
+                props.navigation.navigate('ProductWomen', {
+                  _id: _id,
+                  product_id: product_id,
+                  product_Name: name,
+                  images: images,
+                  base_price: base_price,
+                  category_id: category_id,
+                  attributes: attributes,
+                  description: description,
+                  code: code
+                })
               }
             >
-              <Image
-                style={styles.renderItemColumOne.image}
-                source={{ uri: image }}
-              />
-            </TouchableOpacity>
-
-            <TouchableOpacity>
-              <Image
-                style={styles.renderItemColumOne.image}
-                source={{ uri: image }}
-              />
-            </TouchableOpacity>
-            <View style={{ flex: 2, marginStart: 16 }}>
               <MyText
+                numColumns={1}
                 fontFamily={'Montserrat-SemiBold'}
                 style={styles.renderItemColumOne.txt_product_name}
               >
                 {name}
               </MyText>
               <MyText style={styles.renderItemColumOne.txt_category_name}>
-                {category_name}
+                {code}
               </MyText>
               <View
                 style={{
@@ -296,13 +436,14 @@ const ItemCategoryWomen = props => {
                     fontStyle: 'normal'
                   }}
                 >
-                  ( {review})
+                  {/* ( {review}) */}
                 </MyText>
               </View>
+
               <MyText style={styles.renderItemColumOne.txt_price}>
-                {price}$
+                {base_price} VND
               </MyText>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -335,27 +476,27 @@ const ItemCategoryWomen = props => {
             >
               <Icons.Ionicons name={'chevron-back'} size={24} />
             </TouchableOpacity>
-            <MyText style={styles.txt_title}>{categoryNameById}</MyText>
+            <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_title}>
+              {categoryNameById}
+            </MyText>
 
             <Icons.Ionicons name={'search'} size={24} />
           </View>
 
           <View>
-            <TouchableOpacity
-              style={{
-                backgroundColor: Colors.black,
-                marginStart: 16,
-                borderRadius: 29,
-                height: 30,
-                width: 100,
+            {
+              // render list Category
+            }
+            <View>
+              {/* <Text>{categoryNameById}</Text> */}
+              <FlatList
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                renderItem={renderListCategoryById}
+                data={categoriesById}
+              />
+            </View>
 
-                justifyContent: 'center'
-              }}
-            >
-              <MyText style={{ color: Colors.white, textAlign: 'center' }}>
-                T-shirts
-              </MyText>
-            </TouchableOpacity>
             <View
               style={{
                 flexDirection: 'row',
@@ -409,9 +550,8 @@ const ItemCategoryWomen = props => {
             numColumns={numColumns}
             key={numColumns}
             showsVerticalScrollIndicator={false} // thanh cuộn
-            data={categoriesById}
+            data={products}
             renderItem={numColumns ? renderItemColumTo : renderItemColumOne}
-            
           />
         </ScrollView>
         <View>
@@ -495,7 +635,8 @@ const styles = StyleSheet.create({
     image: {
       width: '100%',
       height: 184,
-      borderRadius: 8
+      borderTopRightRadius: 8,
+      borderTopLeftRadius: 8
     },
     txt_product_name: {
       fontSize: 16,
@@ -535,8 +676,8 @@ const styles = StyleSheet.create({
     },
     image: {
       flex: 1,
-      height: '100%',
-      width: '100%',
+      height: 104,
+      width: 104,
       borderTopLeftRadius: 8,
       borderBottomLeftRadius: 8
     },
