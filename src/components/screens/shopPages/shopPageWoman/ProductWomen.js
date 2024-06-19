@@ -43,8 +43,6 @@ const ProductWomen = props => {
     }
   } = props
 
-  const [attributes, setattributes] = useState([])
-
   const sheetRef = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
   useEffect(() => {
@@ -120,7 +118,6 @@ const ProductWomen = props => {
     }
   }
   const [thumbs, setthumbs] = useState([])
-  // console.log('>>>' + thumbs)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,7 +125,7 @@ const ProductWomen = props => {
       const product_id = product_id
       try {
         const thumb = await getProducts({ version, product_id })
-        console.log('Fetched thumb:', thumb)
+        // console.log('Fetched thumb:', thumb)
         setthumbs(thumb)
       } catch (error) {
         console.error('Error:', error)
@@ -138,17 +135,16 @@ const ProductWomen = props => {
     fetchData()
   }, [])
 
-  const handelPresenProductId = async item => {
+  const [selected, setSelected] = useState()
+  console.log('Lồn mẹ nó ' + selected)
+
+  const [vaLueSelectSize, setVaLueSelectSize] = useState()
+  const handelPresenProductId = item => {
     ;(async () => {
-      const version = 2
-      const product_id = product_id
       try {
-        console.log('>>>>>>>>>' + JSON.stringify(item.attributes))
-        const thumb = await getProducts({ version, product_id })
-        // console.log('Fetched thumb:', thumb)
-        setattributes(JSON.stringify(item.attributes[0]))
-        setthumbs(thumb)
-        setSelected(JSON.stringify(item.attributes[0]))
+        const filteredData = item.attributes.filter(item => item.key === 'Size')
+        console.log('>>>>>>>>>', ...filteredData)
+        await setSelected(filteredData)
       } catch (error) {
         console.error('Error:', error)
         // Handle errors appropriately in your application
@@ -156,24 +152,21 @@ const ProductWomen = props => {
     })()
   }
   // const filteredData = attributes.filter(item => item.key === 'Size')
-  const [selected, setSelected] = useState([])
-  const [vaLueSelectSize, setVaLueSelectSize] = useState()
 
   // console.log(filteredData)
   const handleSelect = (item, index) => {
-    const newItem = attributes.map((e, index) => {
-      if (e._id == item._id) {
-        console.log('selectItem: ', item.value)
-        setVaLueSelectSize(item.value)
-        return { ...e, selected: true }
-      } else {
-        return { ...e, selected: false }
-      }
-    })
+    // Update selected items efficiently
+    const updatedSelected = selected.map(selectedItem => ({
+      ...selectedItem, // Preserve existing properties
+      selected: selectedItem._id === item._id ? true : false // Toggle selection based on ID
+    }))
 
-    setSelected(newItem)
+    // Update state and value
+    setSelected(updatedSelected)
+    setVaLueSelectSize(item.value) // Assuming this sets the size value
 
-    sheetRef.current.close()
+    // Close the sheet if desired
+    sheetRef.current?.close() // Use optional chaining to handle potential null reference
   }
 
   const [isInfoProduct, setIsInfoProduct] = useState(false)
