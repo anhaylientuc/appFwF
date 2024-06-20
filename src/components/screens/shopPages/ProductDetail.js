@@ -1,11 +1,9 @@
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider
-} from '@gorhom/bottom-sheet'
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useRef, useState } from 'react'
 import {
   Alert,
+  Animated,
   Dimensions,
   FlatList,
   Image,
@@ -22,32 +20,78 @@ import Colors from 'src/constants/Colors'
 import { DaTaSale } from 'src/constants/Databases'
 import MyText from 'src/constants/FontsStyle'
 import { getProducts } from 'src/utils/http/NewHTTP'
-import ItemListNew from '../../homePages/ItemListNews'
+import ItemListNew from '../homePages/ItemListNews'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 const ProductWomen = props => {
   const {
     navigation,
     route: {
-      params: {
-        _id,
-        product_id,
-        product_Name,
-        images,
-        base_price,
-        category_id,
-
-        description,
-        code
-      }
+      params: { _id, base_price, product_id, product_Name, images, category_id, description, code }
     }
   } = props
 
+  const width = Dimensions.get('window').width
+
+  const scrollX = new Animated.Value(0)
+
+  let position = Animated.divide(scrollX, width)
+
+  const [product, setProduct] = useState({})
+
   const sheetRef = useRef(null)
+  const [activated, setActivated] = useState(0)
   const [isOpen, setIsOpen] = useState(false)
+  const [thumbs, setthumbs] = useState([])
+  const [selected, setSelected] = useState()
+  const [wallPaper, setwallPaper] = useState([])
+  const [selectedId, setselectedId] = useState(null)
+  const [selectedName, setselectedName] = useState(null)
+  const [vaLueSelectSize, setVaLueSelectSize] = useState()
+  const [isInfoProduct, setIsInfoProduct] = useState(false)
+  // console.log('>>>' + selectedName)
+  // Mở Modal
+
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    const fetchData = async () => {
+      const version = 2
+      const product_id = props.route.params.product_id
+      const name_filter = props.route.params.attributes.filter(params => params.key === 'Color')
+      const size = props.route.params.attributes.filter(params => params.key === 'Size')
+      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+      try {
+        const thumb = await getProducts({ version, product_id })
+
+        setthumbs(thumb)
+        setwallPaper(props.route.params.images)
+        setselectedId(props.route.params._id)
+        setSelected(size)
+        setselectedName(name_filter[0].value)
+      } catch (error) {
+        console.error('Error:', error)
+        // Handle errors appropriately in your application
+      }
+    }
+    fetchData()
   }, [])
+
+  const handelPresenProductId = item => {
+    ;(async () => {
+      try {
+        const filteredData = item.attributes.filter(item => item.key === 'Size')
+        const filteredImages = item.images
+        const filterName = item.attributes.filter(item => item.key === 'Color')
+        setselectedId(item._id)
+        setSelected(filteredData)
+        setwallPaper(filteredImages)
+        setselectedName(filterName[0].value)
+      } catch (error) {
+        console.error('Error:', error)
+        // Handle errors appropriately in your application
+      }
+    })()
+  }
+
   const handlePresentModal = () => {
     sheetRef.current?.present()
     setTimeout(() => {
@@ -55,11 +99,24 @@ const ProductWomen = props => {
     }, 300)
   }
 
-  const [activated, setActivated] = useState(0)
+  // format base_price
+  function formatCurrency(amount, options = {}) {
+    const { currency = 'VND', locale = 'vi-VN' } = options
+
+    const formatter = new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currency
+    })
+    return formatter.format(amount)
+  }
+
+  // Example usage
+  const amount = base_price
+  const formattedCurrency = formatCurrency(amount)
+  // Output: 499.000,00 VND
+
   change = ({ nativeEvent }) => {
-    const slide = Math.ceil(
-      nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width
-    )
+    const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width)
     if (slide != activated) {
       setActivated(slide)
     }
@@ -117,43 +174,7 @@ const ProductWomen = props => {
       props.navigation.goBack()
     }
   }
-  const [thumbs, setthumbs] = useState([])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const version = 2
-      const product_id = product_id
-      try {
-        const thumb = await getProducts({ version, product_id })
-        // console.log('Fetched thumb:', thumb)
-        setthumbs(thumb)
-      } catch (error) {
-        console.error('Error:', error)
-        // Handle errors appropriately in your application
-      }
-    }
-    fetchData()
-  }, [])
-
-  const [selected, setSelected] = useState()
-  console.log('Lồn mẹ nó ' + selected)
-
-  const [vaLueSelectSize, setVaLueSelectSize] = useState()
-  const handelPresenProductId = item => {
-    ;(async () => {
-      try {
-        const filteredData = item.attributes.filter(item => item.key === 'Size')
-        console.log('>>>>>>>>>', ...filteredData)
-        await setSelected(filteredData)
-      } catch (error) {
-        console.error('Error:', error)
-        // Handle errors appropriately in your application
-      }
-    })()
-  }
-  // const filteredData = attributes.filter(item => item.key === 'Size')
-
-  // console.log(filteredData)
   const handleSelect = (item, index) => {
     // Update selected items efficiently
     const updatedSelected = selected.map(selectedItem => ({
@@ -169,15 +190,12 @@ const ProductWomen = props => {
     sheetRef.current?.close() // Use optional chaining to handle potential null reference
   }
 
-  const [isInfoProduct, setIsInfoProduct] = useState(false)
   const infoProduct = () => {
     return (
       <View style={{ marginHorizontal: 16 }}>
         <MyText style={{ fontSize: 14 }}>{description}</MyText>
         <View style={{ flexDirection: 'row', marginTop: 8 }}>
-          <MyText style={{ fontSize: 12, color: Colors.black }}>
-            Mã số sản phẩm:
-          </MyText>
+          <MyText style={{ fontSize: 12, color: Colors.black }}>Mã số sản phẩm:</MyText>
           <Text style={{ fontSize: 12, color: Colors.black }}>1012</Text>
         </View>
         <View style={{ marginTop: 16 }}>
@@ -189,8 +207,7 @@ const ProductWomen = props => {
           </MyText>
 
           <MyText style={{ fontSize: 14 }}>
-            Tay áo: Chiều dài: 66.5 cm (Kích cỡ L/L), Mặt sau: Chiều dài: 79.0
-            cm (Kích cỡ L/L)
+            Tay áo: Chiều dài: 66.5 cm (Kích cỡ L/L), Mặt sau: Chiều dài: 79.0 cm (Kích cỡ L/L)
           </MyText>
           <View style={{ flexDirection: 'row', marginTop: 4 }}>
             <MyText
@@ -247,9 +264,9 @@ const ProductWomen = props => {
     return (
       <View style={{ marginHorizontal: 16 }}>
         <MyText style={{ fontSize: 14 }}>
-          Bạn cũng có thể giúp bảo vệ môi trường cho một tương lai thời trang
-          bền vững hơn. Hãy mang đem bao quần áo cũ / hàng dệt may bất kỳ không
-          sử dụng nữa đến các cửa hàng H&amp;M tham gia tái chế thời trang.
+          Bạn cũng có thể giúp bảo vệ môi trường cho một tương lai thời trang bền vững hơn. Hãy mang
+          đem bao quần áo cũ / hàng dệt may bất kỳ không sử dụng nữa đến các cửa hàng H&amp;M tham
+          gia tái chế thời trang.
         </MyText>
         {/* <MyText
           style={{
@@ -312,9 +329,7 @@ const ProductWomen = props => {
             <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16 }}>
               {/* {product_Name} */}
             </MyText>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('BagPage')}
-            >
+            <TouchableOpacity onPress={() => props.navigation.navigate('BagPage')}>
               <Icons.SimpleLineIcons name={'handbag'} size={24} />
             </TouchableOpacity>
           </View>
@@ -327,12 +342,8 @@ const ProductWomen = props => {
                 marginVertical: 16
               }}
             >
-              <MyText style={{ textAlign: 'center' }}>
-                {/* Nam / Áo sơ mi / Dài tay / */}
-              </MyText>
-              <MyText style={styles.txt_category_name}>
-                Giảm đền 50% cho hàng ngàn sản phẩm
-              </MyText>
+              <MyText style={{ textAlign: 'center' }}>{/* Nam / Áo sơ mi / Dài tay / */}</MyText>
+              <MyText style={styles.txt_category_name}>Giảm đền 50% cho hàng ngàn sản phẩm</MyText>
             </View>
 
             <View>
@@ -342,7 +353,7 @@ const ProductWomen = props => {
                 showsHorizontalScrollIndicator={false}
                 horizontal
                 style={{ width: windowWith }}
-                data={images}
+                data={wallPaper}
                 renderItem={({ item, index }) => (
                   <Pressable>
                     <Image
@@ -393,9 +404,7 @@ const ProductWomen = props => {
               />
             </TouchableOpacity>
 
-            <View
-              style={{ marginTop: 22, marginHorizontal: 16, marginBottom: 10 }}
-            >
+            <View style={{ marginTop: 22, marginHorizontal: 16, marginBottom: 10 }}>
               <View
                 style={{
                   justifyContent: 'space-between',
@@ -403,22 +412,19 @@ const ProductWomen = props => {
                   alignItems: 'center'
                 }}
               >
-                <MyText
-                  fontFamily={'Montserrat-SemiBold'}
-                  style={styles.txt_price}
-                >
+                <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_price}>
                   {product_Name}
                 </MyText>
                 <MyText
                   // fontFamily={'Montserrat-Regular'}
                   style={styles.txt_price}
                 >
-                  {base_price} VND
+                  {formattedCurrency}
                 </MyText>
               </View>
 
               <View style={styles.product.wrapper_container_size_color}>
-                <MyText style={styles.product.txt_size}>Màu be</MyText>
+                <MyText style={styles.product.txt_size}>{selectedName}</MyText>
 
                 <FlatList
                   horizontal
@@ -430,7 +436,16 @@ const ProductWomen = props => {
                       style={{ marginHorizontal: 4 }}
                     >
                       <Image
-                        style={{ width: 57, height: 86 }}
+                        style={
+                          selectedId === item._id
+                            ? {
+                                width: 57,
+                                height: 86,
+                                borderColor: Colors.black,
+                                borderWidth: 1.5
+                              }
+                            : { width: 57, height: 86 }
+                        }
                         source={{ uri: item.images[0].url }}
                       />
                     </TouchableOpacity>
@@ -438,19 +453,14 @@ const ProductWomen = props => {
                 />
               </View>
 
-              <View
-                style={{ flexDirection: 'row', marginEnd: 20, marginTop: 16 }}
-              >
+              <View style={{ flexDirection: 'row', marginEnd: 20, marginTop: 16 }}>
                 <Icons.FontAwesome5 name={'shopify'} size={16} />
-                <MyText
-                  style={{ fontSize: 14, fontWeight: 500, marginStart: 8 }}
-                >
-                  Giá sản phẩm đã bao gồm VAT, không bao gồm phí giao hàng. Thời
-                  gian giao hàng dự kiến 3-7 ngày làm việc. Mọi thắc mắc vui
-                  lòng xem thêm tại trang Dịch vụ khách hàng. Tất cả hàng hóa
-                  trên website này đều do Công ty TNHH H&amp;M Hennes
-                  &amp;Mauritz Việt Nam (trụ sở 235 Đồng Khởi, Bến Nghé, Quận 1,
-                  TPHCM) chịu trách nhiệm.
+                <MyText style={{ fontSize: 14, fontWeight: 500, marginStart: 8 }}>
+                  Giá sản phẩm đã bao gồm VAT, không bao gồm phí giao hàng. Thời gian giao hàng dự
+                  kiến 3-7 ngày làm việc. Mọi thắc mắc vui lòng xem thêm tại trang Dịch vụ khách
+                  hàng. Tất cả hàng hóa trên website này đều do Công ty TNHH H&amp;M Hennes
+                  &amp;Mauritz Việt Nam (trụ sở 235 Đồng Khởi, Bến Nghé, Quận 1, TPHCM) chịu trách
+                  nhiệm.
                 </MyText>
               </View>
               <TouchableOpacity
@@ -492,16 +502,12 @@ const ProductWomen = props => {
                 <MyText
                   fontFamily={'Montserrat-SemiBold'}
                   style={
-                    !isInfoProduct
-                      ? styles.txt_shipping_info
-                      : styles.txt_shipping_info_active
+                    !isInfoProduct ? styles.txt_shipping_info : styles.txt_shipping_info_active
                   }
                 >
                   Mô tả & độ vừa vặn
                 </MyText>
-                <TouchableOpacity
-                  onPress={() => setIsInfoProduct(!isInfoProduct)}
-                >
+                <TouchableOpacity onPress={() => setIsInfoProduct(!isInfoProduct)}>
                   <Icons.AntDesign
                     name={!isInfoProduct ? 'down' : 'up'}
                     size={16}
@@ -528,16 +534,12 @@ const ProductWomen = props => {
                 <MyText
                   fontFamily={'Montserrat-SemiBold'}
                   style={
-                    !isProductCare
-                      ? styles.txt_shipping_info
-                      : styles.txt_shipping_info_active
+                    !isProductCare ? styles.txt_shipping_info : styles.txt_shipping_info_active
                   }
                 >
                   Hướng dẫn chăm sóc sản phẩm
                 </MyText>
-                <TouchableOpacity
-                  onPress={() => setIsProductCare(!isProductCare)}
-                >
+                <TouchableOpacity onPress={() => setIsProductCare(!isProductCare)}>
                   <Icons.AntDesign
                     name={!isProductCare ? 'down' : 'up'}
                     size={16}
@@ -552,60 +554,90 @@ const ProductWomen = props => {
                * image product
                */}
               <View>
-                {images[0] && (
+                {wallPaper[0] && (
                   <Image
                     style={{ width: '100%', height: 600 }}
                     source={{
-                      uri: images[0].url
+                      uri: wallPaper[0].url
                     }}
                   />
                 )}
 
                 <View style={{ flexDirection: 'row', marginTop: 4 }}>
-                  <Image
-                    style={{ width: '100%', height: 300, flex: 1 }}
-                    source={{
-                      uri: images[1].url
-                    }}
-                  />
-                  <View style={{ width: 4 }} />
-                  {images[3] && (
+                  {wallPaper[1] && (
                     <Image
                       style={{ width: '100%', height: 300, flex: 1 }}
                       source={{
-                        uri: images[3].url
+                        uri: wallPaper[1].url
+                      }}
+                    />
+                  )}
+                  <View style={{ width: 4 }} />
+                  {wallPaper[2] && (
+                    <Image
+                      style={{ width: '100%', height: 300, flex: 1 }}
+                      source={{
+                        uri: wallPaper[2].url
                       }}
                     />
                   )}
                 </View>
-                {images[4] && (
+                {wallPaper[3] && (
                   <Image
                     style={{ width: '100%', height: 600, marginTop: 4 }}
                     source={{
-                      uri: images[4].url
+                      uri: wallPaper[3].url
                     }}
                   />
                 )}
                 <View style={{ flexDirection: 'row', marginTop: 4 }}>
-                  {images[2] && (
+                  {wallPaper[4] && (
                     <Image
                       style={{ width: '100%', height: 300, flex: 1 }}
                       source={{
-                        uri: images[2].url
+                        uri: wallPaper[4].url
                       }}
                     />
                   )}
                   <View style={{ width: 4 }} />
-                  {images[3] && (
+                  {wallPaper[5] && (
                     <Image
                       style={{ width: '100%', height: 300, flex: 1 }}
                       source={{
-                        uri: images[3].url
+                        uri: wallPaper[5].url
+                      }}
+                    />
+                  )}
+                </View>
+                {wallPaper[6] && (
+                  <Image
+                    style={{ width: '100%', height: 600, marginTop: 4 }}
+                    source={{
+                      uri: wallPaper[6].url
+                    }}
+                  />
+                )}
+                <View style={{ flexDirection: 'row', marginTop: 4 }}>
+                  {wallPaper[7] && (
+                    <Image
+                      style={{ width: '100%', height: 300, flex: 1 }}
+                      source={{
+                        uri: wallPaper[7].url
+                      }}
+                    />
+                  )}
+                  <View style={{ width: 4 }} />
+                  {wallPaper[8] && (
+                    <Image
+                      style={{ width: '100%', height: 300, flex: 1 }}
+                      source={{
+                        uri: wallPaper[8].url
                       }}
                     />
                   )}
                 </View>
               </View>
+
               <View style={{ marginHorizontal: 16, marginTop: 16 }}>
                 <View
                   style={{
@@ -643,33 +675,19 @@ const ProductWomen = props => {
               style={styles.product.container_txt_size}
               onPress={() => handlePresentModal()}
             >
-              <MyText
-                fontFamily={'Montserrat-SemiBold'}
-                style={{ textAlign: 'center', left: 8, fontWeight: '500' }}
-              >
+              <MyText fontFamily={'Montserrat-SemiBold'} style={{ left: 8, fontWeight: '500' }}>
                 {vaLueSelectSize ? vaLueSelectSize : <Text>Kích cỡ</Text>}
               </MyText>
 
-              <Icons.Entypo
-                name={'chevron-small-down'}
-                size={20}
-                style={{ right: 8 }}
-              />
+              <Icons.Entypo name={'chevron-small-down'} size={20} style={{ right: 8 }} />
             </TouchableOpacity>
             <View style={{ width: 10 }} />
             <TouchableOpacity
               style={styles.add_to_cart.btn_container}
               onPress={() => handleAddToCart()}
             >
-              <Icons.SimpleLineIcons
-                name={'handbag'}
-                size={16}
-                color={Colors.white}
-              />
-              <MyText
-                fontFamily={'Montserrat-SemiBold'}
-                style={styles.txt_addToCart}
-              >
+              <Icons.SimpleLineIcons name={'handbag'} size={16} color={Colors.white} />
+              <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_addToCart}>
                 Thêm
               </MyText>
             </TouchableOpacity>
@@ -886,33 +904,6 @@ const styles = StyleSheet.create({
   }
 })
 
-const DataSize = [
-  {
-    id: 1,
-    subject: 'XS',
-    selected: false
-  },
-  {
-    id: 2,
-    subject: 'S',
-    selected: false
-  },
-  {
-    id: 3,
-    subject: 'M',
-    selected: false
-  },
-  {
-    id: 4,
-    subject: 'L',
-    selected: false
-  },
-  {
-    id: 5,
-    subject: 'XL',
-    selected: false
-  }
-]
 const DataImgeColors = [
   {
     id: 1,

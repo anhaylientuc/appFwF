@@ -1,7 +1,4 @@
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider
-} from '@gorhom/bottom-sheet'
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import * as ImagePicker from 'expo-image-picker'
 import { LinearGradient } from 'expo-linear-gradient'
 import React, { useRef, useState } from 'react'
@@ -69,15 +66,9 @@ const ReviewProduct = props => {
     return (
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity onPress={showModelImageRv}>
-          <Image
-            style={styles.imgRv}
-            source={require('@assets/images/imgRv1.png')}
-          />
+          <Image style={styles.imgRv} source={require('@assets/images/imgRv1.png')} />
         </TouchableOpacity>
-        <Image
-          style={styles.imgRv}
-          source={require('@assets/images/imgRv2.png')}
-        />
+        <Image style={styles.imgRv} source={require('@assets/images/imgRv2.png')} />
       </View>
     )
   }
@@ -108,10 +99,7 @@ const ReviewProduct = props => {
   return (
     <BottomSheetModalProvider>
       <KeyboardAvoidingView
-        style={[
-          styles.wrapper,
-          { backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.grayBg }
-        ]}
+        style={[styles.wrapper, { backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.grayBg }]}
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -147,9 +135,7 @@ const ReviewProduct = props => {
               >
                 4.3
               </MyText>
-              <MyText
-                style={{ fontSize: 14, fontWeight: '400', color: Colors.gray }}
-              >
+              <MyText style={{ fontSize: 14, fontWeight: '400', color: Colors.gray }}>
                 Hạng 23
               </MyText>
             </View>
@@ -169,27 +155,12 @@ const ReviewProduct = props => {
                     gap: 1
                   }}
                 >
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
 
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
                 </View>
                 <View
                   style={{
@@ -218,23 +189,11 @@ const ReviewProduct = props => {
                   }}
                 >
                   <View style={styles.ic} />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
 
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
                 </View>
                 <View
                   style={{
@@ -265,18 +224,9 @@ const ReviewProduct = props => {
                   <View style={styles.ic} />
                   <View style={styles.ic} />
 
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
                 </View>
                 <View
                   style={{
@@ -308,14 +258,8 @@ const ReviewProduct = props => {
                   <View style={styles.ic} />
                   <View style={styles.ic} />
 
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
                 </View>
                 <View
                   style={{
@@ -347,10 +291,7 @@ const ReviewProduct = props => {
                   <View style={styles.ic} />
                   <View style={styles.ic} />
                   <View style={styles.ic} />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
                 </View>
                 <View
                   style={{
@@ -390,16 +331,12 @@ const ReviewProduct = props => {
             >
               <TouchableOpacity onPress={() => setIsShowImage(!isShowImage)}>
                 <Icons.MaterialCommunityIcons
-                  name={
-                    !isShowImage ? 'checkbox-blank-outline' : 'checkbox-marked'
-                  }
+                  name={!isShowImage ? 'checkbox-blank-outline' : 'checkbox-marked'}
                   size={24}
                   color={!isShowImage ? Colors.gray : Colors.black}
                 />
               </TouchableOpacity>
-              <MyText style={{ fontSize: 14, marginStart: 13 }}>
-                Hiện ảnh
-              </MyText>
+              <MyText style={{ fontSize: 14, marginStart: 13 }}>Hiện ảnh</MyText>
             </View>
           </View>
           <View>
@@ -439,26 +376,11 @@ const ReviewProduct = props => {
                 }}
               >
                 <View style={{ flexDirection: 'row', marginTop: 8 }}>
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
                 </View>
                 <MyText
                   style={{
@@ -478,12 +400,11 @@ const ReviewProduct = props => {
                   color: Colors.black
                 }}
               >
-                The dress is great! Very classy and comfortable. It fit
-                perfectly! I'm 5'7" and 130 pounds. I am a 34B chest. This dress
-                would be too long for those who are shorter but could be hemmed.
-                I wouldn't recommend it for those big chested as I am smaller
-                chested and it fit me perfectly. The underarms were not too wide
-                and the dress was made well.
+                The dress is great! Very classy and comfortable. It fit perfectly! I'm 5'7" and 130
+                pounds. I am a 34B chest. This dress would be too long for those who are shorter but
+                could be hemmed. I wouldn't recommend it for those big chested as I am smaller
+                chested and it fit me perfectly. The underarms were not too wide and the dress was
+                made well.
               </MyText>
               {isShowImage ? ImageRv() : null}
               <View
@@ -510,11 +431,7 @@ const ReviewProduct = props => {
                   >
                     Helpful
                   </MyText>
-                  <Icons.AntDesign
-                    name={'like1'}
-                    size={22}
-                    color={Colors.gray}
-                  />
+                  <Icons.AntDesign name={'like1'} size={22} color={Colors.gray} />
                 </View>
               </View>
             </View>
@@ -549,26 +466,11 @@ const ReviewProduct = props => {
                 }}
               >
                 <View style={{ flexDirection: 'row', marginTop: 8 }}>
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
                 </View>
                 <MyText
                   style={{
@@ -588,12 +490,11 @@ const ReviewProduct = props => {
                   color: Colors.black
                 }}
               >
-                The dress is great! Very classy and comfortable. It fit
-                perfectly! I'm 5'7" and 130 pounds. I am a 34B chest. This dress
-                would be too long for those who are shorter but could be hemmed.
-                I wouldn't recommend it for those big chested as I am smaller
-                chested and it fit me perfectly. The underarms were not too wide
-                and the dress was made well.
+                The dress is great! Very classy and comfortable. It fit perfectly! I'm 5'7" and 130
+                pounds. I am a 34B chest. This dress would be too long for those who are shorter but
+                could be hemmed. I wouldn't recommend it for those big chested as I am smaller
+                chested and it fit me perfectly. The underarms were not too wide and the dress was
+                made well.
               </MyText>
               {isShowImage ? ImageRv() : null}
               <View
@@ -620,11 +521,7 @@ const ReviewProduct = props => {
                   >
                     Helpful
                   </MyText>
-                  <Icons.AntDesign
-                    name={'like1'}
-                    size={22}
-                    color={Colors.gray}
-                  />
+                  <Icons.AntDesign name={'like1'} size={22} color={Colors.gray} />
                 </View>
               </View>
             </View>
@@ -659,26 +556,11 @@ const ReviewProduct = props => {
                 }}
               >
                 <View style={{ flexDirection: 'row', marginTop: 8 }}>
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
-                  <Image
-                    style={styles.ic}
-                    source={require('@assets/images/activated.png')}
-                  />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
+                  <Image style={styles.ic} source={require('@assets/images/activated.png')} />
                 </View>
                 <MyText
                   style={{
@@ -698,12 +580,11 @@ const ReviewProduct = props => {
                   color: Colors.black
                 }}
               >
-                The dress is great! Very classy and comfortable. It fit
-                perfectly! I'm 5'7" and 130 pounds. I am a 34B chest. This dress
-                would be too long for those who are shorter but could be hemmed.
-                I wouldn't recommend it for those big chested as I am smaller
-                chested and it fit me perfectly. The underarms were not too wide
-                and the dress was made well.
+                The dress is great! Very classy and comfortable. It fit perfectly! I'm 5'7" and 130
+                pounds. I am a 34B chest. This dress would be too long for those who are shorter but
+                could be hemmed. I wouldn't recommend it for those big chested as I am smaller
+                chested and it fit me perfectly. The underarms were not too wide and the dress was
+                made well.
               </MyText>
               {isShowImage ? ImageRv() : null}
               <View
@@ -730,11 +611,7 @@ const ReviewProduct = props => {
                   >
                     Helpful
                   </MyText>
-                  <Icons.AntDesign
-                    name={'like1'}
-                    size={22}
-                    color={Colors.gray}
-                  />
+                  <Icons.AntDesign name={'like1'} size={22} color={Colors.gray} />
                 </View>
               </View>
             </View>
@@ -812,10 +689,7 @@ const ReviewProduct = props => {
           onDismiss={() => setIsOpen(false)}
         >
           <View style={{ justifyContent: 'space-between' }}>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
-              style={styles.txt_write_review}
-            >
+            <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_write_review}>
               What is you rate?
             </MyText>
 
@@ -831,19 +705,13 @@ const ReviewProduct = props => {
                     <Icons.FontAwesome
                       name={starRating >= option ? 'star' : 'star-o'}
                       size={36}
-                      style={
-                        starRating >= option
-                          ? styles.starSelected
-                          : styles.starUnselected
-                      }
+                      style={starRating >= option ? styles.starSelected : styles.starUnselected}
                     />
                   </Animated.View>
                 </TouchableWithoutFeedback>
               ))}
             </View>
-            <MyText style={styles.txt_write_review}>
-              Please share your opinion
-            </MyText>
+            <MyText style={styles.txt_write_review}>Please share your opinion</MyText>
             <MyText style={styles.txt_write_review}>about the product</MyText>
             <View style={styles.container_MyText_input}>
               <TextInput
@@ -868,9 +736,7 @@ const ReviewProduct = props => {
                 showsHorizontalScrollIndicator={false}
                 data={images}
                 keyExtractor={item => item}
-                renderItem={({ item }) => (
-                  <Image source={{ uri: item }} style={styles.image} />
-                )}
+                renderItem={({ item }) => <Image source={{ uri: item }} style={styles.image} />}
                 contentContainerStyle={{
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -915,11 +781,7 @@ const ReviewProduct = props => {
                     alignItems: 'center'
                   }}
                 >
-                  <Icons.FontAwesome
-                    name={'camera'}
-                    size={20}
-                    color={Colors.white}
-                  />
+                  <Icons.FontAwesome name={'camera'} size={20} color={Colors.white} />
                 </TouchableOpacity>
 
                 <MyText

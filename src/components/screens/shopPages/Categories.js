@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from 'react-native'
+import { FlatList, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
@@ -15,19 +9,19 @@ const CategoryWomen = props => {
   const {
     navigation,
     goBack,
-
     route: {
-      params: { categoryId, categoryName }
+      params: { categoryId }
     }
   } = props
 
-  const [categoriesId, setCategoriesId] = useState([])
-
+  const [categoriesId, setCategoriesId] = useState({})
+  const [nameCategories, setnameCategories] = useState('')
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getCategoryById(categoryId)
         setCategoriesId(response.child)
+        setnameCategories(response.name)
       } catch (error) {
         console.log(error)
         throw error
@@ -44,8 +38,7 @@ const CategoryWomen = props => {
         style={{ marginBottom: 15 }}
         onPress={() =>
           props.navigation.navigate('ItemCategoryWomen', {
-            categoryById: _id,
-            categoryNameById: name
+            categoryById: _id
           })
         }
       >
@@ -66,23 +59,18 @@ const CategoryWomen = props => {
   }
 
   return (
-    <View
-      style={{ backgroundColor: Colors.white, width: '100%', height: '100%' }}
-    >
+    <View style={{ backgroundColor: Colors.white, width: '100%', height: '100%' }}>
       <View style={styles.view_search}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icons.Ionicons name={'chevron-back'} size={24} />
         </TouchableOpacity>
         <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_search}>
-          {categoryName}
+          {nameCategories}
         </MyText>
         <Icons.Ionicons name={'search'} size={24} />
       </View>
 
-      <ScrollView
-        style={{ backgroundColor: Colors.grayBg }}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView style={{ backgroundColor: Colors.grayBg }} showsVerticalScrollIndicator={false}>
         <TouchableOpacity
           style={{
             backgroundColor: Colors.red,
@@ -94,10 +82,7 @@ const CategoryWomen = props => {
             shadowColor: Colors.gray
           }}
         >
-          <MyText
-            fontFamily={'Montserrat-SemiBold'}
-            style={styles.txt_VIEW_ALL_ITEMS}
-          >
+          <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_VIEW_ALL_ITEMS}>
             VIEW ALL ITEMS
           </MyText>
         </TouchableOpacity>

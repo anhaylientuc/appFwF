@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from 'react-native'
+import { FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { createPicassoComponent } from 'react-native-picasso'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
@@ -34,8 +28,7 @@ const ShopPage = props => {
       <TouchableOpacity
         onPress={() =>
           navigation.navigate('CategoryWomen', {
-            categoryId: _id,
-            categoryName: name
+            categoryId: _id
           })
         }
         style={{
@@ -52,10 +45,7 @@ const ShopPage = props => {
             source={{ uri: image }}
           />
 
-          <MyText
-            fontFamily={'Montserrat-SemiBold'}
-            style={{ fontSize: 16, marginLeft: 16 }}
-          >
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16, marginLeft: 16 }}>
             {name}
           </MyText>
         </View>

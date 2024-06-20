@@ -3,9 +3,7 @@ import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 const Profile = () => {
   return (
-    <View
-      style={{ alignItems: 'center', justifyContent: 'center', height: '100%' }}
-    >
+    <View style={{ alignItems: 'center', justifyContent: 'center', height: '100%' }}>
       <MyText
         style={{
           fontFamily: 'Montserrat-Medium',

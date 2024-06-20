@@ -1,18 +1,7 @@
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider
-} from '@gorhom/bottom-sheet'
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import React, { useEffect, useRef, useState } from 'react'
 
-import {
-  FlatList,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native'
+import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
@@ -23,23 +12,28 @@ const ItemCategoryWomen = props => {
   const {
     navigation,
     route: {
-      params: { categoryById, categoryNameById }
+      params: { categoryById }
     }
   } = props
-  console.log(categoryById)
+  // console.log(categoryById)
   const [categoriesById, setCategoriesById] = useState([])
   const [products, setproducts] = useState([])
+  const [isOpen, setIsOpen] = useState(false)
+  const BottomSheetRef = useRef(null)
+  const [addFavorite, setAddFavorite] = useState(false)
+  const [numColumns, setNumColumns] = useState()
+  const [selected, setSelected] = useState(DataSortBy)
+  const snapPoints = ['50%', '60%']
+  const [nameCategoryById, setnameCategoryById] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getCategoryById(categoryById)
+        setnameCategoryById(response.name)
         const { _id, name, parentID, image } = response
         const arr = response.child
-        setCategoriesById([
-          { _id: _id, name: name, parentID: parentID, image: image },
-          ...arr
-        ])
+        setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
         setproducts(products)
       } catch (error) {
         console.log(error)
@@ -49,12 +43,8 @@ const ItemCategoryWomen = props => {
     fetchData()
   }, [])
 
-  const [isOpen, setIsOpen] = useState(false)
-  const snapPoints = ['50%', '60%']
-
   // set useRef
-  const BottomSheetRef = useRef(null)
-  const [addFavorite, setAddFavorite] = useState(false)
+
   const handleAddFavorite = () => {
     setAddFavorite(!addFavorite)
   }
@@ -66,7 +56,6 @@ const ItemCategoryWomen = props => {
     }, 300)
   }
   // const numColumns = 2
-  const [numColumns, setNumColumns] = useState()
 
   // logic onClick set View Flatlist
   const handleColum = () => {
@@ -76,8 +65,6 @@ const ItemCategoryWomen = props => {
       setNumColumns(2)
     }
   }
-
-  const [selected, setSelected] = useState(DataSortBy)
 
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -100,7 +87,7 @@ const ItemCategoryWomen = props => {
   const handleSelect = (item, index) => {
     const newItem = selected.map((e, index) => {
       if (e.id == item.id) {
-        console.log('selectItem: ', item.subject)
+        // console.log('selectItem: ', item.subject)
         return { ...e, selected: true }
       } else {
         return { ...e, selected: false }
@@ -113,26 +100,12 @@ const ItemCategoryWomen = props => {
     setBottomBar()
   }
   const handlePressedCategoryId = async _id => {
-    // if (_id == categoryById) {
-    //   const response = await getCategoryById(_id)
-    //   const children = response.child
-    //   children.map(async (item, index) => {
-    //     const category_id = item._id
-    //     const responses = await getProducts(category_id)
-    //     if (responses != null) {
-    //       console.log(responses)
-    //     }
-    //     setproducts([...products, responses])
-    //   })
-
-    //   // const newProducts = await Promise.all(promises)
-    // }
     ;(async () => {
       const version = 2
       const category_id = _id
       try {
         const products = await getProducts({ version, category_id })
-        console.log('Fetched products:', products)
+        // console.log('Fetched products:', products)
         setproducts(products)
       } catch (error) {
         console.error('Error:', error)
@@ -167,16 +140,8 @@ const ItemCategoryWomen = props => {
   }
   // if numColumns = null  => render
   const renderItemColumTo = ({ item }) => {
-    const {
-      _id,
-      name,
-      images,
-      base_price,
-      discount_price,
-      category_id,
-      attributes,
-      description
-    } = item
+    const { _id, name, images, base_price, discount_price, category_id, attributes, description } =
+      item
     return (
       <View
         style={[
@@ -185,10 +150,7 @@ const ItemCategoryWomen = props => {
         ]}
       >
         <View>
-          <Image
-            style={styles.renderItemColumTo.image}
-            source={{ uri: images[2].url }}
-          />
+          <Image style={styles.renderItemColumTo.image} source={{ uri: images[2].url }} />
           <View
             style={{
               backgroundColor: Colors.white,
@@ -222,9 +184,7 @@ const ItemCategoryWomen = props => {
             paddingHorizontal: 16
           }}
         >
-          <View
-            style={{ flexDirection: 'row', alignItems: 'center', marginTop: 7 }}
-          >
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 7 }}>
             <Image
               style={styles.renderItemColumTo.img_activated}
               source={require('@assets/images/activated.png')}
@@ -266,18 +226,14 @@ const ItemCategoryWomen = props => {
           >
             {name}
           </MyText>
-          <MyText style={styles.renderItemColumTo.txt_price}>
-            {base_price} VND
-          </MyText>
+          <MyText style={styles.renderItemColumTo.txt_price}>{base_price} VND</MyText>
         </View>
       </View>
     )
   }
   const [activated, setActivated] = useState(0)
   change = ({ nativeEvent }) => {
-    const slide = Math.ceil(
-      nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width
-    )
+    const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width)
     if (slide != activated) {
       setActivated(slide)
     }
@@ -336,19 +292,15 @@ const ItemCategoryWomen = props => {
                 horizontal
                 style={{ width: 124 }}
               >
-                {images.map(
-                  (image, index) => (
-                    console.log(image.url),
-                    (
-                      <Image
-                        resizeMode="cover"
-                        key={index}
-                        style={{ width: 124 }}
-                        source={{ uri: image.url }}
-                      />
-                    )
-                  )
-                )}
+                {images.map((image, index) => (
+                  // console.log(image.url),
+                  <Image
+                    resizeMode="cover"
+                    key={index}
+                    style={{ width: 124 }}
+                    source={{ uri: image.url }}
+                  />
+                ))}
               </ScrollView>
               <View
                 style={{
@@ -360,7 +312,7 @@ const ItemCategoryWomen = props => {
                   shadowColor: Colors.black
                 }}
               >
-                {images.map((i, k) => (
+                {/* {images.map((i, k) => (
                   <Text
                     key={k}
                     style={
@@ -371,7 +323,7 @@ const ItemCategoryWomen = props => {
                   >
                     ⬤
                   </Text>
-                ))}
+                ))} */}
               </View>
             </View>
 
@@ -398,9 +350,7 @@ const ItemCategoryWomen = props => {
               >
                 {name}
               </MyText>
-              <MyText style={styles.renderItemColumOne.txt_category_name}>
-                {code}
-              </MyText>
+              <MyText style={styles.renderItemColumOne.txt_category_name}>{code}</MyText>
               <View
                 style={{
                   flexDirection: 'row',
@@ -440,9 +390,7 @@ const ItemCategoryWomen = props => {
                 </MyText>
               </View>
 
-              <MyText style={styles.renderItemColumOne.txt_price}>
-                {base_price} VND
-              </MyText>
+              <MyText style={styles.renderItemColumOne.txt_price}>{base_price} VND</MyText>
             </TouchableOpacity>
           </View>
         </View>
@@ -477,7 +425,7 @@ const ItemCategoryWomen = props => {
               <Icons.Ionicons name={'chevron-back'} size={24} />
             </TouchableOpacity>
             <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_title}>
-              {categoryNameById}
+              {nameCategoryById}
             </MyText>
 
             <Icons.Ionicons name={'search'} size={24} />
@@ -593,9 +541,7 @@ const ItemCategoryWomen = props => {
                   >
                     <View
                       style={{
-                        backgroundColor: item.selected
-                          ? Colors.red
-                          : Colors.white
+                        backgroundColor: item.selected ? Colors.red : Colors.white
                       }}
                     >
                       <MyText

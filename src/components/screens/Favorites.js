@@ -1,7 +1,4 @@
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider
-} from '@gorhom/bottom-sheet'
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import React, { useRef, useState } from 'react'
 import {
   FlatList,
@@ -86,9 +83,8 @@ const Favorites = props => {
             textAlign: 'center'
           }}
         >
-          Bạn chưa lưu sản phẩm nào. Đừng lo, rất đơn giản! Chỉ cần chọn biểu
-          tượng trái tim trên cùng để lưu, các sản phẩm bạn yêu thích sẽ hiện ở
-          đây.
+          Bạn chưa lưu sản phẩm nào. Đừng lo, rất đơn giản! Chỉ cần chọn biểu tượng trái tim trên
+          cùng để lưu, các sản phẩm bạn yêu thích sẽ hiện ở đây.
         </MyText>
         <TouchableOpacity
           style={{
@@ -99,11 +95,7 @@ const Favorites = props => {
           }}
           onPress={() => props.navigation.navigate('HomeStack')}
         >
-          <MyText
-            style={{ fontSize: 16, color: Colors.white, fontWeight: '700' }}
-          >
-            Xem ngay
-          </MyText>
+          <MyText style={{ fontSize: 16, color: Colors.white, fontWeight: '700' }}>Xem ngay</MyText>
         </TouchableOpacity>
       </View>
     )
@@ -133,11 +125,7 @@ const Favorites = props => {
                   borderRadius: 100
                 }}
               >
-                <Icons.Feather
-                  name={'trash-2'}
-                  size={20}
-                  color={Colors.black}
-                />
+                <Icons.Feather name={'trash-2'} size={20} color={Colors.black} />
               </TouchableOpacity>
             </View>
             <View style={{ width: 190, padding: 16 }}>
@@ -199,11 +187,7 @@ const Favorites = props => {
                 alignItems: 'center'
               }}
             >
-              <Icons.FontAwesome
-                name={'shopping-bag'}
-                size={16}
-                color={Colors.white}
-              />
+              <Icons.FontAwesome name={'shopping-bag'} size={16} color={Colors.white} />
               <MyText
                 fontFamily={'Montserrat-SemiBold'}
                 style={{
@@ -244,13 +228,9 @@ const Favorites = props => {
           >
             Yêu thích
           </MyText>
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-          >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View />
-            <MyText style={{ fontSize: 14, color: Colors.gray }}>
-              1 sản phẩm
-            </MyText>
+            <MyText style={{ fontSize: 14, color: Colors.gray }}>1 sản phẩm</MyText>
           </View>
           <MyText
             style={{
@@ -259,8 +239,8 @@ const Favorites = props => {
               paddingHorizontal: 50
             }}
           >
-            Lưu và xem lại các sản phẩm này bất cứ lúc nào trên mọi thiết bị
-            bằng cách đăng nhập hoặc tạo tài khoản
+            Lưu và xem lại các sản phẩm này bất cứ lúc nào trên mọi thiết bị bằng cách đăng nhập
+            hoặc tạo tài khoản
           </MyText>
           <FlatList
             scrollEnabled={false}
