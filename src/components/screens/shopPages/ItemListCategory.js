@@ -1,14 +1,26 @@
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import React, { useEffect, useRef, useState } from 'react'
-
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View
+} from 'react-native'
 
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
 
+const width = Dimensions.get('window').width
+const height = Dimensions.get('window').height
+
 const ItemCategoryWomen = props => {
+  const [windowWith, setwindowWith] = useState(width)
+  const [windowHeight, setwindowHeight] = useState(height)
   const {
     navigation,
     route: {
@@ -21,7 +33,7 @@ const ItemCategoryWomen = props => {
   const [isOpen, setIsOpen] = useState(false)
   const BottomSheetRef = useRef(null)
   const [addFavorite, setAddFavorite] = useState(false)
-  const [numColumns, setNumColumns] = useState()
+  const [numColumns, setNumColumns] = useState(2)
   const [selected, setSelected] = useState(DataSortBy)
   const snapPoints = ['50%', '60%']
   const [nameCategoryById, setnameCategoryById] = useState('')
@@ -35,6 +47,8 @@ const ItemCategoryWomen = props => {
         const arr = response.child
         setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
         setproducts(products)
+        setwindowWith(width / 2)
+        setwindowHeight(height / 3)
       } catch (error) {
         console.log(error)
         throw error
@@ -61,8 +75,12 @@ const ItemCategoryWomen = props => {
   const handleColum = () => {
     if (numColumns) {
       setNumColumns(null)
+      setwindowWith(width)
+      setwindowHeight(height / 2)
     } else {
       setNumColumns(2)
+      setwindowWith(width / 2)
+      setwindowHeight(height / 3)
     }
   }
 
@@ -139,94 +157,100 @@ const ItemCategoryWomen = props => {
     )
   }
   // if numColumns = null  => render
-  const renderItemColumTo = ({ item }) => {
-    const { _id, name, images, base_price, discount_price, category_id, attributes, description } =
-      item
+  const renderItems = ({ item }) => {
+    const {
+      _id,
+      name,
+      images,
+      base_price,
+      discount_price,
+      category_id,
+      attributes,
+      description,
+      product_id,
+      product_Name,
+      code
+    } = item
+
+    // format base_price
+    function formatCurrency(amount, options = {}) {
+      const { currency = 'VND', locale = 'vi-VN' } = options
+
+      const formatter = new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: currency
+      })
+      return formatter.format(amount)
+    }
+
+    // Example usage
+    const amount = base_price
+    const formattedCurrency = formatCurrency(amount)
+    // Output: 499.000,00 VND
     return (
       <View
         style={[
-          styles.renderItemColumTo.container,
+          styles.renderItems.container,
           { backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.white }
         ]}
       >
-        <View>
-          <Image style={styles.renderItemColumTo.image} source={{ uri: images[2].url }} />
-          <View
-            style={{
-              backgroundColor: Colors.white,
-              width: 40,
-              height: 40,
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'absolute',
-              borderRadius: 36,
-              bottom: 1,
-              top: 164,
-              elevation: 4,
-              shadowColor: '#52006A',
-              right: 0
-            }}
+        <View style={{ paddingVertical: 32, width: windowWith }}>
+          <ScrollView
+            pagingEnabled
+            onScroll={this.change}
+            showsHorizontalScrollIndicator={false}
+            horizontal
           >
+            {images.map((image, index) => (
+              <Image
+                resizeMode="center"
+                key={index}
+                style={{ width: windowWith, height: windowHeight }}
+                source={{ uri: image.url }}
+              />
+            ))}
+          </ScrollView>
+
+          <TouchableOpacity style={styles.StyleFavorites}>
             <Icons.MaterialIcons
               style={{
                 textAlign: 'center'
               }}
               name={'favorite-outline'}
-              size={24}
+              size={20}
               color={Colors.gray}
             />
-          </View>
-        </View>
-        <View
-          style={{
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-            paddingHorizontal: 16
-          }}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 7 }}>
-            <Image
-              style={styles.renderItemColumTo.img_activated}
-              source={require('@assets/images/activated.png')}
-            />
-            <Image
-              style={styles.renderItemColumTo.img_activated}
-              source={require('@assets/images/activated.png')}
-            />
-            <Image
-              style={styles.renderItemColumTo.img_activated}
-              source={require('@assets/images/activated.png')}
-            />
-            <Image
-              style={styles.renderItemColumTo.img_activated}
-              source={require('@assets/images/activated.png')}
-            />
-            <Image
-              style={styles.renderItemColumTo.img_activated}
-              source={require('@assets/images/activated.png')}
-            />
-            <MyText
-              style={{
-                fontSize: 10,
-                fontWeight: '400',
-                color: Colors.gray,
-                fontStyle: 'normal'
-              }}
-            >
-              {/* ( {review}) */}
-            </MyText>
-          </View>
-          <MyText style={styles.renderItemColumTo.txt_category_name}>
-            {/* {category_name} */}
-          </MyText>
-          <MyText
-            numColumns={1}
-            fontFamily={'Montserrat-SemiBold'}
-            style={styles.renderItemColumTo.txt_product_name}
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              props.navigation.navigate('ProductWomen', {
+                _id: _id,
+                product_id: product_id,
+                product_Name: name,
+                images: images,
+                base_price: base_price,
+                category_id: category_id,
+                attributes: attributes,
+                description: description,
+                code: code
+              })
+            }
+            style={{
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+              paddingHorizontal: 16
+            }}
           >
-            {name}
-          </MyText>
-          <MyText style={styles.renderItemColumTo.txt_price}>{base_price} VND</MyText>
+            <MyText style={styles.renderItems.txt_category_name}>{/* {category_name} */}</MyText>
+            <MyText
+              numColumns={1}
+              fontFamily={'Montserrat-SemiBold'}
+              style={styles.renderItems.txt_product_name}
+            >
+              {name}
+            </MyText>
+            <MyText style={styles.renderItems.txt_price}>{formattedCurrency}</MyText>
+          </TouchableOpacity>
         </View>
       </View>
     )
@@ -237,165 +261,6 @@ const ItemCategoryWomen = props => {
     if (slide != activated) {
       setActivated(slide)
     }
-  }
-  // if numColums = 2 => render
-  const renderItemColumOne = ({ item }) => {
-    const {
-      _id,
-      name,
-      images,
-      base_price,
-      code,
-      discount_price,
-      category_id,
-      attributes,
-      product_id,
-      description
-    } = item
-
-    return (
-      <View style={{ marginBottom: 16 }}>
-        <View style={styles.renderItemColumOne.container}>
-          <View
-            style={{
-              backgroundColor: Colors.white,
-              width: 48,
-              height: 48,
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'absolute',
-              borderRadius: 36,
-              bottom: 10,
-              top: 98,
-              elevation: 4,
-              shadowColor: '#52006A',
-              right: 0
-            }}
-          >
-            <TouchableOpacity onPress={() => handleAddFavorite()}>
-              <Icons.MaterialIcons
-                style={{
-                  textAlign: 'center'
-                }}
-                name={addFavorite ? 'favorite-outline' : 'favorite'}
-                size={24}
-                color={addFavorite ? Colors.gray : Colors.red}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={{ flexDirection: 'row', height: 124 }}>
-            <View>
-              <ScrollView
-                pagingEnabled
-                onScroll={this.change}
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                style={{ width: 124 }}
-              >
-                {images.map((image, index) => (
-                  // console.log(image.url),
-                  <Image
-                    resizeMode="cover"
-                    key={index}
-                    style={{ width: 124 }}
-                    source={{ uri: image.url }}
-                  />
-                ))}
-              </ScrollView>
-              <View
-                style={{
-                  position: 'absolute',
-                  flexDirection: 'row',
-                  bottom: 4,
-                  alignSelf: 'center',
-                  elevation: 8,
-                  shadowColor: Colors.black
-                }}
-              >
-                {/* {images.map((i, k) => (
-                  <Text
-                    key={k}
-                    style={
-                      k == activated
-                        ? { color: Colors.white, margin: 3 }
-                        : { color: Colors.gray, margin: 3 }
-                    }
-                  >
-                    ⬤
-                  </Text>
-                ))} */}
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={{ flex: 2, marginStart: 16 }}
-              onPress={() =>
-                props.navigation.navigate('ProductWomen', {
-                  _id: _id,
-                  product_id: product_id,
-                  product_Name: name,
-                  images: images,
-                  base_price: base_price,
-                  category_id: category_id,
-                  attributes: attributes,
-                  description: description,
-                  code: code
-                })
-              }
-            >
-              <MyText
-                numColumns={1}
-                fontFamily={'Montserrat-SemiBold'}
-                style={styles.renderItemColumOne.txt_product_name}
-              >
-                {name}
-              </MyText>
-              <MyText style={styles.renderItemColumOne.txt_category_name}>{code}</MyText>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginTop: 8
-                }}
-              >
-                <Image
-                  style={styles.renderItemColumOne.img_activated}
-                  source={require('@assets/images/activated.png')}
-                />
-                <Image
-                  style={styles.renderItemColumOne.img_activated}
-                  source={require('@assets/images/activated.png')}
-                />
-                <Image
-                  style={styles.renderItemColumOne.img_activated}
-                  source={require('@assets/images/activated.png')}
-                />
-                <Image
-                  style={styles.renderItemColumOne.img_activated}
-                  source={require('@assets/images/activated.png')}
-                />
-                <Image
-                  style={styles.renderItemColumOne.img_activated}
-                  source={require('@assets/images/activated.png')}
-                />
-                <MyText
-                  style={{
-                    fontSize: 10,
-                    fontWeight: '400',
-                    color: Colors.gray,
-                    fontStyle: 'normal'
-                  }}
-                >
-                  {/* ( {review}) */}
-                </MyText>
-              </View>
-
-              <MyText style={styles.renderItemColumOne.txt_price}>{base_price} VND</MyText>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    )
   }
 
   return (
@@ -499,7 +364,7 @@ const ItemCategoryWomen = props => {
             key={numColumns}
             showsVerticalScrollIndicator={false} // thanh cuộn
             data={products}
-            renderItem={numColumns ? renderItemColumTo : renderItemColumOne}
+            renderItem={renderItems}
           />
         </ScrollView>
         <View>
@@ -569,20 +434,22 @@ const ItemCategoryWomen = props => {
 export default ItemCategoryWomen
 
 const styles = StyleSheet.create({
-  renderItemColumTo: {
+  StyleFavorites: {
+    backgroundColor: Colors.white,
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    borderRadius: 36,
+    bottom: 90,
+    elevation: 8,
+    shadowColor: '#52006A',
+    right: 16
+  },
+  renderItems: {
     container: {
-      flex: 1,
-      height: '100%',
-      borderRadius: 8,
-      marginHorizontal: 16,
-      marginTop: 17,
-      marginBottom: 12
-    },
-    image: {
-      width: '100%',
-      height: 184,
-      borderTopRightRadius: 8,
-      borderTopLeftRadius: 8
+      flex: 1
     },
     txt_product_name: {
       fontSize: 16,
@@ -610,49 +477,7 @@ const styles = StyleSheet.create({
       marginTop: 3
     }
   },
-  renderItemColumOne: {
-    container: {
-      marginTop: 16,
-      marginHorizontal: 16,
-      borderRadius: 8,
-      elevation: 4,
-      shadowColor: '#52006A',
-      justifyContent: 'center',
-      backgroundColor: Colors.white
-    },
-    image: {
-      flex: 1,
-      height: 104,
-      width: 104,
-      borderTopLeftRadius: 8,
-      borderBottomLeftRadius: 8
-    },
-    txt_product_name: {
-      fontSize: 16,
-      marginTop: 10,
-      color: Colors.black,
-      fontWeight: '500',
-      fontStyle: 'normal'
-    },
-    txt_category_name: {
-      fontSize: 12,
-      fontWeight: '400',
-      color: Colors.gray,
-      fontStyle: 'normal',
-      marginTop: 4
-    },
-    img_activated: {
-      width: 14,
-      height: 14
-    },
-    txt_price: {
-      fontSize: 14,
-      color: Colors.black,
-      lineHeight: 20,
-      fontWeight: '400',
-      marginTop: 8
-    }
-  },
+
   txt_bottom_sheet: {
     fontSize: 16,
     marginTop: 32,

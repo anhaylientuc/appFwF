@@ -1,12 +1,5 @@
 import React, { useState } from 'react'
-import {
-  Image,
-  KeyboardAvoidingView,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View
-} from 'react-native'
+import { Image, KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
@@ -73,12 +66,7 @@ const Tab1 = () => {
       </View>
       <View style={{ flexDirection: 'row' }}>
         <MyText style={styles.txt_body_parameters}>US</MyText>
-        <View
-          style={[
-            styles.container_size_parameters,
-            styles.container_size_parameters_pink
-          ]}
-        >
+        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
           <MyText style={styles.txt_size_parameters}>28</MyText>
           <MyText style={styles.txt_size_parameters}>30R-32</MyText>
           <MyText style={styles.txt_size_parameters}>34R-36R</MyText>
@@ -96,12 +84,7 @@ const Tab1 = () => {
 
       <View style={{ flexDirection: 'row' }}>
         <MyText style={styles.txt_body_parameters}>Eo cm</MyText>
-        <View
-          style={[
-            styles.container_size_parameters,
-            styles.container_size_parameters_pink
-          ]}
-        >
+        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
           <MyText style={styles.txt_size_parameters}>62-66</MyText>
           <MyText style={styles.txt_size_parameters}>66-74</MyText>
           <MyText style={styles.txt_size_parameters}>74-78</MyText>
@@ -109,9 +92,7 @@ const Tab1 = () => {
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>
-          Chiều dài cánh tay cm
-        </MyText>
+        <MyText style={styles.txt_body_parameters}>Chiều dài cánh tay cm</MyText>
         <View style={styles.container_size_parameters}>
           <MyText style={styles.txt_size_parameters}>59</MyText>
           <MyText style={styles.txt_size_parameters}>59</MyText>
@@ -121,12 +102,7 @@ const Tab1 = () => {
 
       <View style={{ flexDirection: 'row' }}>
         <MyText style={styles.txt_body_parameters}>Cổ cm</MyText>
-        <View
-          style={[
-            styles.container_size_parameters,
-            styles.container_size_parameters_pink
-          ]}
-        >
+        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
           <MyText style={styles.txt_size_parameters}>33</MyText>
           <MyText style={styles.txt_size_parameters}>34-35</MyText>
           <MyText style={styles.txt_size_parameters}>36</MyText>
@@ -196,12 +172,7 @@ const Tab2 = () => {
       </View>
       <View style={{ flexDirection: 'row' }}>
         <MyText style={styles.txt_body_parameters}>US</MyText>
-        <View
-          style={[
-            styles.container_size_parameters,
-            styles.container_size_parameters_pink
-          ]}
-        >
+        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
           <MyText style={styles.txt_size_parameters}>28</MyText>
           <MyText style={styles.txt_size_parameters}>30R-32</MyText>
           <MyText style={styles.txt_size_parameters}>34R-36R</MyText>
@@ -219,12 +190,7 @@ const Tab2 = () => {
 
       <View style={{ flexDirection: 'row' }}>
         <MyText style={styles.txt_body_parameters}>Eo cm</MyText>
-        <View
-          style={[
-            styles.container_size_parameters,
-            styles.container_size_parameters_pink
-          ]}
-        >
+        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
           <MyText style={styles.txt_size_parameters}>62-66</MyText>
           <MyText style={styles.txt_size_parameters}>66-74</MyText>
           <MyText style={styles.txt_size_parameters}>74-78</MyText>
@@ -232,9 +198,7 @@ const Tab2 = () => {
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>
-          Chiều dài cánh tay cm
-        </MyText>
+        <MyText style={styles.txt_body_parameters}>Chiều dài cánh tay cm</MyText>
         <View style={styles.container_size_parameters}>
           <MyText style={styles.txt_size_parameters}>59</MyText>
           <MyText style={styles.txt_size_parameters}>59</MyText>
@@ -244,12 +208,7 @@ const Tab2 = () => {
 
       <View style={{ flexDirection: 'row' }}>
         <MyText style={styles.txt_body_parameters}>Cổ cm</MyText>
-        <View
-          style={[
-            styles.container_size_parameters,
-            styles.container_size_parameters_pink
-          ]}
-        >
+        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
           <MyText style={styles.txt_size_parameters}>33</MyText>
           <MyText style={styles.txt_size_parameters}>34-35</MyText>
           <MyText style={styles.txt_size_parameters}>36</MyText>
@@ -377,10 +336,7 @@ const SizeInfo = props => {
             }}
           >
             <View />
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
-              style={{ fontSize: 24, fontWeight: '600' }}
-            >
+            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 24, fontWeight: '600' }}>
               Áo và áo khoác
             </MyText>
             <TouchableOpacity onPress={() => goBack()}>
@@ -391,46 +347,29 @@ const SizeInfo = props => {
         <View style={styles.container_measure}>
           <MyText
             fontFamily={'Montserrat-SemiBold'}
-            style={
-              isShowMeasureSize ? styles.txt_measure_active : styles.txt_measure
-            }
+            style={isShowMeasureSize ? styles.txt_measure_active : styles.txt_measure}
           >
             Cách đo lường
           </MyText>
-          <TouchableOpacity
-            onPress={() => setIsShowMeasureSize(!isShowMeasureSize)}
-          >
+          <TouchableOpacity onPress={() => setIsShowMeasureSize(!isShowMeasureSize)}>
             <Icons.Entypo
-              name={
-                !isShowMeasureSize ? 'chevron-small-down' : 'chevron-small-up'
-              }
+              name={!isShowMeasureSize ? 'chevron-small-down' : 'chevron-small-up'}
               size={20}
             />
           </TouchableOpacity>
         </View>
         {isShowMeasureSize ? measureSize() : null}
         <View style={{ backgroundColor: Colors.white, paddingBottom: 50 }}>
-          <MyText
-            fontFamily={'Montserrat-SemiBold'}
-            style={styles.txt_size_range}
-          >
+          <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_size_range}>
             Chọn phạm vi kích cỡ
           </MyText>
           <View style={styles.container_btn_tab}>
-            <View
-              style={
-                !isShowSize ? styles.btn_Active_Tab : styles.btn_no_Active_Tab
-              }
-            >
+            <View style={!isShowSize ? styles.btn_Active_Tab : styles.btn_no_Active_Tab}>
               <TouchableOpacity onPress={() => handleNormally()}>
                 <MyText style={{ textAlign: 'center' }}>Thông thường</MyText>
               </TouchableOpacity>
             </View>
-            <View
-              style={
-                isShowSize ? styles.btn_Active_Tab : styles.btn_no_Active_Tab
-              }
-            >
+            <View style={isShowSize ? styles.btn_Active_Tab : styles.btn_no_Active_Tab}>
               <TouchableOpacity onPress={() => handleLongShape()}>
                 <MyText style={{ textAlign: 'center' }}>Dáng dài</MyText>
               </TouchableOpacity>

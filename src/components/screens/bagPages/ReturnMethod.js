@@ -63,8 +63,7 @@ const ReturnMethod = props => {
             fontWeight: '600'
           }}
         >
-          Miễn phí giao hàng cho Member với hóa đơn từ đ499.000, miến phí giao
-          hàng cho Plus member.
+          Miễn phí giao hàng cho Member với hóa đơn từ đ499.000, miến phí giao hàng cho Plus member.
         </MyText>
         <MyText style={{ MyTextAlign: 'left', fontSize: 14, marginBottom: 8 }}>
           Chọn giữa giao hàng tận nhà, địa chỉ thay thế hoặc địa điểm giao nhận.
@@ -76,11 +75,10 @@ const ReturnMethod = props => {
           Đổi trả
         </MyText>
         <MyText>
-          Chúng tôi áp dụng chính sách hoàn trả miễn phí và linh hoạt. Chúng tôi
-          áp dụng hoàn lại tiền trong vòng 30 ngày cho bất kỳ sản phẩm không phù
-          hợp nào, miễn là sản phẩm còn ở trong tình trạng có thể bán lại được.
-          Xin lưu ý rằng chính sách Chính sách đổi &amp; trả đơn hàng của chúng
-          tôi có thể khác đối với các bộ sưu tập Nhà thiết kế, bộ sưa tập Đặc
+          Chúng tôi áp dụng chính sách hoàn trả miễn phí và linh hoạt. Chúng tôi áp dụng hoàn lại
+          tiền trong vòng 30 ngày cho bất kỳ sản phẩm không phù hợp nào, miễn là sản phẩm còn ở
+          trong tình trạng có thể bán lại được. Xin lưu ý rằng chính sách Chính sách đổi &amp; trả
+          đơn hàng của chúng tôi có thể khác đối với các bộ sưu tập Nhà thiết kế, bộ sưa tập Đặc
           biệt.
         </MyText>
       </View>

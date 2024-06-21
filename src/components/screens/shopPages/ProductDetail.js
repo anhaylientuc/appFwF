@@ -37,8 +37,6 @@ const ProductWomen = props => {
 
   let position = Animated.divide(scrollX, width)
 
-  const [product, setProduct] = useState({})
-
   const sheetRef = useRef(null)
   const [activated, setActivated] = useState(0)
   const [isOpen, setIsOpen] = useState(false)
@@ -47,10 +45,11 @@ const ProductWomen = props => {
   const [wallPaper, setwallPaper] = useState([])
   const [selectedId, setselectedId] = useState(null)
   const [selectedName, setselectedName] = useState(null)
-  const [vaLueSelectSize, setVaLueSelectSize] = useState()
+  const [vaLueSelectSize, setVaLueSelectSize] = useState(null)
   const [isInfoProduct, setIsInfoProduct] = useState(false)
-  // console.log('>>>' + selectedName)
-  // Mở Modal
+  const [storageData, setstorageData] = useState([])
+  // console.log('>>>', storageData)
+  // // Mở Modal
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,7 +60,6 @@ const ProductWomen = props => {
       navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
       try {
         const thumb = await getProducts({ version, product_id })
-
         setthumbs(thumb)
         setwallPaper(props.route.params.images)
         setselectedId(props.route.params._id)
@@ -77,10 +75,10 @@ const ProductWomen = props => {
 
   const handelPresenProductId = item => {
     ;(async () => {
+      const filteredData = item.attributes.filter(item => item.key === 'Size')
+      const filteredImages = item.images
+      const filterName = item.attributes.filter(item => item.key === 'Color')
       try {
-        const filteredData = item.attributes.filter(item => item.key === 'Size')
-        const filteredImages = item.images
-        const filterName = item.attributes.filter(item => item.key === 'Color')
         setselectedId(item._id)
         setSelected(filteredData)
         setwallPaper(filteredImages)
@@ -129,32 +127,27 @@ const ProductWomen = props => {
 
   const handleAddToCart = async () => {
     const valueToSave = {
-      product_id,
-      product_Name,
-      images,
-      base_price,
-      category_id,
-      vaLueSelectSize,
-      description,
-      code
+      product_Name
     }
-    const stringifiedValue = JSON.stringify(valueToSave)
 
     try {
+      const stringifiedValue = JSON.stringify(valueToSave, null, 2)
       Alert.alert('Add successfully')
       await AsyncStorage.setItem('my-cart', stringifiedValue)
         .then(() => console.log('Value stored successfully'))
         .catch(error => console.error('Error saving value:', error))
-      setTimeout(() => {
-        props.navigation.navigate('BagPage')
-      }, 2000)
+      storageData.push(valueToSave)
+      console.log(storageData)
+      // setTimeout(() => {
+      //   props.navigation.navigate('BagPage')
+      // }, 2000)
       // console.log(stringifiedValue)
     } catch (error) {
       console.log('Lỗi rồi cu')
     }
   }
 
-  const snapPoints = ['30%', '60%']
+  const snapPoints = ['40%', '60%']
   const handleOnBack = () => {
     {
       navigation.getParent().setOptions({
@@ -903,41 +896,3 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   }
 })
-
-const DataImgeColors = [
-  {
-    id: 1,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F2f%2Fd4%2F2fd49e1d4ed15f740a9874b59758e025921fee7b.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/fullscreen]'
-  },
-  {
-    id: 2,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Fe0%2F91%2Fe091d36cead2efe5cf4b3fd8bf96252e56ab79af.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/fullscreen]'
-  },
-  {
-    id: 3,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Fe0%2F91%2Fe091d36cead2efe5cf4b3fd8bf96252e56ab79af.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/fullscreen]'
-  },
-  {
-    id: 4,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Fe0%2F91%2Fe091d36cead2efe5cf4b3fd8bf96252e56ab79af.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/fullscreen]'
-  },
-  {
-    id: 5,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Fe0%2F91%2Fe091d36cead2efe5cf4b3fd8bf96252e56ab79af.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/fullscreen]'
-  },
-  {
-    id: 6,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Fe0%2F91%2Fe091d36cead2efe5cf4b3fd8bf96252e56ab79af.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/fullscreen]'
-  },
-  {
-    id: 7,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Fe0%2F91%2Fe091d36cead2efe5cf4b3fd8bf96252e56ab79af.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/fullscreen]'
-  }
-]

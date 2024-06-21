@@ -66,9 +66,7 @@ const ListSale = () => {
             <MyText style={{ textAlign: 'center' }}>View all</MyText>
           </View>
 
-          <MyText style={{ color: Colors.red, fontWeight: 400 }}>
-            Super summer sale
-          </MyText>
+          <MyText style={{ color: Colors.red, fontWeight: 400 }}>Super summer sale</MyText>
         </View>
       </View>
 
@@ -103,9 +101,7 @@ const HomePage = props => {
             }}
           >
             <View style={styles.btn_check}>
-              <Text style={{ color: Colors.white, fontWeight: '500' }}>
-                Check
-              </Text>
+              <Text style={{ color: Colors.white, fontWeight: '500' }}>Check</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -156,9 +152,7 @@ const HomePage = props => {
         </View>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flex: 1 }}>
-            <View
-              style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}
-            >
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
               <Text style={styles.txt_Summer_sale}>Summer</Text>
               <Text style={styles.txt_Summer_sale}>sale</Text>
             </View>
@@ -167,15 +161,11 @@ const HomePage = props => {
                 style={{ width: '100%', height: 187 }}
                 source={require('@assets/images/image7.png')}
               />
-              <Text style={[styles.txt_new_collection, styles.txt_black]}>
-                Black
-              </Text>
+              <Text style={[styles.txt_new_collection, styles.txt_black]}>Black</Text>
             </View>
           </View>
 
-          <View
-            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-          >
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Image
               style={{ height: 374, width: '100%' }}
               source={require('@assets/images/image6.png')}

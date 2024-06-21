@@ -36,17 +36,11 @@ const ItemListSale = props => {
               borderRadius: 29
             }}
           >
-            <MyText
-              style={{ color: Colors.white, fontWeight: '500', fontSize: 12 }}
-            >
-              -20%
-            </MyText>
+            <MyText style={{ color: Colors.white, fontWeight: '500', fontSize: 12 }}>-20%</MyText>
           </View>
         </View>
 
-        <View
-          style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}
-        >
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
           <Image
             style={{ width: 24, height: 24 }}
             source={require('@assets/images/activated.png')}
@@ -67,16 +61,10 @@ const ItemListSale = props => {
             style={{ width: 24, height: 24 }}
             source={require('@assets/images/activated.png')}
           />
-          <MyText style={{ textAlign: 'center', color: Colors.gray }}>
-            (10)
-          </MyText>
+          <MyText style={{ textAlign: 'center', color: Colors.gray }}>(10)</MyText>
         </View>
-        <MyText style={{ color: Colors.gray, marginTop: 6 }}>
-          Dorothy Perkins
-        </MyText>
-        <MyText
-          style={{ color: Colors.black, fontSize: 16, fontWeight: '400' }}
-        >
+        <MyText style={{ color: Colors.gray, marginTop: 6 }}>Dorothy Perkins</MyText>
+        <MyText style={{ color: Colors.black, fontSize: 16, fontWeight: '400' }}>
           Evening Dress
         </MyText>
         <View style={{ flexDirection: 'row' }}>
@@ -90,9 +78,7 @@ const ItemListSale = props => {
           >
             {data.cost}$
           </MyText>
-          <MyText
-            style={{ fontSize: 14, fontWeight: '500', color: Colors.red }}
-          >
+          <MyText style={{ fontSize: 14, fontWeight: '500', color: Colors.red }}>
             {data.reduced_price}$
           </MyText>
         </View>

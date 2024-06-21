@@ -34,9 +34,7 @@ const BagPage = props => {
   const BottomSheetRef = useRef(null)
   // Logic: onclick Open Bottom Sheet Modal
   const handlePresentModal = () => {
-    props.navigation
-      .getParent()
-      .setOptions({ tabBarStyle: { display: 'none' } })
+    props.navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     BottomSheetRef.current?.present()
     setTimeout(() => {
       setIsOpen(true)
@@ -89,18 +87,12 @@ const BagPage = props => {
         >
           <View>
             {addFavorite ? (
-              <Icons.MaterialIcons
-                name={'favorite'}
-                size={24}
-                color={Colors.red}
-              />
+              <Icons.MaterialIcons name={'favorite'} size={24} color={Colors.red} />
             ) : (
               <Icons.MaterialIcons name={'favorite-border'} size={24} />
             )}
           </View>
-          <MyText style={{ textAlign: 'center', marginStart: 8 }}>
-            Yêu thích
-          </MyText>
+          <MyText style={{ textAlign: 'center', marginStart: 8 }}>Yêu thích</MyText>
         </TouchableOpacity>
         <View
           style={{
@@ -121,9 +113,7 @@ const BagPage = props => {
         >
           <Icons.Feather name={'trash-2'} size={24} />
 
-          <MyText style={{ textAlign: 'center', marginStart: 8 }}>
-            Xóa khỏi danh sách
-          </MyText>
+          <MyText style={{ textAlign: 'center', marginStart: 8 }}>Xóa khỏi danh sách</MyText>
         </TouchableOpacity>
       </View>
     )
@@ -149,12 +139,10 @@ const BagPage = props => {
   const handleSelectCodeSale = (item, index) => {
     const updatedSelected = [...selected]
     // Efficiently update the selected property using find and spread
-    const updatedItem = updatedSelected.find(
-      selectedItem => selectedItem.id === item.id
-    )
+    const updatedItem = updatedSelected.find(selectedItem => selectedItem.id === item.id)
     if (updatedItem) {
       updatedItem.selected = true
-      console.log(updatedItem.code_saleOff)
+      // console.log(JSON.stringify(updatedItem.code_saleOff, null, 2))
     }
     const selectedCodeSale = updatedItem.code_saleOff
 
@@ -172,7 +160,7 @@ const BagPage = props => {
       const value = await AsyncStorage.getItem('my-cart')
       if (value !== null) {
         const parsedValue = JSON.parse(value)
-        console.log('Value retrieved successfully:', parsedValue)
+        // console.log('Value retrieved successfully >>>:', JSON.stringify(parsedValue, null, 2))
         setproductTocart([parsedValue])
         // Sử dụng giá trị đã phân tích cú pháp
       } else {
@@ -199,9 +187,7 @@ const BagPage = props => {
             Không có sản phẩm trong giỏ hàng của bạn
           </MyText>
 
-          <TouchableOpacity
-            style={{ backgroundColor: Colors.red, paddingVertical: 16 }}
-          >
+          <TouchableOpacity style={{ backgroundColor: Colors.red, paddingVertical: 16 }}>
             <MyText
               fontFamily={'Montserrat-SemiBold'}
               style={{
@@ -215,9 +201,7 @@ const BagPage = props => {
             </MyText>
           </TouchableOpacity>
         </View>
-        <MyText
-          style={{ textAlign: 'left', marginTop: 16, marginHorizontal: 16 }}
-        >
+        <MyText style={{ textAlign: 'left', marginTop: 16, marginHorizontal: 16 }}>
           Đăng nhập để sử dụng các ưu đãi cá nhân!
         </MyText>
         <View
@@ -237,9 +221,7 @@ const BagPage = props => {
               textAlign: 'center'
             }}
           />
-          <MyText style={{ textAlign: 'center', marginHorizontal: 10 }}>
-            Hoặc
-          </MyText>
+          <MyText style={{ textAlign: 'center', marginHorizontal: 10 }}>Hoặc</MyText>
           <MyText
             style={{
               backgroundColor: Colors.gray,
@@ -276,7 +258,6 @@ const BagPage = props => {
   // Item list product
   const [quantity, setQuantity] = useState(1)
   const [price, setPrice] = useState()
-  console.log(price)
 
   const ItemCart = ({ item }) => {
     const {
@@ -340,12 +321,8 @@ const BagPage = props => {
                   flexDirection: 'row'
                 }}
               >
-                <MyText style={{ marginStart: 8, color: Colors.gray }}>
-                  Size:
-                </MyText>
-                <MyText style={{ color: Colors.black, marginStart: 8 }}>
-                  {vaLueSelectSize}
-                </MyText>
+                <MyText style={{ marginStart: 8, color: Colors.gray }}>Size:</MyText>
+                <MyText style={{ color: Colors.black, marginStart: 8 }}>{vaLueSelectSize}</MyText>
               </View>
             </View>
             <View
@@ -374,9 +351,7 @@ const BagPage = props => {
                 >
                   <Icons.AntDesign name={'plus'} size={18} />
                 </TouchableOpacity>
-                <MyText style={{ textAlign: 'center', marginHorizontal: 15 }}>
-                  {quantity}
-                </MyText>
+                <MyText style={{ textAlign: 'center', marginHorizontal: 15 }}>{quantity}</MyText>
                 <TouchableOpacity
                   onPress={() => handleMinus()}
                   style={{
@@ -390,9 +365,7 @@ const BagPage = props => {
                   <Icons.AntDesign name={'minus'} size={18} />
                 </TouchableOpacity>
               </View>
-              <MyText style={{ fontSize: 14, fontWeight: '500' }}>
-                {price} VND
-              </MyText>
+              <MyText style={{ fontSize: 14, fontWeight: '500' }}>{price} VND</MyText>
             </View>
             {visiblePopupMenu ? popupMenu() : null}
           </View>
@@ -484,9 +457,7 @@ const BagPage = props => {
               >
                 {selectedCodeSale}
               </MyText>
-              <TouchableOpacity
-                onPress={() => setSelectedCodeSale(!selectedCodeSale)}
-              >
+              <TouchableOpacity onPress={() => setSelectedCodeSale(!selectedCodeSale)}>
                 <Icons.Feather name={'x'} size={24} />
               </TouchableOpacity>
             </View>
@@ -530,14 +501,7 @@ const BagPage = props => {
   }
   // render item list Product
   const renderItem = ({ item, index }) => {
-    const {
-      id,
-      name_saleOff,
-      image_saleOff,
-      date_saleOff,
-      code_saleOff,
-      subject
-    } = item
+    const { id, name_saleOff, image_saleOff, date_saleOff, code_saleOff, subject } = item
     return (
       <View style={styles.wrapper_promoCodes}>
         <View style={styles.image_promoCodes}>
@@ -586,10 +550,7 @@ const BagPage = props => {
               }}
             >
               {subject}
-              <MyText
-                fontFamily={'Montserrat-SemiBold'}
-                style={styles.btn_apply_txt}
-              >
+              <MyText fontFamily={'Montserrat-SemiBold'} style={styles.btn_apply_txt}>
                 Áp dụng
               </MyText>
             </TouchableOpacity>
@@ -610,11 +571,7 @@ const BagPage = props => {
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={() => goBack()}>
-            <Icons.Ionicons
-              name={'arrow-back-sharp'}
-              size={24}
-              color={Colors.black}
-            />
+            <Icons.Ionicons name={'arrow-back-sharp'} size={24} color={Colors.black} />
           </TouchableOpacity>
           <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_header}>
             Giỏ hàng của tôi
@@ -674,16 +631,12 @@ const BagPage = props => {
             }}
           >
             <MyText style={{ fontSize: 12 }}>
-              Giá cả và chi phí giao hàng này chưa phải là cuối cùng cho đến khi
-              bạn tới phần thanh toán.
+              Giá cả và chi phí giao hàng này chưa phải là cuối cùng cho đến khi bạn tới phần thanh
+              toán.
             </MyText>
             <View style={{ flexDirection: 'row', marginTop: 8 }}>
-              <MyText style={{ fontSize: 12 }}>
-                Miễn phí trả hàng trong 30 ngày.
-              </MyText>
-              <MyText
-                style={{ borderBottomWidth: 0.5, marginStart: 4, fontSize: 12 }}
-              >
+              <MyText style={{ fontSize: 12 }}>Miễn phí trả hàng trong 30 ngày.</MyText>
+              <MyText style={{ borderBottomWidth: 0.5, marginStart: 4, fontSize: 12 }}>
                 trả hàng và hoàn tiền
               </MyText>
             </View>
@@ -738,19 +691,12 @@ const BagPage = props => {
               style={styles.btn_discountCode}
               onPress={() => BottomSheetRef.current.close() & setBottomBar()}
             >
-              <Icons.Feather
-                name={'arrow-right'}
-                size={24}
-                color={Colors.white}
-              />
+              <Icons.Feather name={'arrow-right'} size={24} color={Colors.white} />
             </TouchableOpacity>
           </View>
 
           <ScrollView style={{ marginTop: 32, marginHorizontal: 16 }}>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
-              style={{ fontSize: 18, fontWeight: '500' }}
-            >
+            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 18, fontWeight: '500' }}>
               Mã khuyến mãi của bạn
             </MyText>
 
@@ -849,52 +795,6 @@ const styles = StyleSheet.create({
     shadowColor: Colors.gray
   }
 })
-
-const DataMyBag = [
-  {
-    id: 1,
-    category_name: 'Bordy',
-    product_name: 'Rigler',
-    color: 'Black',
-    size: 'M',
-    price: 12,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=source[/b8/3d/b83db12f18a434b25bddc027d4b3bf3b329b2e36.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
-  },
-  {
-    id: 2,
-    category_name: 'Bordy',
-    product_name: 'Rigler',
-    review: 1,
-    color: 'Black',
-    size: 'M',
-    price: 12,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=source[/b8/3d/b83db12f18a434b25bddc027d4b3bf3b329b2e36.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
-  },
-  {
-    id: 3,
-    category_name: 'Talbert',
-    product_name: 'Presidey',
-    review: 2,
-    color: 'Black',
-    size: 'M',
-    price: 20,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=source[/b8/54/b8547cb07c52deb4a896206184c63c0a50429c20.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
-  },
-  {
-    id: 4,
-    category_name: 'Bogey',
-    product_name: 'Lawly',
-    review: 3,
-    color: 'Black',
-    size: 'M',
-    price: 30,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=source[/f6/7a/f67afb0615e9deecb932ae28402005b90ec0204e.jpg],origin[dam],category[],type[DESCRIPTIVESTILLLIFE],res[y],hmver[2]&call=url[file:/product/main]'
-  }
-]
 
 const DataCodeSale = [
   {

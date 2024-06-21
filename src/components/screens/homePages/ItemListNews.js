@@ -36,16 +36,10 @@ const ItemListNew = props => {
               borderRadius: 29
             }}
           >
-            <MyText
-              style={{ color: Colors.white, fontWeight: '500', fontSize: 12 }}
-            >
-              NEW
-            </MyText>
+            <MyText style={{ color: Colors.white, fontWeight: '500', fontSize: 12 }}>NEW</MyText>
           </View>
         </View>
-        <View
-          style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}
-        >
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
           <Image
             style={{ width: 24, height: 24 }}
             source={require('../../../assets/images/activated.png')}
@@ -66,14 +60,10 @@ const ItemListNew = props => {
             style={{ width: 24, height: 24 }}
             source={require('../../../assets/images/activated.png')}
           />
-          <MyText style={{ textAlign: 'center', color: Colors.gray }}>
-            (10)
-          </MyText>
+          <MyText style={{ textAlign: 'center', color: Colors.gray }}>(10)</MyText>
         </View>
         <MyText style={{ color: Colors.gray }}>Dorothy Perkins</MyText>
-        <MyText
-          style={{ color: Colors.black, fontSize: 16, fontWeight: '400' }}
-        >
+        <MyText style={{ color: Colors.black, fontSize: 16, fontWeight: '400' }}>
           Evening Dress
         </MyText>
         <View style={{ flexDirection: 'row' }}>
@@ -87,11 +77,7 @@ const ItemListNew = props => {
           >
             15$
           </MyText>
-          <MyText
-            style={{ fontSize: 14, fontWeight: '500', color: Colors.red }}
-          >
-            12$
-          </MyText>
+          <MyText style={{ fontSize: 14, fontWeight: '500', color: Colors.red }}>12$</MyText>
         </View>
       </View>
     </View>
