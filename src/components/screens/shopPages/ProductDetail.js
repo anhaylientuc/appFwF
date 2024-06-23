@@ -2,8 +2,6 @@ import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useRef, useState } from 'react'
 import {
-  Alert,
-  Animated,
   Dimensions,
   FlatList,
   Image,
@@ -19,6 +17,7 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import { DaTaSale } from 'src/constants/Databases'
 import MyText from 'src/constants/FontsStyle'
+import { useStorage } from 'src/contexts/StorageProvider'
 import { getProducts } from 'src/utils/http/NewHTTP'
 import ItemListNew from '../homePages/ItemListNews'
 const windowWith = Dimensions.get('window').width
@@ -31,12 +30,7 @@ const ProductWomen = props => {
     }
   } = props
 
-  const width = Dimensions.get('window').width
-
-  const scrollX = new Animated.Value(0)
-
-  let position = Animated.divide(scrollX, width)
-
+  const { storageData, setStorageData } = useStorage()
   const sheetRef = useRef(null)
   const [activated, setActivated] = useState(0)
   const [isOpen, setIsOpen] = useState(false)
@@ -47,9 +41,9 @@ const ProductWomen = props => {
   const [selectedName, setselectedName] = useState(null)
   const [vaLueSelectSize, setVaLueSelectSize] = useState(null)
   const [isInfoProduct, setIsInfoProduct] = useState(false)
-  const [storageData, setstorageData] = useState([])
-  // console.log('>>>', storageData)
-  // // Mở Modal
+  console.log(selectedId)
+  // console.log('>>> Giỏ hàng hiện tại', JSON.stringify(storageData))
+  // // // Mở Modal
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,8 +64,26 @@ const ProductWomen = props => {
         // Handle errors appropriately in your application
       }
     }
+
     fetchData()
   }, [])
+
+  const handleAddToCart = async () => {
+    const productTocart = {
+      _id: selectedId,
+      description: description,
+      product_Name: product_Name,
+      product_id: product_id,
+      base_price: base_price,
+      color: selectedName,
+      size: vaLueSelectSize,
+      image: wallPaper[0].url,
+      code: code
+    }
+    const updateProductToCart = [...storageData, productTocart]
+    setStorageData(updateProductToCart)
+    await AsyncStorage.setItem('my-cart', JSON.stringify(updateProductToCart))
+  }
 
   const handelPresenProductId = item => {
     ;(async () => {
@@ -123,28 +135,6 @@ const ProductWomen = props => {
   const [addFavorite, setAddFavorite] = useState(false)
   const handleAddFavorite = () => {
     setAddFavorite(!addFavorite)
-  }
-
-  const handleAddToCart = async () => {
-    const valueToSave = {
-      product_Name
-    }
-
-    try {
-      const stringifiedValue = JSON.stringify(valueToSave, null, 2)
-      Alert.alert('Add successfully')
-      await AsyncStorage.setItem('my-cart', stringifiedValue)
-        .then(() => console.log('Value stored successfully'))
-        .catch(error => console.error('Error saving value:', error))
-      storageData.push(valueToSave)
-      console.log(storageData)
-      // setTimeout(() => {
-      //   props.navigation.navigate('BagPage')
-      // }, 2000)
-      // console.log(stringifiedValue)
-    } catch (error) {
-      console.log('Lỗi rồi cu')
-    }
   }
 
   const snapPoints = ['40%', '60%']

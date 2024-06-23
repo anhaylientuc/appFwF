@@ -37,6 +37,7 @@ const ItemCategoryWomen = props => {
   const [selected, setSelected] = useState(DataSortBy)
   const snapPoints = ['50%', '60%']
   const [nameCategoryById, setnameCategoryById] = useState('')
+  const [selectedProductId, setselectedProductId] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,7 +49,7 @@ const ItemCategoryWomen = props => {
         setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
         setproducts(products)
         setwindowWith(width / 2)
-        setwindowHeight(height / 3)
+        setwindowHeight(height / 2)
       } catch (error) {
         console.log(error)
         throw error
@@ -76,11 +77,11 @@ const ItemCategoryWomen = props => {
     if (numColumns) {
       setNumColumns(null)
       setwindowWith(width)
-      setwindowHeight(height / 2)
+      setwindowHeight(height * 1)
     } else {
       setNumColumns(2)
       setwindowWith(width / 2)
-      setwindowHeight(height / 3)
+      setwindowHeight(height / 2)
     }
   }
 
@@ -125,6 +126,7 @@ const ItemCategoryWomen = props => {
         const products = await getProducts({ version, category_id })
         // console.log('Fetched products:', products)
         setproducts(products)
+        setselectedProductId(_id)
       } catch (error) {
         console.error('Error:', error)
         // Handle errors appropriately in your application
@@ -138,17 +140,21 @@ const ItemCategoryWomen = props => {
         <TouchableOpacity
           onPress={() => handlePressedCategoryId(_id)}
           style={{
-            backgroundColor: Colors.black,
+            backgroundColor: selectedProductId === item._id ? Colors.black : Colors.bgBottomSheet,
             marginStart: 16,
             borderRadius: 29,
             paddingVertical: 8,
             paddingHorizontal: 16,
-            justifyContent: 'center'
+            justifyContent: 'center',
+            borderWidth: selectedProductId === item._id ? 0 : 1
           }}
         >
           <MyText
             fontFamily={'Montserrat-SemiBold'}
-            style={{ color: Colors.white, textAlign: 'center' }}
+            style={{
+              color: selectedProductId === item._id ? Colors.white : Colors.black,
+              textAlign: 'center'
+            }}
           >
             {name}
           </MyText>
@@ -191,19 +197,29 @@ const ItemCategoryWomen = props => {
       <View
         style={[
           styles.renderItems.container,
-          { backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.white }
+          {
+            backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.white
+          }
         ]}
       >
-        <View style={{ paddingVertical: 32, width: windowWith }}>
+        <View
+          style={{
+            marginBottom: 16,
+            width: windowWith
+          }}
+        >
           <ScrollView
             pagingEnabled
             onScroll={this.change}
             showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
+              backgroundColor: Colors.bgBottomSheet
+            }}
             horizontal
           >
             {images.map((image, index) => (
               <Image
-                resizeMode="center"
+                resizeMode="cover"
                 key={index}
                 style={{ width: windowWith, height: windowHeight }}
                 source={{ uri: image.url }}
@@ -269,12 +285,12 @@ const ItemCategoryWomen = props => {
         style={{
           width: '100%',
           height: '100%',
-          backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.grayBg
+          backgroundColor: isOpen ? Colors.gray : Colors.grayBg
         }}
       >
         <View
           style={{
-            backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.white,
+            backgroundColor: isOpen ? Colors.gray : Colors.white,
             elevation: 8,
             shadowColor: Colors.gray
           }}
@@ -297,33 +313,27 @@ const ItemCategoryWomen = props => {
           </View>
 
           <View>
-            {
-              // render list Category
-            }
-            <View>
-              {/* <Text>{categoryNameById}</Text> */}
-              <FlatList
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                renderItem={renderListCategoryById}
-                data={categoriesById}
-              />
-            </View>
+            {/* <Text>{categoryNameById}</Text> */}
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              renderItem={renderListCategoryById}
+              data={categoriesById}
+            />
 
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                marginVertical: 18,
+                paddingVertical: 16,
                 elevation: 8,
                 shadowColor: Colors.gray,
-                marginHorizontal: 16
+                paddingHorizontal: 16
               }}
             >
               <TouchableOpacity
                 style={{
                   flexDirection: 'row',
-
                   alignItems: 'center'
                 }}
               >
@@ -352,13 +362,13 @@ const ItemCategoryWomen = props => {
         </View>
         <ScrollView
           style={{
-            backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.grayBg
+            backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.grayBg 
           }}
           showsVerticalScrollIndicator={false}
         >
           <FlatList
             // render Item Product by Category
-            style={{ marginBottom: '25%' }}
+            style={{ marginBottom: '25%' , }}
             scrollEnabled={false}
             numColumns={numColumns}
             key={numColumns}
@@ -386,7 +396,7 @@ const ItemCategoryWomen = props => {
               style={{
                 color: Colors.black,
                 textAlign: 'center',
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: '500',
                 marginBottom: 32
               }}
@@ -448,9 +458,7 @@ const styles = StyleSheet.create({
     right: 16
   },
   renderItems: {
-    container: {
-      flex: 1
-    },
+    container: {},
     txt_product_name: {
       fontSize: 16,
       marginTop: 5,
@@ -488,7 +496,7 @@ const styles = StyleSheet.create({
   },
   txt_filters: {
     marginStart: 6,
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '400',
     color: Colors.black
   },

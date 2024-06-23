@@ -4,21 +4,25 @@ import {
   BottomSheetModalProvider
 } from '@gorhom/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import {
+  Dimensions,
   FlatList,
   Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
   View
 } from 'react-native'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
+import { useStorage } from 'src/contexts/StorageProvider'
 import Icons from '../../icons/Icon'
-
+const windowWith = Dimensions.get('window').width
+const windowHeight = Dimensions.get('window').height
 const BagPage = props => {
   const {
     navigation: { goBack }
@@ -26,12 +30,20 @@ const BagPage = props => {
   // sate selected code sale off
   const [selected, setSelected] = useState(DataCodeSale)
   const [selectedCodeSale, setSelectedCodeSale] = useState()
-  const [productTocart, setproductTocart] = useState()
-
+  const { storageData, setStorageData } = useStorage()
+  const [visiblePopupMenu, setVisiblePopupMenu] = useState(null)
+  const [addFavorite, setAddFavorite] = useState(null)
+  const BottomSheetRef = useRef(null)
+  const [quantity, setQuantity] = useState(1)
+  const [price, setPrice] = useState()
   const [isOpen, setIsOpen] = useState(false)
+
+  const handleStatusProduct = _id => {
+    setVisiblePopupMenu(_id)
+    console.log(_id)
+  }
   const snapPoints = ['60%', '80%']
   // set sate Bottom sheet to useRef
-  const BottomSheetRef = useRef(null)
   // Logic: onclick Open Bottom Sheet Modal
   const handlePresentModal = () => {
     props.navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
@@ -41,10 +53,38 @@ const BagPage = props => {
     }, 300)
   }
 
+  // Logic: onclick show Bottom bar
+  const setBottomBar = () => {
+    props.navigation.getParent().setOptions({
+      tabBarStyle: {
+        borderTopEndRadius: 12,
+        borderTopStartRadius: 12,
+        paddingTop: 10,
+        paddingBottom: 10,
+        height: 68,
+        backgroundColor: Colors.white,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute'
+      }
+    })
+  }
+  // Logic: onclick item code sale
+  const handleSelectCodeSale = (item, index) => {
+    const updatedSelected = [...selected]
+
+    const updatedItem = updatedSelected.find(selectedItem => selectedItem.id === item.id)
+    if (updatedItem) {
+      updatedItem.selected = true
+    }
+    const selectedCodeSale = updatedItem.code_saleOff
+    // Update state with the modified array
+    setSelected(updatedSelected)
+    setSelectedCodeSale(selectedCodeSale)
+  }
+
   // PopupMenu
-  const [visiblePopupMenu, setVisiblePopupMenu] = useState(false)
-  // Logic: onclick addFavorite
-  const [addFavorite, setAddFavorite] = useState(false)
+
   const handleAddFavorites = () => {
     ;setAddFavorite(!addFavorite) &
       console.log('Thêm vào yêu thích') &
@@ -54,15 +94,20 @@ const BagPage = props => {
   }
 
   // Logic: onClick delete Item from List
-  const [deleteFromList, setDeleteFromList] = useState(false)
-  const handleDeleteFromList = () => {
-    ;setDeleteFromList(!deleteFromList) &
-      console.log('delete From List') &
-      setVisiblePopupMenu(false)
+  const handleDeleteFromList = async _id => {
+    const result = await AsyncStorage.getItem('my-cart')
+    let storage = []
+    if (result !== null) {
+      storage = JSON.parse(result)
+    }
+
+    const newStorage = storage.filter(s => s._id !== visiblePopupMenu)
+    setStorageData(newStorage)
+    await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
   }
 
   // Menu popup Item
-  const popupMenu = () => {
+  const popupMenu = ({ _id }) => {
     return (
       <View
         style={{
@@ -76,7 +121,7 @@ const BagPage = props => {
         }}
       >
         <TouchableOpacity
-          onPress={() => handleAddFavorites()}
+          onPress={() => handleAddFavorites(_id)}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -102,7 +147,7 @@ const BagPage = props => {
           }}
         />
         <TouchableOpacity
-          onPress={() => handleDeleteFromList()}
+          onPress={() => handleDeleteFromList(_id)}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -119,57 +164,6 @@ const BagPage = props => {
     )
   }
 
-  // Logic: onclick show Bottom bar
-  const setBottomBar = () => {
-    props.navigation.getParent().setOptions({
-      tabBarStyle: {
-        borderTopEndRadius: 12,
-        borderTopStartRadius: 12,
-        paddingTop: 10,
-        paddingBottom: 10,
-        height: 68,
-        backgroundColor: Colors.white,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute'
-      }
-    })
-  }
-  // Logic: onclick item code sale
-  const handleSelectCodeSale = (item, index) => {
-    const updatedSelected = [...selected]
-    // Efficiently update the selected property using find and spread
-    const updatedItem = updatedSelected.find(selectedItem => selectedItem.id === item.id)
-    if (updatedItem) {
-      updatedItem.selected = true
-      // console.log(JSON.stringify(updatedItem.code_saleOff, null, 2))
-    }
-    const selectedCodeSale = updatedItem.code_saleOff
-
-    // Update state with the modified array
-    setSelected(updatedSelected)
-    setSelectedCodeSale(selectedCodeSale)
-  }
-
-  useEffect(() => {
-    getDataProduct()
-  }, [])
-
-  const getDataProduct = async () => {
-    try {
-      const value = await AsyncStorage.getItem('my-cart')
-      if (value !== null) {
-        const parsedValue = JSON.parse(value)
-        // console.log('Value retrieved successfully >>>:', JSON.stringify(parsedValue, null, 2))
-        setproductTocart([parsedValue])
-        // Sử dụng giá trị đã phân tích cú pháp
-      } else {
-        console.log('No value found for key "my-cart"')
-      }
-    } catch (error) {
-      console.error('Error retrieving value:', error)
-    }
-  }
   // No cart to Bag
   const noCart = () => {
     return (
@@ -255,22 +249,9 @@ const BagPage = props => {
     )
   }
 
-  // Item list product
-  const [quantity, setQuantity] = useState(1)
-  const [price, setPrice] = useState()
-
-  const ItemCart = ({ item }) => {
-    const {
-      product_Id,
-      product_Name,
-      images,
-      base_price,
-      category_id,
-      vaLueSelectSize,
-      description,
-      code,
-      discount_price
-    } = item
+  const ItemCart = ({ item, index }) => {
+    const { product_Name, base_price, category_id, size, selectedName, _id, color, image, code } =
+      item
 
     const handlePlus = () => {
       setQuantity(quantity + 1)
@@ -282,6 +263,7 @@ const BagPage = props => {
         setPrice(base_price * quantity)
       }
     }
+
     return (
       <SafeAreaView style={{ marginBottom: 24 }}>
         <View
@@ -299,7 +281,7 @@ const BagPage = props => {
               borderTopLeftRadius: 8,
               borderBottomLeftRadius: 8
             }}
-            source={{ uri: images[0].url }}
+            source={{ uri: image }}
           />
 
           <View
@@ -310,19 +292,47 @@ const BagPage = props => {
               backgroundColor: isOpen ? Colors.gray : Colors.white
             }}
           >
-            <MyText style={styles.txt_price}>{product_Name}</MyText>
-            <View style={{ flexDirection: 'row', marginVertical: 8 }}>
-              <View style={{ flexDirection: 'row' }}>
-                <MyText style={{ color: Colors.gray }}>Màu sắc:</MyText>
-                {/* <MyText style={{ color: Colors.black }}> {color}</MyText> */}
+            <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_price}>
+              {product_Name}
+            </MyText>
+            <View
+              style={{
+                flexDirection: 'column',
+                marginVertical: 8,
+                justifyContent: 'space-between'
+              }}
+            >
+              <View style={{ flexDirection: 'row', width: windowWith / 2.2 }}>
+                <MyText fontFamily={'Montserrat-SemiBold'} style={{ color: Colors.gray }}>
+                  Màu sắc:
+                </MyText>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    color: Colors.black,
+                    marginStart: 8,
+                    fontWeight: '500',
+                    fontFamily: 'Montserrat-SemiBold'
+                  }}
+                >
+                  {color}
+                </Text>
               </View>
+              <View style={{ height: 8 }} />
               <View
                 style={{
                   flexDirection: 'row'
                 }}
               >
-                <MyText style={{ marginStart: 8, color: Colors.gray }}>Size:</MyText>
-                <MyText style={{ color: Colors.black, marginStart: 8 }}>{vaLueSelectSize}</MyText>
+                <MyText fontFamily={'Montserrat-SemiBold'} style={{ color: Colors.gray }}>
+                  Size:
+                </MyText>
+                <MyText
+                  fontFamily={'Montserrat-SemiBold'}
+                  style={{ color: Colors.black, marginStart: 8 }}
+                >
+                  {size}
+                </MyText>
               </View>
             </View>
             <View
@@ -351,7 +361,12 @@ const BagPage = props => {
                 >
                   <Icons.AntDesign name={'plus'} size={18} />
                 </TouchableOpacity>
-                <MyText style={{ textAlign: 'center', marginHorizontal: 15 }}>{quantity}</MyText>
+                <MyText
+                  fontFamily={'Montserrat-SemiBold'}
+                  style={{ textAlign: 'center', marginHorizontal: 15 }}
+                >
+                  {quantity}
+                </MyText>
                 <TouchableOpacity
                   onPress={() => handleMinus()}
                   style={{
@@ -367,25 +382,41 @@ const BagPage = props => {
               </View>
               <MyText style={{ fontSize: 14, fontWeight: '500' }}>{price} VND</MyText>
             </View>
-            {visiblePopupMenu ? popupMenu() : null}
+            {visiblePopupMenu === _id ? popupMenu(_id) : null}
           </View>
           <TouchableOpacity
-            onPress={() => setVisiblePopupMenu(!visiblePopupMenu)}
+            onPress={() => handleStatusProduct(_id)}
             style={{
               borderTopRightRadius: 8
             }}
           >
-            <Icons.Entypo
-              name={'dots-three-vertical'}
-              size={18}
-              color={Colors.gray}
-              style={{
-                position: 'absolute',
-                right: 0,
-                padding: 8,
-                borderTopRightRadius: 8
-              }}
-            />
+            {visiblePopupMenu === _id ? (
+              <TouchableOpacity onPress={() => setVisiblePopupMenu(!visiblePopupMenu)}>
+                <Icons.Feather
+                  name={'x'}
+                  size={18}
+                  color={Colors.red}
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    padding: 8,
+                    borderTopRightRadius: 8
+                  }}
+                />
+              </TouchableOpacity>
+            ) : (
+              <Icons.Entypo
+                name={'dots-three-vertical'}
+                size={18}
+                color={Colors.gray}
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  padding: 8,
+                  borderTopRightRadius: 8
+                }}
+              />
+            )}
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -399,7 +430,7 @@ const BagPage = props => {
         <FlatList
           showsVerticalScrollIndicator={false}
           scrollEnabled={false}
-          data={productTocart}
+          data={storageData}
           renderItem={ItemCart}
         />
         <View
@@ -472,8 +503,12 @@ const BagPage = props => {
             marginHorizontal: 16
           }}
         >
-          <MyText style={{ color: Colors.gray }}>Thành tiền:</MyText>
-          <MyText style={styles.txt_price}>299.000 đ</MyText>
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ color: Colors.gray }}>
+            Thành tiền:
+          </MyText>
+          <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_price}>
+            299.000 đ
+          </MyText>
         </View>
 
         <TouchableOpacity
@@ -581,7 +616,7 @@ const BagPage = props => {
           Miễn phí giao hàng cho Member với đơn từ 499k
         </MyText>
         {/* {noCart()} */}
-        {ListItemCart()}
+        {storageData ? ListItemCart() : noCart()}
         <View style={{ marginVertical: 16 }}>
           <MyText
             fontFamily={'Montserrat-SemiBold'}

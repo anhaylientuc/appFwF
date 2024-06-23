@@ -1,0 +1,26 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import React, { createContext, useContext, useEffect, useState } from 'react'
+
+const StorageContext = createContext()
+const StorageProvider = ({ children }) => {
+  const [storageData, setStorageData] = useState([])
+  const getDataProducts = async () => {
+    const result = await AsyncStorage.getItem('my-cart')
+    if (result !== null) {
+      setStorageData(JSON.parse(result))
+    }
+  }
+  useEffect(() => {
+    getDataProducts()
+  }, [])
+
+  return (
+    <StorageContext.Provider value={{ storageData, setStorageData, getDataProducts }}>
+      {children}
+    </StorageContext.Provider>
+  )
+}
+
+export const useStorage = () => useContext(StorageContext)
+
+export default StorageProvider
