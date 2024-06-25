@@ -1,58 +1,67 @@
 import React from 'react'
-import { Dimensions, StyleSheet, Text, View } from 'react-native'
-import Colors from 'src/constants/Colors'
-import Icons from '../icons/Icon'
-import PriceRangeSlider from './PriceRangeSlider'
+import {
+  StyleSheet,
+  Text,
+  View
+} from 'react-native'
 
 const Profile = () => {
   const windowWith = Dimensions.get('window').width
   const windowHeight = Dimensions.get('window').height
 
   return (
-    <View
-      style={{
-        backgroundColor: Colors.grayBg,
-        height: windowHeight,
-        width: windowWith
-      }}
-    >
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingHorizontal: 16,
-          alignItems: 'center',
-          paddingTop: 40,
-          paddingBottom: 16,
-          elevation: 32,
-          shadowColor: Colors.gray,
-          backgroundColor: Colors.white
-        }}
-      >
-        <Icons.Entypo name="chevron-thin-left" size={20} style={{ flex: 1 }} />
-        <Text
-          style={{
-            fontSize: 16,
-            color: Colors.black,
-            fontFamily: 'Montserrat-SemiBold',
-            textAlign: 'center',
-            flex: 1
-          }}
-        >
-          Bộ lọc
-        </Text>
-        <View style={{ flex: 1 }} />
-      </View>
-      <View style={{ paddingVertical: 16, paddingHorizontal: 16 }}>
-        <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>Giá tiền</Text>
-      </View>
-     
-        <PriceRangeSlider />
-     
+    <View>
+      <Text>Profile</Text>
     </View>
   )
 }
 
 export default Profile
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  txt_underinfo: {
+    marginTop: 10,
+    width: 121,
+    height: 11,
+
+    fontSize: 11,
+    fontWeight: '400',
+    fontStyle: 'normal',
+    lineHeight: 11,
+    color: '#9B9B9B'
+  },
+  txt_info: {
+    width: 200,
+    height: 16,
+    fontSize: 16,
+    fontWeight: '600',
+    fontStyle: 'normal',
+    lineHeight: 16,
+    color: '#222222'
+  },
+  view_info: {
+    width: 350,
+    height: 45
+  },
+  view_search: {
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    padding: 8,
+    marginTop: 44
+  },
+  txt_profile: {
+    width: 169,
+    height: 34,
+
+    fontSize: 34,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    lineHeight: 34,
+    color: '#222222'
+  },
+  view_pic: {
+    marginTop: 24,
+    flexDirection: 'row',
+    backgroundColor: '#F9F9F9'
+  }
+})
