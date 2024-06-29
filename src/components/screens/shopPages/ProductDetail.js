@@ -2,6 +2,7 @@ import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useRef, useState } from 'react'
 import {
+  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -22,7 +23,7 @@ import { getProducts } from 'src/utils/http/NewHTTP'
 import ItemListNew from '../homePages/ItemListNews'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
-const ProductWomen = props => {
+const ProductDetail = props => {
   const {
     navigation,
     route: {
@@ -41,9 +42,10 @@ const ProductWomen = props => {
   const [selectedName, setselectedName] = useState(null)
   const [vaLueSelectSize, setVaLueSelectSize] = useState(null)
   const [isInfoProduct, setIsInfoProduct] = useState(false)
-  console.log(selectedId)
-  // console.log('>>> Giỏ hàng hiện tại', JSON.stringify(storageData))
-  // // // Mở Modal
+  const [cnt, setcnt] = useState()
+  const [attributes_id, setattributes_id] = useState(null)
+  // quantity khởi tạo mặc định
+  const [quantity, setQuantity] = useState(1)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,22 +69,64 @@ const ProductWomen = props => {
 
     fetchData()
   }, [])
+  console.log(attributes_id)
 
   const handleAddToCart = async () => {
-    const productTocart = {
-      _id: selectedId,
-      description: description,
-      product_Name: product_Name,
-      product_id: product_id,
-      base_price: base_price,
-      color: selectedName,
-      size: vaLueSelectSize,
-      image: wallPaper[0].url,
-      code: code
+    // Check if product already exists in storage
+    const existingProductIndex = storageData.findIndex(obj => obj.attributes === attributes_id)
+
+    if (existingProductIndex !== -1) {
+      // Update quantity if product exists
+      const updatedStorage = storageData.map((obj, index) => {
+        if (index === existingProductIndex) {
+          console.log('=========================')
+          console.log('attributes_id:', attributes_id, 'đã tồn tại')
+          // Check stock before updating
+          if (obj.quantity + quantity <= cnt) {
+            const newQuantity = obj.quantity + quantity
+            const newPrice = base_price * newQuantity
+            console.log('Cập nhật thành công')
+            return {
+              ...obj,
+              quantity: newQuantity,
+              newPrice: newPrice
+            }
+          } else {
+            Alert.alert('Số lượng tông kho không đủ')
+            return obj // Return unchanged if stock limit reached
+          }
+        } else {
+          return obj // Return other items unchanged
+        }
+      })
+
+      await setStorageData(updatedStorage)
+      // console.log(JSON.stringify(updatedStorage, null, 2))
+    } else {
+      // Add new product if it doesn't exist
+      const newProduct = {
+        _id: selectedId,
+        description: description,
+        product_Name: product_Name,
+        product_id: product_id,
+        base_price: base_price,
+        color: selectedName,
+        size: vaLueSelectSize,
+        image: wallPaper[0].url,
+        code: code,
+        newPrice: base_price * quantity,
+        quantity: quantity,
+        cnt: cnt,
+        attributes: attributes_id
+      }
+
+      const updatedStorage = [...storageData, newProduct]
+      setStorageData(updatedStorage)
+      console.log(JSON.stringify(updatedStorage, null, 2))
+      await AsyncStorage.setItem('my-cart', JSON.stringify(updatedStorage))
+      Alert.alert('Thêm thành công')
+      sheetRef.current?.close() // Assuming sheetRef is a reference to a modal component
     }
-    const updateProductToCart = [...storageData, productTocart]
-    setStorageData(updateProductToCart)
-    await AsyncStorage.setItem('my-cart', JSON.stringify(updateProductToCart))
   }
 
   const handelPresenProductId = item => {
@@ -95,11 +139,48 @@ const ProductWomen = props => {
         setSelected(filteredData)
         setwallPaper(filteredImages)
         setselectedName(filterName[0].value)
+        setVaLueSelectSize(null)
+        console.log('id sản phẩm: ', selectedId)
       } catch (error) {
         console.error('Error:', error)
         // Handle errors appropriately in your application
       }
     })()
+  }
+  const handleSelect = (item, index) => {
+    // Update selected items efficiently
+    const updatedSelected = selected.map(selectedItem => ({
+      ...selectedItem, // Preserve existing properties
+      selected: selectedItem._id === item._id ? true : false // Toggle selection based on ID
+    }))
+    setQuantity(1)
+    setVaLueSelectSize(item.value)
+    console.log('>>> id attributes: ', attributes_id)
+    setcnt(item.cnt)
+    setattributes_id(item._id)
+  }
+
+  const handlePlus = () => {
+    if (quantity < 20 && quantity < cnt) {
+      setQuantity(quantity + 1)
+    } else if (attributes_id == null) {
+      Alert.alert('Vui lòng chọn kích cỡ')
+    } else if (quantity == cnt) {
+      Alert.alert('Chọn tối đa '+ cnt)
+    } else {
+      Alert.alert('chọn tối đa 20')
+    }
+  }
+
+  // console.log('Số lượng khách hàng thêm', quantity)
+  const handleMinus = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1)
+    } else if (attributes_id == null) {
+      Alert.alert('Vui lòng chọn kích cỡ')
+    } else {
+      Alert.alert('Chọn tối thiểu 1')
+    }
   }
 
   const handlePresentModal = () => {
@@ -137,7 +218,7 @@ const ProductWomen = props => {
     setAddFavorite(!addFavorite)
   }
 
-  const snapPoints = ['40%', '60%']
+  const snapPoints = ['55%']
   const handleOnBack = () => {
     {
       navigation.getParent().setOptions({
@@ -156,21 +237,6 @@ const ProductWomen = props => {
       })
       props.navigation.goBack()
     }
-  }
-
-  const handleSelect = (item, index) => {
-    // Update selected items efficiently
-    const updatedSelected = selected.map(selectedItem => ({
-      ...selectedItem, // Preserve existing properties
-      selected: selectedItem._id === item._id ? true : false // Toggle selection based on ID
-    }))
-
-    // Update state and value
-    setSelected(updatedSelected)
-    setVaLueSelectSize(item.value) // Assuming this sets the size value
-
-    // Close the sheet if desired
-    sheetRef.current?.close() // Use optional chaining to handle potential null reference
   }
 
   const infoProduct = () => {
@@ -309,11 +375,41 @@ const ProductWomen = props => {
             <TouchableOpacity onPress={() => handleOnBack()}>
               <Icons.Ionicons name={'chevron-back-outline'} size={24} />
             </TouchableOpacity>
-            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16 }}>
-              {/* {product_Name} */}
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
+              style={{ fontSize: 16, color: Colors.black }}
+            >
+              {product_Name}
             </MyText>
-            <TouchableOpacity onPress={() => props.navigation.navigate('BagPage')}>
-              <Icons.SimpleLineIcons name={'handbag'} size={24} />
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('BagPage')}
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              <Icons.SimpleLineIcons name={'bag'} size={28} />
+              <View
+                style={{
+                  position: 'absolute',
+                  right: 4,
+                  left: 4,
+                  top: 10,
+                  width: 20
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: 'Montserrat-SemiBold',
+                    fontSize: 12,
+                    textAlign: 'center',
+                    color: Colors.black
+                  }}
+                >
+                  {storageData.length ? storageData.length : null}
+                </Text>
+              </View>
             </TouchableOpacity>
           </View>
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -662,17 +758,15 @@ const ProductWomen = props => {
                 {vaLueSelectSize ? vaLueSelectSize : <Text>Kích cỡ</Text>}
               </MyText>
 
-              <Icons.Entypo name={'chevron-small-down'} size={20} style={{ right: 8 }} />
+              <Icons.Entypo name={'chevron-small-down'} size={24} style={{ right: 8 }} />
             </TouchableOpacity>
             <View style={{ width: 10 }} />
             <TouchableOpacity
               style={styles.add_to_cart.btn_container}
-              onPress={() => handleAddToCart()}
+              onPress={() => (attributes_id ? handleAddToCart() : handlePresentModal())}
             >
               <Icons.SimpleLineIcons name={'handbag'} size={16} color={Colors.white} />
-              <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_addToCart}>
-                Thêm
-              </MyText>
+              <Text style={styles.txt_addToCart}>Thêm</Text>
             </TouchableOpacity>
           </View>
 
@@ -689,21 +783,35 @@ const ProductWomen = props => {
               setIsOpen(false)
             }}
           >
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
+            <View
               style={{
-                color: Colors.black,
-                textAlign: 'center',
-                fontSize: 18,
-                fontWeight: '500'
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingHorizontal: 16
               }}
             >
-              Chọn kích cỡ
-            </MyText>
+              <View />
+              <MyText
+                fontFamily={'Montserrat-SemiBold'}
+                style={{
+                  color: Colors.black,
+                  textAlign: 'center',
+                  fontSize: 18,
+                  fontWeight: '500',
+                  flex: 2
+                }}
+              >
+                Chọn kích cỡ
+              </MyText>
+              <TouchableOpacity onPress={() => sheetRef.current?.close()}>
+                <Icons.Feather name="x" size={20} />
+              </TouchableOpacity>
+            </View>
             <View style={{ marginHorizontal: 16 }}>
               <FlatList
                 // render Item Data Sort by
-                style={{ marginVertical: 22 }}
+                style={{ marginTop: 16 }}
                 data={selected}
                 numColumns={3}
                 renderItem={({ item, index }) => {
@@ -717,24 +825,21 @@ const ProductWomen = props => {
                         width: 100,
                         padding: 10,
                         marginEnd: 22,
-                        borderColor: Colors.gray,
-                        marginBottom: 22
+                        borderColor: item._id === attributes_id ? Colors.red : Colors.gray,
+                        marginBottom: 22,
+                        backgroundColor: item._id === attributes_id ? Colors.red : Colors.white
                       }}
                       onPress={() => {
                         handleSelect(item, index)
                       }}
                     >
-                      <View
-                        style={{
-                          backgroundColor: Colors.white
-                        }}
-                      >
+                      <View>
                         <MyText
                           fontFamily={'Montserrat-SemiBold'}
                           style={{
                             fontSize: 16,
                             fontWeight: '500',
-                            color: Colors.black,
+                            color: item._id === attributes_id ? Colors.white : Colors.black,
                             lineHeight: 20
                           }}
                         >
@@ -745,16 +850,90 @@ const ProductWomen = props => {
                   )
                 }}
               />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingVertical: 16
+                }}
+              >
+                <MyText style={{ textAlign: 'center' }}>Số lượng</MyText>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center'
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => handleMinus(quantity)}
+                    style={{
+                      padding: 6,
+                      backgroundColor: Colors.white,
+                      borderRadius: 50,
+                      elevation: 8,
+                      shadowColor: Colors.gray,
+                      borderWidth: 0.5,
+                      borderColor: Colors.gray
+                    }}
+                  >
+                    <Icons.AntDesign name={'minus'} size={18} />
+                  </TouchableOpacity>
+                  <MyText
+                    fontFamily={'Montserrat-SemiBold'}
+                    style={{ textAlign: 'center', marginHorizontal: 15 }}
+                  >
+                    {quantity}
+                  </MyText>
+                  <TouchableOpacity
+                    onPress={() => handlePlus(quantity)}
+                    style={{
+                      padding: 6,
+                      backgroundColor: Colors.white,
+                      borderRadius: 50,
+                      elevation: 8,
+                      shadowColor: Colors.gray,
+                      borderWidth: 0.5,
+                      borderColor: Colors.gray
+                    }}
+                  >
+                    <Icons.AntDesign name={'plus'} size={18} />
+                  </TouchableOpacity>
+                </View>
+              </View>
               <TouchableOpacity
                 onPress={() => props.navigation.navigate('SizeInfo')}
                 style={{
                   justifyContent: 'space-between',
-                  flexDirection: 'row'
+                  flexDirection: 'row',
+                  paddingVertical: 8
                 }}
               >
                 <MyText>Hướng dẫn chọn kích cỡ</MyText>
 
-                <Icons.MaterialIcons name={'navigate-next'} size={20} />
+                <Icons.MaterialIcons name={'navigate-next'} size={24} />
+              </TouchableOpacity>
+            </View>
+            <View style={{ position: 'absolute', right: 16, left: 16, bottom: 16 }}>
+              <TouchableOpacity
+                onPress={() => handleAddToCart()}
+                style={{
+                  backgroundColor: Colors.red,
+                  paddingVertical: 16,
+                  borderRadius: 8,
+                  width: '100%'
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    color: Colors.white,
+                    fontFamily: 'Montserrat-SemiBold',
+                    fontSize: 16
+                  }}
+                >
+                  Xác nhận
+                </Text>
               </TouchableOpacity>
             </View>
           </BottomSheetModal>
@@ -764,7 +943,7 @@ const ProductWomen = props => {
   )
 }
 
-export default ProductWomen
+export default ProductDetail
 
 const styles = StyleSheet.create({
   product: {
@@ -845,8 +1024,9 @@ const styles = StyleSheet.create({
   txt_addToCart: {
     color: Colors.white,
     marginStart: 8,
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '500',
+    fontFamily: 'Montserrat-SemiBold',
     textAlign: 'center'
   },
   txt_category_name: {

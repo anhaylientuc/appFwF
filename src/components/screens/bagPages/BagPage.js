@@ -4,8 +4,9 @@ import {
   BottomSheetModalProvider
 } from '@gorhom/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
+  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -24,9 +25,7 @@ import Icons from '../../icons/Icon'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 const BagPage = props => {
-  const {
-    navigation: { goBack }
-  } = props
+  const { navigation } = props
   // sate selected code sale off
   const [selected, setSelected] = useState(DataCodeSale)
   const [selectedCodeSale, setSelectedCodeSale] = useState()
@@ -34,16 +33,53 @@ const BagPage = props => {
   const [visiblePopupMenu, setVisiblePopupMenu] = useState(null)
   const [addFavorite, setAddFavorite] = useState(null)
   const BottomSheetRef = useRef(null)
-  const [quantity, setQuantity] = useState(1)
   const [price, setPrice] = useState()
   const [isOpen, setIsOpen] = useState(false)
+  const [cart, setCart] = useState([])
+  const [transportFee, setTransportFee] = useState()
 
-  const handleStatusProduct = _id => {
-    setVisiblePopupMenu(_id)
-    console.log(_id)
+  const handleStatusProduct = attributes => {
+    setVisiblePopupMenu(attributes)
   }
-  const snapPoints = ['60%', '80%']
+
+  useEffect(() => {
+    setCart(...storageData)
+    setPrice(totalBasePrice)
+    setTransportFee(49000)
+    
+  }, [storageData])
+
+  const allBasePrices = storageData.map(item => item.newPrice)
+  console.log(storageData)
+  const totalBasePrice = sumBasePrices(allBasePrices)
+  const totalPrices = totalBasePrice + transportFee
+  function sumBasePrices(allBasePrices) {
+    let total = 0
+    for (const price of allBasePrices) {
+      total += price
+    }
+    return total
+  }
+
+  function formatCurrency(amount, options = {}) {
+    const { currency = 'VND', locale = 'vi-VN' } = options
+
+    const formatter = new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currency
+    })
+    return formatter.format(amount)
+  }
+
+  // Example usage
+  const formattedCurrency = formatCurrency(price)
+  const formattedTransportfee = formatCurrency(transportFee)
+  const formattedTotalPrices = formatCurrency(totalPrices)
+  // console.log(`Tổng giá trị base_price: >>> ${formattedTotalPrices}`)
+
   // set sate Bottom sheet to useRef
+  const snapPoints = ['60%', '80%']
+
   // Logic: onclick Open Bottom Sheet Modal
   const handlePresentModal = () => {
     props.navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
@@ -94,20 +130,20 @@ const BagPage = props => {
   }
 
   // Logic: onClick delete Item from List
-  const handleDeleteFromList = async _id => {
+  const handleDeleteFromList = async attributes => {
     const result = await AsyncStorage.getItem('my-cart')
     let storage = []
     if (result !== null) {
       storage = JSON.parse(result)
     }
 
-    const newStorage = storage.filter(s => s._id !== visiblePopupMenu)
+    const newStorage = storage.filter(s => s.attributes !== visiblePopupMenu)
     setStorageData(newStorage)
     await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
   }
 
   // Menu popup Item
-  const popupMenu = ({ _id }) => {
+  const popupMenu = ({ attributes }) => {
     return (
       <View
         style={{
@@ -121,11 +157,11 @@ const BagPage = props => {
         }}
       >
         <TouchableOpacity
-          onPress={() => handleAddFavorites(_id)}
+          onPress={() => handleAddFavorites(attributes)}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-
+            justifyContent: 'center',
             width: '100%',
             padding: 16
           }}
@@ -137,7 +173,8 @@ const BagPage = props => {
               <Icons.MaterialIcons name={'favorite-border'} size={24} />
             )}
           </View>
-          <MyText style={{ textAlign: 'center', marginStart: 8 }}>Yêu thích</MyText>
+
+          <MyText style={{ textAlign: 'center', flex: 1 }}>Yêu thích</MyText>
         </TouchableOpacity>
         <View
           style={{
@@ -147,7 +184,7 @@ const BagPage = props => {
           }}
         />
         <TouchableOpacity
-          onPress={() => handleDeleteFromList(_id)}
+          onPress={() => handleDeleteFromList(attributes)}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -249,20 +286,59 @@ const BagPage = props => {
     )
   }
 
-  const ItemCart = ({ item, index }) => {
-    const { product_Name, base_price, category_id, size, selectedName, _id, color, image, code } =
-      item
-
-    const handlePlus = () => {
-      setQuantity(quantity + 1)
-      setPrice(base_price * quantity)
-    }
-    const handleMinus = () => {
-      if (quantity >= 2) {
-        setQuantity(quantity - 1)
-        setPrice(base_price * quantity)
+  // tổng trong kho
+  // Số lượng tăng
+  const handlePlus = item => {
+    const { quantity, attributes, cnt, base_price } = item
+    const newQuantity = quantity + 1
+    const newPrice = base_price * newQuantity
+    const newStorageData = storageData.map((val, index) => {
+      if (val.attributes === attributes && newQuantity <= val.cnt) {
+        return {
+          ...val,
+          quantity: newQuantity,
+          base_price: base_price,
+          newPrice: newPrice
+        }
+      } else {
+        Alert.alert('Chọn tối đa ' + (newQuantity - 1))
+        return val
       }
-    }
+
+      return val
+    })
+    setStorageData(newStorageData)
+    console.log(JSON.stringify(newStorageData, null, 2))
+  }
+
+  // Số lượng giảm
+  const handleMinus = item => {
+    const { quantity, attributes, cnt, base_price } = item
+    const newQuantity = quantity - 1
+    let newPrice = base_price * newQuantity
+    const newStorageData = storageData.map((val, index) => {
+      if (val.attributes === attributes && newQuantity >= 1) {
+        console.log(val.quantity)
+        return { ...val, quantity: newQuantity, base_price: base_price, newPrice: newPrice }
+      } else {
+        Alert.alert('Chọn tối thiểu 1')
+        return val
+      }
+      return val
+    })
+    setStorageData(newStorageData)
+    console.log(JSON.stringify(newStorageData, null, 2))
+    // console.log(JSON.stringify(item, null, 2))
+  }
+  // const newPrice = priceProduct
+  // storageData.push({ ...item, newPrice })
+  const ItemCart = ({ item, index }) => {
+    const { product_Name, base_price, cnt, size, _id, color, image, code, quantity, attributes } =
+      item
+    const priceProduct = base_price
+    const newPrice = { ...item, newPrice: base_price * quantity }
+    console.log(newPrice.newPrice)
+    const formattedPriceProduct = formatCurrency(newPrice.newPrice)
 
     return (
       <SafeAreaView style={{ marginBottom: 24 }}>
@@ -350,7 +426,7 @@ const BagPage = props => {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => handlePlus()}
+                  onPress={() => handlePlus(item, priceProduct)}
                   style={{
                     padding: 6,
                     backgroundColor: isOpen ? Colors.gray : Colors.white,
@@ -368,7 +444,7 @@ const BagPage = props => {
                   {quantity}
                 </MyText>
                 <TouchableOpacity
-                  onPress={() => handleMinus()}
+                  onPress={() => handleMinus(item)}
                   style={{
                     padding: 6,
                     backgroundColor: isOpen ? Colors.gray : Colors.white,
@@ -380,17 +456,17 @@ const BagPage = props => {
                   <Icons.AntDesign name={'minus'} size={18} />
                 </TouchableOpacity>
               </View>
-              <MyText style={{ fontSize: 14, fontWeight: '500' }}>{price} VND</MyText>
+              <MyText style={{ fontSize: 14, fontWeight: '500' }}>{formattedPriceProduct}</MyText>
             </View>
-            {visiblePopupMenu === _id ? popupMenu(_id) : null}
+            {visiblePopupMenu === attributes ? popupMenu(attributes) : null}
           </View>
           <TouchableOpacity
-            onPress={() => handleStatusProduct(_id)}
+            onPress={() => handleStatusProduct(attributes)}
             style={{
               borderTopRightRadius: 8
             }}
           >
-            {visiblePopupMenu === _id ? (
+            {visiblePopupMenu === attributes ? (
               <TouchableOpacity onPress={() => setVisiblePopupMenu(!visiblePopupMenu)}>
                 <Icons.Feather
                   name={'x'}
@@ -457,6 +533,7 @@ const BagPage = props => {
           >
             Mã giảm giá:
           </MyText>
+
           {!selectedCodeSale ? (
             <TouchableOpacity onPress={() => handlePresentModal()}>
               <MyText
@@ -494,43 +571,74 @@ const BagPage = props => {
             </View>
           )}
         </View>
+
+        <View style={{ paddingHorizontal: 16 }}>
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
+            style={{ textAlign: 'left', fontSize: 14, marginTop: 16 }}
+          >
+            Đăng nhập để sử dụng các ưu đãi cá nhân!
+          </MyText>
+          <TouchableOpacity
+            style={{
+              backgroundColor: Colors.white,
+              paddingVertical: 16,
+
+              borderWidth: 1,
+              marginTop: 16
+            }}
+          >
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
+              style={{
+                color: Colors.black,
+                textAlign: 'center',
+                fontWeight: '700',
+                fontSize: 16
+              }}
+            >
+              Đăng Nhập
+            </MyText>
+          </TouchableOpacity>
+        </View>
+
+        <View
+          style={{
+            borderTopWidth: 1,
+            borderBottomWidth: 1,
+            borderColor: Colors.gray,
+            marginVertical: 16,
+            paddingVertical: 8,
+            marginHorizontal: 16,
+            justifyContent: 'space-between'
+          }}
+        >
+          <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+            <MyText>Giá trị đơn hàng</MyText>
+            <MyText fontFamily={'Montserrat-SemiBold'}>{formattedCurrency}</MyText>
+          </View>
+          <View style={{ height: 8 }} />
+          <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+            <MyText>Phí giao hàng</MyText>
+            <MyText fontFamily={'Montserrat-SemiBold'}>{formattedTransportfee}</MyText>
+          </View>
+        </View>
+
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginTop: 28,
             marginHorizontal: 16
           }}
         >
-          <MyText fontFamily={'Montserrat-SemiBold'} style={{ color: Colors.gray }}>
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ color: Colors.black, fontSize: 16 }}>
             Thành tiền:
           </MyText>
           <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_price}>
-            299.000 đ
+            {formattedTotalPrices}
           </MyText>
         </View>
-
-        <TouchableOpacity
-          style={{
-            paddingVertical: 16,
-            backgroundColor: Colors.red,
-            borderRadius: 25,
-            marginHorizontal: 16,
-            marginTop: 24
-          }}
-        >
-          <MyText
-            style={{
-              color: Colors.white,
-              textAlign: 'center',
-              fontWeight: '500',
-              fontSize: 14
-            }}
-          >
-            Tiến hành thanh toán
-          </MyText>
-        </TouchableOpacity>
       </View>
     )
   }
@@ -595,28 +703,56 @@ const BagPage = props => {
     )
   }
   return (
-    <BottomSheetModalProvider>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={{
-          width: '100%',
-          height: '100%',
-          backgroundColor: isOpen ? Colors.gray : Colors.grayBg
-        }}
-      >
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => goBack()}>
+    <BottomSheetModalProvider
+      style={{
+        width: '100%',
+        height: '100%',
+        backgroundColor: isOpen ? Colors.gray : Colors.grayBg
+      }}
+    >
+      <View style={[styles.header, { backgroundColor: isOpen ? Colors.gray : Colors.white }]}>
+        <View style={{ height: 36 }} />
+        <View style={{ flexDirection: 'row' }}>
+          <TouchableOpacity onPress={() => props.navigation.goBack()}>
             <Icons.Ionicons name={'arrow-back-sharp'} size={24} color={Colors.black} />
           </TouchableOpacity>
           <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_header}>
             Giỏ hàng của tôi
           </MyText>
         </View>
+        {cart ? (
+          <TouchableOpacity
+            style={{
+              paddingVertical: 16,
+              backgroundColor: Colors.red,
+
+              marginTop: 16
+            }}
+          >
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
+              style={{
+                color: Colors.white,
+                textAlign: 'center',
+                fontWeight: '500',
+                fontSize: 16
+              }}
+            >
+              Tiếp tục thanh toán
+            </MyText>
+          </TouchableOpacity>
+        ) : null}
+      </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ backgroundColor: isOpen ? Colors.gray : Colors.grayBg }}
+      >
         <MyText style={{ textAlign: 'center', marginVertical: 32 }}>
           Miễn phí giao hàng cho Member với đơn từ 499k
         </MyText>
         {/* {noCart()} */}
-        {storageData ? ListItemCart() : noCart()}
+        {cart ? ListItemCart() : noCart()}
+        <View style={{ height: 20 }} />
         <View style={{ marginVertical: 16 }}>
           <MyText
             fontFamily={'Montserrat-SemiBold'}
@@ -640,8 +776,12 @@ const BagPage = props => {
             }}
           >
             <View>
-              <MyText style={{ textAlign: 'center' }}>Thanh toán khi</MyText>
-              <MyText style={{ textAlign: 'center' }}>nhận hàng</MyText>
+              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 12 }}>
+                Thanh toán khi
+              </MyText>
+              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 12 }}>
+                nhận hàng
+              </MyText>
             </View>
 
             <Image
@@ -697,7 +837,6 @@ const BagPage = props => {
             <Icons.MaterialIcons name={'navigate-next'} size={24} />
           </TouchableOpacity>
         </View>
-        <View style={{ height: 100 }} />
       </ScrollView>
       <BottomSheetModal
         snapPoints={snapPoints}
@@ -753,7 +892,7 @@ export default BagPage
 
 const styles = StyleSheet.create({
   txt_price: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '500'
   },
   txt_header: {
@@ -762,11 +901,9 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-    marginTop: 32,
-    marginStart: 16
+    backgroundColor: Colors.white,
+    paddingVertical: 16,
+    paddingHorizontal: 16
   },
   btn_apply_txt: {
     color: Colors.white,

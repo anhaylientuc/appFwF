@@ -66,7 +66,8 @@ const ShopStack = () => {
         name="BagPage"
         component={BagPage}
         options={{
-          title: 'BagPage'
+          title: 'BagPage',
+          tabBarStyle: { display: 'none' }
         }}
       ></Stack.Screen>
     </Stack.Navigator>
@@ -123,7 +124,7 @@ const BagStack = () => {
       <Stack.Screen
         name="BagPage"
         component={BagPage}
-        options={{ title: 'BagPage' }}
+        options={{ title: 'BagPage', tabBarStyle: { display: 'none' } }}
       ></Stack.Screen>
       <Stack.Screen
         name="ReturnMethod"
@@ -191,7 +192,7 @@ function BottomTabNavigator() {
           component={BagStack}
           options={{
             tabBarLabel: 'Giỏ hàng',
-            // tabBarStyle: { display: 'none' },
+            tabBarStyle: { display: 'none' },
             tabBarColor: Colors.white,
             tabBarIcon: ({ focused }) => (
               <Icons.Ionicons

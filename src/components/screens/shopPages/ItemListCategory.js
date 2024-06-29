@@ -6,6 +6,7 @@ import {
   Image,
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View
 } from 'react-native'
@@ -19,15 +20,14 @@ const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
 const ItemCategoryWomen = props => {
-  const [windowWith, setwindowWith] = useState(width)
-  const [windowHeight, setwindowHeight] = useState(height)
   const {
     navigation,
     route: {
       params: { categoryById }
     }
   } = props
-  // console.log(categoryById)
+  const [windowWith, setwindowWith] = useState(width)
+  const [windowHeight, setwindowHeight] = useState(height)
   const [categoriesById, setCategoriesById] = useState([])
   const [products, setproducts] = useState([])
   const [isOpen, setIsOpen] = useState(false)
@@ -71,7 +71,6 @@ const ItemCategoryWomen = props => {
     }, 300)
   }
   // const numColumns = 2
-
   // logic onClick set View Flatlist
   const handleColum = () => {
     if (numColumns) {
@@ -85,6 +84,7 @@ const ItemCategoryWomen = props => {
     }
   }
 
+  // set Bottom navigation on
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -102,11 +102,9 @@ const ItemCategoryWomen = props => {
   }
 
   // logic handle select Items bottom sheet
-
   const handleSelect = (item, index) => {
     const newItem = selected.map((e, index) => {
       if (e.id == item.id) {
-        // console.log('selectItem: ', item.subject)
         return { ...e, selected: true }
       } else {
         return { ...e, selected: false }
@@ -118,13 +116,14 @@ const ItemCategoryWomen = props => {
     BottomSheetRef.current.close()
     setBottomBar()
   }
+
+  // Logic: onclick set product by category Id
   const handlePressedCategoryId = async _id => {
     ;(async () => {
       const version = 2
       const category_id = _id
       try {
         const products = await getProducts({ version, category_id })
-        // console.log('Fetched products:', products)
         setproducts(products)
         setselectedProductId(_id)
       } catch (error) {
@@ -133,6 +132,15 @@ const ItemCategoryWomen = props => {
       }
     })()
   }
+
+  // Slide show image
+  const [activated, setActivated] = useState(0)
+  change = ({ nativeEvent }) => {
+    const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width)
+    if (slide != activated) {
+      setActivated(slide)
+    }
+  }
   const renderListCategoryById = ({ item }) => {
     const { _id, name } = item
     return (
@@ -140,13 +148,14 @@ const ItemCategoryWomen = props => {
         <TouchableOpacity
           onPress={() => handlePressedCategoryId(_id)}
           style={{
-            backgroundColor: selectedProductId === item._id ? Colors.black : Colors.bgBottomSheet,
+            backgroundColor: selectedProductId === item._id ? Colors.black : Colors.white,
             marginStart: 16,
             borderRadius: 29,
             paddingVertical: 8,
             paddingHorizontal: 16,
             justifyContent: 'center',
-            borderWidth: selectedProductId === item._id ? 0 : 1
+            borderColor: Colors.black,
+            borderWidth: 1
           }}
         >
           <MyText
@@ -258,25 +267,14 @@ const ItemCategoryWomen = props => {
             }}
           >
             <MyText style={styles.renderItems.txt_category_name}>{/* {category_name} */}</MyText>
-            <MyText
-              numColumns={1}
-              fontFamily={'Montserrat-SemiBold'}
-              style={styles.renderItems.txt_product_name}
-            >
+            <Text numColumns={1} style={styles.renderItems.txt_product_name}>
               {name}
-            </MyText>
+            </Text>
             <MyText style={styles.renderItems.txt_price}>{formattedCurrency}</MyText>
           </TouchableOpacity>
         </View>
       </View>
     )
-  }
-  const [activated, setActivated] = useState(0)
-  change = ({ nativeEvent }) => {
-    const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width)
-    if (slide != activated) {
-      setActivated(slide)
-    }
   }
 
   return (
@@ -362,13 +360,13 @@ const ItemCategoryWomen = props => {
         </View>
         <ScrollView
           style={{
-            backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.grayBg 
+            backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.grayBg
           }}
           showsVerticalScrollIndicator={false}
         >
           <FlatList
             // render Item Product by Category
-            style={{ marginBottom: '25%' , }}
+            style={{ marginBottom: '25%' }}
             scrollEnabled={false}
             numColumns={numColumns}
             key={numColumns}
@@ -464,7 +462,8 @@ const styles = StyleSheet.create({
       marginTop: 5,
       color: Colors.black,
       fontWeight: '500',
-      fontStyle: 'normal'
+      fontStyle: 'normal',
+      fontFamily: 'Montserrat-SemiBold'
     },
     txt_category_name: {
       fontSize: 11,
@@ -517,7 +516,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 8,
-    marginTop: 44,
+    marginTop: 36,
     marginBottom: 8
   }
 })
