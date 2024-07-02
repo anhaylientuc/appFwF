@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
 const StorageContext = createContext()
+
 const StorageProvider = ({ children }) => {
   const [storageData, setStorageData] = useState([])
   const getDataProducts = async () => {
@@ -22,5 +23,15 @@ const StorageProvider = ({ children }) => {
 }
 
 export const useStorage = () => useContext(StorageContext)
+
+export function formatCurrency(amount, options = {}) {
+  const { currency = 'VND', locale = 'vi-VN' } = options
+
+  const formatter = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency
+  })
+  return formatter.format(amount)
+}
 
 export default StorageProvider

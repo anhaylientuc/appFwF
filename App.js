@@ -1,6 +1,7 @@
 import { useFonts } from 'expo-font'
 import * as React from 'react'
 import { StyleSheet } from 'react-native'
+import { UserProvider } from 'src/components/screens/user/UserContext'
 import AppNavigation from 'src/navigators/AppNavigation'
 
 export default function App() {
@@ -8,14 +9,18 @@ export default function App() {
   const [loadFonts] = useFonts({
     'Montserrat-Medium': require('src/assets/fonts/Montserrat-Medium.ttf'),
     'Montserrat-Regular': require('src/assets/fonts/Montserrat-Regular.ttf'),
-    'Montserrat-SemiBold': require('src/assets/fonts/Montserrat-SemiBold.ttf'),
+    'Montserrat-SemiBold': require('src/assets/fonts/Montserrat-SemiBold.ttf')
     // 'HMSans-Bold': require('src/assets/fonts/HMSans-Bold.woff2')
   })
   //src\assets\fonts\Quicksand-VariableFont_wght.ttf
   if (!loadFonts) {
     return null
   }
-  return <AppNavigation />
+  return (
+    <UserProvider>
+      <AppNavigation />
+    </UserProvider>
+  )
 }
 
 const styles = StyleSheet.create({

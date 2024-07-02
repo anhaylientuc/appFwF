@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native'
 import React, { useEffect, useState } from 'react'
 import { FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { createPicassoComponent } from 'react-native-picasso'
@@ -7,7 +8,7 @@ import MyText from 'src/constants/FontsStyle'
 import { getCategory } from 'src/utils/http/NewHTTP'
 const ShopPage = props => {
   const PicassoImage = createPicassoComponent(Image)
-  const { navigation, goBack } = props
+  const navigation = useNavigation()
   const [categories, setCategories] = useState([])
   useEffect(() => {
     const fetchData = async () => {
@@ -57,13 +58,15 @@ const ShopPage = props => {
   return (
     <View style={{ backgroundColor: '#fff', width: '100%', height: '100%' }}>
       <View style={styles.view_search}>
-        <TouchableOpacity onPress={() => props.navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icons.Ionicons name={'chevron-back'} size={24} />
         </TouchableOpacity>
         <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_search}>
           Categories
         </MyText>
-        <Icons.Ionicons name={'search'} size={24} />
+        <TouchableOpacity onPress={() => navigation.navigate('SearchPage')}>
+          <Icons.Ionicons name={'search'} size={24} />
+        </TouchableOpacity>
       </View>
       <FlatList renderItem={renderListCategory} data={categories} />
     </View>

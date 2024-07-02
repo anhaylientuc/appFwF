@@ -67,7 +67,9 @@ const CategoryWomen = props => {
         <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_search}>
           {nameCategories}
         </MyText>
-        <Icons.Ionicons name={'search'} size={24} />
+        <TouchableOpacity onPress={() => props.navigation.navigate('SearchPage')}>
+          <Icons.Ionicons name={'search'} size={24} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView style={{ backgroundColor: Colors.grayBg }} showsVerticalScrollIndicator={false}>

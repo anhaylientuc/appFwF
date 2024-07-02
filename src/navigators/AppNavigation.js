@@ -1,5 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native'
-import BottomTabNavigator from './BottomNavigation'
+import MainNavigator from './MainNavigation'
 
 import React from 'react'
 import { StyleSheet } from 'react-native'
@@ -7,7 +7,7 @@ import { StyleSheet } from 'react-native'
 const AppNavigation = () => {
   return (
     <NavigationContainer>
-      <BottomTabNavigator /> 
+      <MainNavigator />
     </NavigationContainer>
   )
 }

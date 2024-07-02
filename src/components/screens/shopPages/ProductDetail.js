@@ -1,4 +1,4 @@
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useEffect, useRef, useState } from 'react'
 import {
@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   View
 } from 'react-native'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import { DaTaSale } from 'src/constants/Databases'
@@ -102,6 +101,8 @@ const ProductDetail = props => {
 
       await setStorageData(updatedStorage)
       // console.log(JSON.stringify(updatedStorage, null, 2))
+    } else if (attributes_id == null) {
+      console.log('Vui lòng chọn thông số')
     } else {
       // Add new product if it doesn't exist
       const newProduct = {
@@ -149,10 +150,6 @@ const ProductDetail = props => {
   }
   const handleSelect = (item, index) => {
     // Update selected items efficiently
-    const updatedSelected = selected.map(selectedItem => ({
-      ...selectedItem, // Preserve existing properties
-      selected: selectedItem._id === item._id ? true : false // Toggle selection based on ID
-    }))
     setQuantity(1)
     setVaLueSelectSize(item.value)
     console.log('>>> id attributes: ', attributes_id)
@@ -166,7 +163,7 @@ const ProductDetail = props => {
     } else if (attributes_id == null) {
       Alert.alert('Vui lòng chọn kích cỡ')
     } else if (quantity == cnt) {
-      Alert.alert('Chọn tối đa '+ cnt)
+      Alert.alert('Chọn tối đa ' + cnt)
     } else {
       Alert.alert('chọn tối đa 20')
     }
@@ -184,7 +181,7 @@ const ProductDetail = props => {
   }
 
   const handlePresentModal = () => {
-    sheetRef.current?.present()
+    sheetRef.current?.open()
     setTimeout(() => {
       setIsOpen(true)
     }, 300)
@@ -218,7 +215,6 @@ const ProductDetail = props => {
     setAddFavorite(!addFavorite)
   }
 
-  const snapPoints = ['55%']
   const handleOnBack = () => {
     {
       navigation.getParent().setOptions({
@@ -307,7 +303,6 @@ const ProductDetail = props => {
       </View>
     )
   }
-
   const [isProductCare, setIsProductCare] = useState(false)
   const ProductCare = () => {
     return (
@@ -362,584 +357,578 @@ const ProductDetail = props => {
   }
 
   return (
-    <GestureHandlerRootView>
-      <BottomSheetModalProvider>
-        <View
+    <View
+      style={{
+        width: '100%',
+        height: '100%',
+        backgroundColor: Colors.grayBg
+      }}
+    >
+      <View style={styles.container_header}>
+        <TouchableOpacity onPress={() => handleOnBack()}>
+          <Icons.Ionicons name={'chevron-back-outline'} size={24} />
+        </TouchableOpacity>
+        <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16, color: Colors.black }}>
+          {product_Name}
+        </MyText>
+        <TouchableOpacity
+          onPress={() => props.navigation.navigate('BagPage')}
           style={{
-            width: '100%',
-            height: '100%',
-            backgroundColor: Colors.grayBg
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
           }}
         >
-          <View style={styles.container_header}>
-            <TouchableOpacity onPress={() => handleOnBack()}>
-              <Icons.Ionicons name={'chevron-back-outline'} size={24} />
-            </TouchableOpacity>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
-              style={{ fontSize: 16, color: Colors.black }}
-            >
-              {product_Name}
-            </MyText>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('BagPage')}
+          <Icons.SimpleLineIcons name={'bag'} size={28} />
+          <View
+            style={{
+              position: 'absolute',
+              right: 4,
+              left: 4,
+              top: 10,
+              width: 20
+            }}
+          >
+            <Text
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center'
+                fontFamily: 'Montserrat-SemiBold',
+                fontSize: 12,
+                textAlign: 'center',
+                color: Colors.black
               }}
             >
-              <Icons.SimpleLineIcons name={'bag'} size={28} />
-              <View
-                style={{
-                  position: 'absolute',
-                  right: 4,
-                  left: 4,
-                  top: 10,
-                  width: 20
-                }}
+              {storageData.length ? storageData.length : null}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginVertical: 16
+          }}
+        >
+          <MyText style={{ textAlign: 'center' }}>{/* Nam / Áo sơ mi / Dài tay / */}</MyText>
+          <MyText style={styles.txt_category_name}>Giảm đền 50% cho hàng ngàn sản phẩm</MyText>
+        </View>
+
+        <View>
+          <FlatList
+            pagingEnabled
+            onScroll={this.change}
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            style={{ width: windowWith, height: windowHeight / 1.5 }}
+            data={wallPaper}
+            renderItem={({ item, index }) => (
+              <Pressable>
+                <Image
+                  resizeMode="cover"
+                  key={index}
+                  style={{ width: windowWith, height: windowHeight / 1.5 }}
+                  source={{ uri: item.url }}
+                />
+              </Pressable>
+            )}
+          />
+
+          <View
+            style={{
+              position: 'absolute',
+              flexDirection: 'row',
+              bottom: 4,
+              alignSelf: 'center',
+              elevation: 8,
+              shadowColor: Colors.black
+            }}
+          >
+            {images.map((i, k) => (
+              <Text
+                key={k}
+                style={
+                  k == activated
+                    ? { color: Colors.white, margin: 3 }
+                    : { color: Colors.gray, margin: 3 }
+                }
               >
-                <Text
-                  style={{
-                    fontFamily: 'Montserrat-SemiBold',
-                    fontSize: 12,
-                    textAlign: 'center',
-                    color: Colors.black
-                  }}
+                ⬤
+              </Text>
+            ))}
+          </View>
+        </View>
+        <TouchableOpacity
+          style={styles.product.container_ic_add_favorite}
+          onPress={() => handleAddFavorite()}
+        >
+          <Icons.MaterialIcons
+            style={{
+              textAlign: 'center'
+            }}
+            name={!addFavorite ? 'favorite-outline' : 'favorite'}
+            size={24}
+            color={!addFavorite ? Colors.gray : Colors.red}
+          />
+        </TouchableOpacity>
+
+        <View style={{ marginTop: 22, marginHorizontal: 16, marginBottom: 10 }}>
+          <View
+            style={{
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              alignItems: 'center'
+            }}
+          >
+            <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_price}>
+              {product_Name}
+            </MyText>
+            <MyText
+              // fontFamily={'Montserrat-Regular'}
+              style={styles.txt_price}
+            >
+              {formattedCurrency}
+            </MyText>
+          </View>
+
+          <View style={styles.product.wrapper_container_size_color}>
+            <MyText style={styles.product.txt_size}>{selectedName}</MyText>
+
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={thumbs}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  onPress={() => handelPresenProductId(item)}
+                  style={{ marginHorizontal: 4 }}
                 >
-                  {storageData.length ? storageData.length : null}
-                </Text>
-              </View>
+                  <Image
+                    style={
+                      selectedId === item._id
+                        ? {
+                            width: 57,
+                            height: 86,
+                            borderColor: Colors.black,
+                            borderWidth: 1.5
+                          }
+                        : { width: 57, height: 86 }
+                    }
+                    source={{ uri: item.images[0].url }}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+
+          <View style={{ flexDirection: 'row', marginEnd: 20, marginTop: 16 }}>
+            <Icons.FontAwesome5 name={'shopify'} size={16} />
+            <MyText style={{ fontSize: 14, fontWeight: 500, marginStart: 8 }}>
+              Giá sản phẩm đã bao gồm VAT, không bao gồm phí giao hàng. Thời gian giao hàng dự kiến
+              3-7 ngày làm việc. Mọi thắc mắc vui lòng xem thêm tại trang Dịch vụ khách hàng. Tất cả
+              hàng hóa trên website này đều do Công ty TNHH H&amp;M Hennes &amp;Mauritz Việt Nam
+              (trụ sở 235 Đồng Khởi, Bến Nghé, Quận 1, TPHCM) chịu trách nhiệm.
+            </MyText>
+          </View>
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate('ReviewProduct')}
+            style={{
+              flexDirection: 'row',
+              height: 48,
+              alignItems: 'center',
+              marginTop: 32
+            }}
+          >
+            <Image
+              style={{ width: 20, height: 20 }}
+              source={require('@assets/images/activated.png')}
+            />
+            <Image
+              style={{ width: 20, height: 20 }}
+              source={require('@assets/images/activated.png')}
+            />
+            <Image
+              style={{ width: 20, height: 20 }}
+              source={require('@assets/images/activated.png')}
+            />
+            <MyText style={styles.txt_review}>(10 đánh giá)</MyText>
+          </TouchableOpacity>
+        </View>
+        <View>
+          <View
+            style={{
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              marginTop: 32,
+              borderBlockColor: Colors.black,
+              borderTopWidth: 0.1,
+              borderBottomWidth: 0.1,
+              padding: 16
+            }}
+          >
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
+              style={!isInfoProduct ? styles.txt_shipping_info : styles.txt_shipping_info_active}
+            >
+              Mô tả & độ vừa vặn
+            </MyText>
+            <TouchableOpacity onPress={() => setIsInfoProduct(!isInfoProduct)}>
+              <Icons.AntDesign
+                name={!isInfoProduct ? 'down' : 'up'}
+                size={16}
+                color={!isInfoProduct ? Colors.black : Colors.red}
+              />
             </TouchableOpacity>
           </View>
-          <ScrollView showsVerticalScrollIndicator={false}>
+          {/**
+           * Show info product
+           */}
+          {isInfoProduct ? infoProduct() : null}
+
+          <View
+            style={{
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              marginTop: 16,
+              borderTopWidth: 0.1,
+              borderBottomWidth: 0.1,
+              borderBlockColor: Colors.black,
+              padding: 16
+            }}
+          >
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
+              style={!isProductCare ? styles.txt_shipping_info : styles.txt_shipping_info_active}
+            >
+              Hướng dẫn chăm sóc sản phẩm
+            </MyText>
+            <TouchableOpacity onPress={() => setIsProductCare(!isProductCare)}>
+              <Icons.AntDesign
+                name={!isProductCare ? 'down' : 'up'}
+                size={16}
+                color={Colors.black}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {isProductCare ? ProductCare() : null}
+
+          {/**
+           * image product
+           */}
+          <View>
+            {wallPaper[0] && (
+              <Image
+                style={{ width: '100%', height: 600 }}
+                source={{
+                  uri: wallPaper[0].url
+                }}
+              />
+            )}
+
+            <View style={{ flexDirection: 'row', marginTop: 4, height: 300 }}>
+              {wallPaper[1] && (
+                <Image
+                  style={{ width: '100%', height: 300, flex: 1 }}
+                  source={{
+                    uri: wallPaper[1].url
+                  }}
+                />
+              )}
+              <View style={{ width: 4 }} />
+              {wallPaper[2] && (
+                <Image
+                  style={{ width: '100%', height: 300, flex: 1 }}
+                  source={{
+                    uri: wallPaper[2].url
+                  }}
+                />
+              )}
+            </View>
+            {wallPaper[3] && (
+              <Image
+                style={{ width: '100%', height: 600, marginTop: 4 }}
+                source={{
+                  uri: wallPaper[3].url
+                }}
+              />
+            )}
+            <View style={{ flexDirection: 'row', marginTop: 4 }}>
+              {wallPaper[4] && (
+                <Image
+                  style={{ width: '100%', height: 300, flex: 1 }}
+                  source={{
+                    uri: wallPaper[4].url
+                  }}
+                />
+              )}
+              <View style={{ width: 4 }} />
+              {wallPaper[5] && (
+                <Image
+                  style={{ width: '100%', height: 300, flex: 1 }}
+                  source={{
+                    uri: wallPaper[5].url
+                  }}
+                />
+              )}
+            </View>
+            {wallPaper[6] && (
+              <Image
+                style={{ width: '100%', height: 600, marginTop: 4 }}
+                source={{
+                  uri: wallPaper[6].url
+                }}
+              />
+            )}
+            <View style={{ flexDirection: 'row', marginTop: 4 }}>
+              {wallPaper[7] && (
+                <Image
+                  style={{ width: '100%', height: 300, flex: 1 }}
+                  source={{
+                    uri: wallPaper[7].url
+                  }}
+                />
+              )}
+              <View style={{ width: 4 }} />
+              {wallPaper[8] && (
+                <Image
+                  style={{ width: '100%', height: 300, flex: 1 }}
+                  source={{
+                    uri: wallPaper[8].url
+                  }}
+                />
+              )}
+            </View>
+          </View>
+
+          <View style={{ marginHorizontal: 16, marginTop: 16 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between'
+              }}
+            >
+              <MyText
+                fontFamily={'Montserrat-SemiBold'}
+                style={{ fontSize: 18, fontWeight: '500', lineHeight: 22 }}
+              >
+                You can also like this
+              </MyText>
+              <MyText style={styles.txt_review}>12 items</MyText>
+            </View>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {DaTaSale.map((item, index) => (
+              <ItemListNew key={item._id} data={item} />
+            ))}
+          </ScrollView>
+        </View>
+        <View style={{ height: 50 }} />
+      </ScrollView>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          marginHorizontal: 16,
+          marginVertical: 20,
+          backgroundColor: Colors.grayBg
+        }}
+      >
+        <TouchableOpacity
+          style={styles.product.container_txt_size}
+          onPress={() => handlePresentModal()}
+        >
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ left: 8, fontWeight: '500' }}>
+            {vaLueSelectSize ? vaLueSelectSize : <Text>Kích cỡ</Text>}
+          </MyText>
+
+          <Icons.Entypo name={'chevron-small-down'} size={24} style={{ right: 8 }} />
+        </TouchableOpacity>
+        <View style={{ width: 10 }} />
+        <TouchableOpacity
+          style={styles.add_to_cart.btn_container}
+          onPress={() => (attributes_id ? handleAddToCart() : handlePresentModal())}
+        >
+          <Icons.SimpleLineIcons name={'handbag'} size={16} color={Colors.white} />
+          <Text style={styles.txt_addToCart}>Thêm</Text>
+        </TouchableOpacity>
+      </View>
+
+      <BottomSheet
+        // bottom sheet
+        ref={sheetRef}
+        index={0}
+        style={{
+          backgroundColor: Colors.white
+        }}
+        height={windowHeight / 1.8}
+        onDismiss={() => {
+          setIsOpen(false)
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 16
+          }}
+        >
+          <View />
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
+            style={{
+              color: Colors.black,
+              textAlign: 'center',
+              fontSize: 18,
+              fontWeight: '500'
+            }}
+          >
+            Chọn kích cỡ
+          </MyText>
+          <TouchableOpacity onPress={() => sheetRef.current?.close()}>
+            <Icons.Feather name="x" size={20} />
+          </TouchableOpacity>
+        </View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View
+            style={{
+              marginHorizontal: 16,
+              height: windowHeight / 2.8
+            }}
+          >
+            <FlatList
+              // render Item Data Sort by
+              scrollEnabled={false}
+              style={{ marginTop: 16 }}
+              data={selected}
+              numColumns={3}
+              renderItem={({ item, index }) => {
+                return (
+                  <TouchableOpacity
+                    style={{
+                      borderWidth: 1,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 8,
+                      width: 100,
+                      padding: 10,
+                      marginEnd: 22,
+                      borderColor: item._id === attributes_id ? Colors.red : Colors.gray,
+                      marginBottom: 22,
+                      backgroundColor: item._id === attributes_id ? Colors.red : Colors.white
+                    }}
+                    onPress={() => {
+                      handleSelect(item, index)
+                    }}
+                  >
+                    <View>
+                      <MyText
+                        fontFamily={'Montserrat-SemiBold'}
+                        style={{
+                          fontSize: 16,
+                          fontWeight: '500',
+                          color: item._id === attributes_id ? Colors.white : Colors.black,
+                          lineHeight: 20
+                        }}
+                      >
+                        {item.value}
+                      </MyText>
+                    </View>
+                  </TouchableOpacity>
+                )
+              }}
+            />
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'center',
-                marginVertical: 16
+                justifyContent: 'space-between',
+                paddingVertical: 16
               }}
             >
-              <MyText style={{ textAlign: 'center' }}>{/* Nam / Áo sơ mi / Dài tay / */}</MyText>
-              <MyText style={styles.txt_category_name}>Giảm đền 50% cho hàng ngàn sản phẩm</MyText>
-            </View>
-
-            <View>
-              <FlatList
-                pagingEnabled
-                onScroll={this.change}
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                style={{ width: windowWith }}
-                data={wallPaper}
-                renderItem={({ item, index }) => (
-                  <Pressable>
-                    <Image
-                      resizeMode="cover"
-                      key={index}
-                      style={{ width: windowWith, height: 600 }}
-                      source={{ uri: item.url }}
-                    />
-                  </Pressable>
-                )}
-              />
-
+              <MyText style={{ textAlign: 'center' }}>Số lượng</MyText>
               <View
                 style={{
-                  position: 'absolute',
-                  flexDirection: 'row',
-                  bottom: 4,
-                  alignSelf: 'center',
-                  elevation: 8,
-                  shadowColor: Colors.black
-                }}
-              >
-                {images.map((i, k) => (
-                  <Text
-                    key={k}
-                    style={
-                      k == activated
-                        ? { color: Colors.white, margin: 3 }
-                        : { color: Colors.gray, margin: 3 }
-                    }
-                  >
-                    ⬤
-                  </Text>
-                ))}
-              </View>
-            </View>
-            <TouchableOpacity
-              style={styles.product.container_ic_add_favorite}
-              onPress={() => handleAddFavorite()}
-            >
-              <Icons.MaterialIcons
-                style={{
-                  textAlign: 'center'
-                }}
-                name={!addFavorite ? 'favorite-outline' : 'favorite'}
-                size={24}
-                color={!addFavorite ? Colors.gray : Colors.red}
-              />
-            </TouchableOpacity>
-
-            <View style={{ marginTop: 22, marginHorizontal: 16, marginBottom: 10 }}>
-              <View
-                style={{
-                  justifyContent: 'space-between',
                   flexDirection: 'row',
                   alignItems: 'center'
                 }}
               >
-                <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_price}>
-                  {product_Name}
-                </MyText>
-                <MyText
-                  // fontFamily={'Montserrat-Regular'}
-                  style={styles.txt_price}
-                >
-                  {formattedCurrency}
-                </MyText>
-              </View>
-
-              <View style={styles.product.wrapper_container_size_color}>
-                <MyText style={styles.product.txt_size}>{selectedName}</MyText>
-
-                <FlatList
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  data={thumbs}
-                  renderItem={({ item, index }) => (
-                    <TouchableOpacity
-                      onPress={() => handelPresenProductId(item)}
-                      style={{ marginHorizontal: 4 }}
-                    >
-                      <Image
-                        style={
-                          selectedId === item._id
-                            ? {
-                                width: 57,
-                                height: 86,
-                                borderColor: Colors.black,
-                                borderWidth: 1.5
-                              }
-                            : { width: 57, height: 86 }
-                        }
-                        source={{ uri: item.images[0].url }}
-                      />
-                    </TouchableOpacity>
-                  )}
-                />
-              </View>
-
-              <View style={{ flexDirection: 'row', marginEnd: 20, marginTop: 16 }}>
-                <Icons.FontAwesome5 name={'shopify'} size={16} />
-                <MyText style={{ fontSize: 14, fontWeight: 500, marginStart: 8 }}>
-                  Giá sản phẩm đã bao gồm VAT, không bao gồm phí giao hàng. Thời gian giao hàng dự
-                  kiến 3-7 ngày làm việc. Mọi thắc mắc vui lòng xem thêm tại trang Dịch vụ khách
-                  hàng. Tất cả hàng hóa trên website này đều do Công ty TNHH H&amp;M Hennes
-                  &amp;Mauritz Việt Nam (trụ sở 235 Đồng Khởi, Bến Nghé, Quận 1, TPHCM) chịu trách
-                  nhiệm.
-                </MyText>
-              </View>
-              <TouchableOpacity
-                onPress={() => props.navigation.navigate('ReviewProduct')}
-                style={{
-                  flexDirection: 'row',
-                  height: 48,
-                  alignItems: 'center',
-                  marginTop: 32
-                }}
-              >
-                <Image
-                  style={{ width: 20, height: 20 }}
-                  source={require('@assets/images/activated.png')}
-                />
-                <Image
-                  style={{ width: 20, height: 20 }}
-                  source={require('@assets/images/activated.png')}
-                />
-                <Image
-                  style={{ width: 20, height: 20 }}
-                  source={require('@assets/images/activated.png')}
-                />
-                <MyText style={styles.txt_review}>(10 đánh giá)</MyText>
-              </TouchableOpacity>
-            </View>
-            <View>
-              <View
-                style={{
-                  justifyContent: 'space-between',
-                  flexDirection: 'row',
-                  marginTop: 32,
-                  borderBlockColor: Colors.black,
-                  borderTopWidth: 0.1,
-                  borderBottomWidth: 0.1,
-                  padding: 16
-                }}
-              >
-                <MyText
-                  fontFamily={'Montserrat-SemiBold'}
-                  style={
-                    !isInfoProduct ? styles.txt_shipping_info : styles.txt_shipping_info_active
-                  }
-                >
-                  Mô tả & độ vừa vặn
-                </MyText>
-                <TouchableOpacity onPress={() => setIsInfoProduct(!isInfoProduct)}>
-                  <Icons.AntDesign
-                    name={!isInfoProduct ? 'down' : 'up'}
-                    size={16}
-                    color={!isInfoProduct ? Colors.black : Colors.red}
-                  />
-                </TouchableOpacity>
-              </View>
-              {/**
-               * Show info product
-               */}
-              {isInfoProduct ? infoProduct() : null}
-
-              <View
-                style={{
-                  justifyContent: 'space-between',
-                  flexDirection: 'row',
-                  marginTop: 16,
-                  borderTopWidth: 0.1,
-                  borderBottomWidth: 0.1,
-                  borderBlockColor: Colors.black,
-                  padding: 16
-                }}
-              >
-                <MyText
-                  fontFamily={'Montserrat-SemiBold'}
-                  style={
-                    !isProductCare ? styles.txt_shipping_info : styles.txt_shipping_info_active
-                  }
-                >
-                  Hướng dẫn chăm sóc sản phẩm
-                </MyText>
-                <TouchableOpacity onPress={() => setIsProductCare(!isProductCare)}>
-                  <Icons.AntDesign
-                    name={!isProductCare ? 'down' : 'up'}
-                    size={16}
-                    color={Colors.black}
-                  />
-                </TouchableOpacity>
-              </View>
-
-              {isProductCare ? ProductCare() : null}
-
-              {/**
-               * image product
-               */}
-              <View>
-                {wallPaper[0] && (
-                  <Image
-                    style={{ width: '100%', height: 600 }}
-                    source={{
-                      uri: wallPaper[0].url
-                    }}
-                  />
-                )}
-
-                <View style={{ flexDirection: 'row', marginTop: 4 }}>
-                  {wallPaper[1] && (
-                    <Image
-                      style={{ width: '100%', height: 300, flex: 1 }}
-                      source={{
-                        uri: wallPaper[1].url
-                      }}
-                    />
-                  )}
-                  <View style={{ width: 4 }} />
-                  {wallPaper[2] && (
-                    <Image
-                      style={{ width: '100%', height: 300, flex: 1 }}
-                      source={{
-                        uri: wallPaper[2].url
-                      }}
-                    />
-                  )}
-                </View>
-                {wallPaper[3] && (
-                  <Image
-                    style={{ width: '100%', height: 600, marginTop: 4 }}
-                    source={{
-                      uri: wallPaper[3].url
-                    }}
-                  />
-                )}
-                <View style={{ flexDirection: 'row', marginTop: 4 }}>
-                  {wallPaper[4] && (
-                    <Image
-                      style={{ width: '100%', height: 300, flex: 1 }}
-                      source={{
-                        uri: wallPaper[4].url
-                      }}
-                    />
-                  )}
-                  <View style={{ width: 4 }} />
-                  {wallPaper[5] && (
-                    <Image
-                      style={{ width: '100%', height: 300, flex: 1 }}
-                      source={{
-                        uri: wallPaper[5].url
-                      }}
-                    />
-                  )}
-                </View>
-                {wallPaper[6] && (
-                  <Image
-                    style={{ width: '100%', height: 600, marginTop: 4 }}
-                    source={{
-                      uri: wallPaper[6].url
-                    }}
-                  />
-                )}
-                <View style={{ flexDirection: 'row', marginTop: 4 }}>
-                  {wallPaper[7] && (
-                    <Image
-                      style={{ width: '100%', height: 300, flex: 1 }}
-                      source={{
-                        uri: wallPaper[7].url
-                      }}
-                    />
-                  )}
-                  <View style={{ width: 4 }} />
-                  {wallPaper[8] && (
-                    <Image
-                      style={{ width: '100%', height: 300, flex: 1 }}
-                      source={{
-                        uri: wallPaper[8].url
-                      }}
-                    />
-                  )}
-                </View>
-              </View>
-
-              <View style={{ marginHorizontal: 16, marginTop: 16 }}>
-                <View
+                <TouchableOpacity
+                  onPress={() => handleMinus(quantity)}
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between'
+                    padding: 6,
+                    backgroundColor: Colors.white,
+                    borderRadius: 50,
+                    elevation: 8,
+                    shadowColor: Colors.gray,
+                    borderWidth: 0.5,
+                    borderColor: Colors.gray
                   }}
                 >
-                  <MyText
-                    fontFamily={'Montserrat-SemiBold'}
-                    style={{ fontSize: 18, fontWeight: '500', lineHeight: 22 }}
-                  >
-                    You can also like this
-                  </MyText>
-                  <MyText style={styles.txt_review}>12 items</MyText>
-                </View>
+                  <Icons.AntDesign name={'minus'} size={18} />
+                </TouchableOpacity>
+                <MyText
+                  fontFamily={'Montserrat-SemiBold'}
+                  style={{ textAlign: 'center', marginHorizontal: 15 }}
+                >
+                  {quantity}
+                </MyText>
+                <TouchableOpacity
+                  onPress={() => handlePlus(quantity)}
+                  style={{
+                    padding: 6,
+                    backgroundColor: Colors.white,
+                    borderRadius: 50,
+                    elevation: 8,
+                    shadowColor: Colors.gray,
+                    borderWidth: 0.5,
+                    borderColor: Colors.gray
+                  }}
+                >
+                  <Icons.AntDesign name={'plus'} size={18} />
+                </TouchableOpacity>
               </View>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {DaTaSale.map((item, index) => (
-                  <ItemListNew key={item._id} data={item} />
-                ))}
-              </ScrollView>
             </View>
-            <View style={{ height: 50 }} />
-          </ScrollView>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              marginHorizontal: 16,
-              marginVertical: 20,
-              backgroundColor: Colors.grayBg
-            }}
-          >
             <TouchableOpacity
-              style={styles.product.container_txt_size}
-              onPress={() => handlePresentModal()}
+              onPress={() => props.navigation.navigate('SizeInfo')}
+              style={{
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+                paddingVertical: 8
+              }}
             >
-              <MyText fontFamily={'Montserrat-SemiBold'} style={{ left: 8, fontWeight: '500' }}>
-                {vaLueSelectSize ? vaLueSelectSize : <Text>Kích cỡ</Text>}
-              </MyText>
+              <MyText>Hướng dẫn chọn kích cỡ</MyText>
 
-              <Icons.Entypo name={'chevron-small-down'} size={24} style={{ right: 8 }} />
-            </TouchableOpacity>
-            <View style={{ width: 10 }} />
-            <TouchableOpacity
-              style={styles.add_to_cart.btn_container}
-              onPress={() => (attributes_id ? handleAddToCart() : handlePresentModal())}
-            >
-              <Icons.SimpleLineIcons name={'handbag'} size={16} color={Colors.white} />
-              <Text style={styles.txt_addToCart}>Thêm</Text>
+              <Icons.MaterialIcons name={'navigate-next'} size={24} />
             </TouchableOpacity>
           </View>
 
-          <BottomSheetModal
-            // bottom sheet
-            ref={sheetRef}
-            snapPoints={snapPoints}
-            index={0}
-            backgroundStyle={{
-              backgroundColor: Colors.white,
-              borderRadius: 34
-            }}
-            onDismiss={() => {
-              setIsOpen(false)
-            }}
-          >
-            <View
+          <View style={{ marginHorizontal: 16 }}>
+            <TouchableOpacity
+              onPress={() => handleAddToCart()}
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingHorizontal: 16
+                backgroundColor: Colors.red,
+                paddingVertical: 16,
+                borderRadius: 8
               }}
             >
-              <View />
-              <MyText
-                fontFamily={'Montserrat-SemiBold'}
+              <Text
                 style={{
-                  color: Colors.black,
                   textAlign: 'center',
-                  fontSize: 18,
-                  fontWeight: '500',
-                  flex: 2
+                  color: Colors.white,
+                  fontFamily: 'Montserrat-SemiBold',
+                  fontSize: 16
                 }}
               >
-                Chọn kích cỡ
-              </MyText>
-              <TouchableOpacity onPress={() => sheetRef.current?.close()}>
-                <Icons.Feather name="x" size={20} />
-              </TouchableOpacity>
-            </View>
-            <View style={{ marginHorizontal: 16 }}>
-              <FlatList
-                // render Item Data Sort by
-                style={{ marginTop: 16 }}
-                data={selected}
-                numColumns={3}
-                renderItem={({ item, index }) => {
-                  return (
-                    <TouchableOpacity
-                      style={{
-                        borderWidth: 1,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: 8,
-                        width: 100,
-                        padding: 10,
-                        marginEnd: 22,
-                        borderColor: item._id === attributes_id ? Colors.red : Colors.gray,
-                        marginBottom: 22,
-                        backgroundColor: item._id === attributes_id ? Colors.red : Colors.white
-                      }}
-                      onPress={() => {
-                        handleSelect(item, index)
-                      }}
-                    >
-                      <View>
-                        <MyText
-                          fontFamily={'Montserrat-SemiBold'}
-                          style={{
-                            fontSize: 16,
-                            fontWeight: '500',
-                            color: item._id === attributes_id ? Colors.white : Colors.black,
-                            lineHeight: 20
-                          }}
-                        >
-                          {item.value}
-                        </MyText>
-                      </View>
-                    </TouchableOpacity>
-                  )
-                }}
-              />
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  paddingVertical: 16
-                }}
-              >
-                <MyText style={{ textAlign: 'center' }}>Số lượng</MyText>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center'
-                  }}
-                >
-                  <TouchableOpacity
-                    onPress={() => handleMinus(quantity)}
-                    style={{
-                      padding: 6,
-                      backgroundColor: Colors.white,
-                      borderRadius: 50,
-                      elevation: 8,
-                      shadowColor: Colors.gray,
-                      borderWidth: 0.5,
-                      borderColor: Colors.gray
-                    }}
-                  >
-                    <Icons.AntDesign name={'minus'} size={18} />
-                  </TouchableOpacity>
-                  <MyText
-                    fontFamily={'Montserrat-SemiBold'}
-                    style={{ textAlign: 'center', marginHorizontal: 15 }}
-                  >
-                    {quantity}
-                  </MyText>
-                  <TouchableOpacity
-                    onPress={() => handlePlus(quantity)}
-                    style={{
-                      padding: 6,
-                      backgroundColor: Colors.white,
-                      borderRadius: 50,
-                      elevation: 8,
-                      shadowColor: Colors.gray,
-                      borderWidth: 0.5,
-                      borderColor: Colors.gray
-                    }}
-                  >
-                    <Icons.AntDesign name={'plus'} size={18} />
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <TouchableOpacity
-                onPress={() => props.navigation.navigate('SizeInfo')}
-                style={{
-                  justifyContent: 'space-between',
-                  flexDirection: 'row',
-                  paddingVertical: 8
-                }}
-              >
-                <MyText>Hướng dẫn chọn kích cỡ</MyText>
-
-                <Icons.MaterialIcons name={'navigate-next'} size={24} />
-              </TouchableOpacity>
-            </View>
-            <View style={{ position: 'absolute', right: 16, left: 16, bottom: 16 }}>
-              <TouchableOpacity
-                onPress={() => handleAddToCart()}
-                style={{
-                  backgroundColor: Colors.red,
-                  paddingVertical: 16,
-                  borderRadius: 8,
-                  width: '100%'
-                }}
-              >
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    color: Colors.white,
-                    fontFamily: 'Montserrat-SemiBold',
-                    fontSize: 16
-                  }}
-                >
-                  Xác nhận
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </BottomSheetModal>
-        </View>
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
+                Xác nhận
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </BottomSheet>
+    </View>
   )
 }
 

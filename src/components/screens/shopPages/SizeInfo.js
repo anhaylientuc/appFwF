@@ -222,7 +222,7 @@ const SizeInfo = props => {
     navigation: { goBack }
   } = props
   const [isShowSize, setIsShowSize] = useState(false)
-
+  const [isShowMeasureSize, setIsShowMeasureSize] = useState(false)
   // Logic: Onclick show size parameters  thông thường
   const handleNormally = () => {
     setIsShowSize(false)
@@ -231,8 +231,6 @@ const SizeInfo = props => {
   const handleLongShape = () => {
     setIsShowSize(true)
   }
-
-  const [isShowMeasureSize, setIsShowMeasureSize] = useState(false)
 
   const measureSize = () => {
     return (
