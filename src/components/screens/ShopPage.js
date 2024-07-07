@@ -84,13 +84,12 @@ const styles = StyleSheet.create({
     color: Colors.black,
     textAlign: 'center',
     fontSize: 18,
-    fontWeight: '400',
-    lineHeight: 22
+    fontWeight: '400'
   },
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    marginTop: 44
+    paddingVertical: 8
   }
 })

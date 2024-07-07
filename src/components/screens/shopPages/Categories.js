@@ -142,8 +142,8 @@ const styles = StyleSheet.create({
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 8,
-    marginTop: 44
+    paddingHorizontal: 16,
+    paddingVertical: 8
   }
 })
 

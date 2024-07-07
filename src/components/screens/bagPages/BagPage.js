@@ -1,7 +1,7 @@
 import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -18,9 +18,11 @@ import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import Icons from '../../icons/Icon'
+import UserContext from '../user/UserContext'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 const BagPage = props => {
+  const { user } = useContext(UserContext)
   const sheetRef = useRef(null)
   const navigation = useNavigation()
   // sate selected code sale off
@@ -80,15 +82,11 @@ const BagPage = props => {
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
-        borderTopEndRadius: 12,
-        borderTopStartRadius: 12,
-        paddingTop: 10,
-        paddingBottom: 10,
-        height: 68,
         backgroundColor: Colors.white,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute'
+        bottom: 0,
+        paddingVertical: 16,
+        height: 68
+        // position: 'absolute'
       }
     })
   }
@@ -205,74 +203,88 @@ const BagPage = props => {
             Không có sản phẩm trong giỏ hàng của bạn
           </MyText>
 
-          <TouchableOpacity
-            style={{ backgroundColor: Colors.red, paddingVertical: 16 }}
-            onPress={() => navigation.navigate('Login')}
-          >
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
+          {!user ? (
+            <TouchableOpacity
+              style={{ backgroundColor: Colors.red, paddingVertical: 16 }}
+              onPress={() =>
+                navigation.navigate('ProfileStack', {
+                  screen: 'Login'
+                })
+              }
+            >
+              <MyText
+                fontFamily={'Montserrat-SemiBold'}
+                style={{
+                  color: Colors.white,
+                  textAlign: 'center',
+                  fontWeight: '700',
+                  fontSize: 16
+                }}
+              >
+                Đăng Nhập
+              </MyText>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+        {!user ? (
+          <View>
+            <MyText style={{ textAlign: 'left', marginTop: 16, marginHorizontal: 16 }}>
+              Đăng nhập để sử dụng các ưu đãi cá nhân!
+            </MyText>
+            <View
               style={{
-                color: Colors.white,
-                textAlign: 'center',
-                fontWeight: '700',
-                fontSize: 16
+                paddingVertical: 24,
+                marginHorizontal: 16,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center'
               }}
             >
-              Đăng Nhập
-            </MyText>
-          </TouchableOpacity>
-        </View>
-        <MyText style={{ textAlign: 'left', marginTop: 16, marginHorizontal: 16 }}>
-          Đăng nhập để sử dụng các ưu đãi cá nhân!
-        </MyText>
-        <View
-          style={{
-            paddingVertical: 24,
-            marginHorizontal: 16,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          <MyText
-            style={{
-              backgroundColor: Colors.gray,
-              flex: 1,
-              height: 1,
-              textAlign: 'center'
-            }}
-          />
-          <MyText style={{ textAlign: 'center', marginHorizontal: 10 }}>Hoặc</MyText>
-          <MyText
-            style={{
-              backgroundColor: Colors.gray,
-              flex: 1,
-              height: 1,
-              textAlign: 'center'
-            }}
-          />
-        </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Register')}
-          style={{
-            backgroundColor: Colors.white,
-            paddingVertical: 16,
-            marginHorizontal: 16,
-            borderWidth: 1
-          }}
-        >
-          <MyText
-            fontFamily={'Montserrat-SemiBold'}
-            style={{
-              color: Colors.black,
-              textAlign: 'center',
-              fontWeight: '700',
-              fontSize: 16
-            }}
-          >
-            Tạo tài khoản mới
-          </MyText>
-        </TouchableOpacity>
+              <MyText
+                style={{
+                  backgroundColor: Colors.gray,
+                  flex: 1,
+                  height: 1,
+                  textAlign: 'center'
+                }}
+              />
+              <MyText style={{ textAlign: 'center', marginHorizontal: 10 }}>Hoặc</MyText>
+              <MyText
+                style={{
+                  backgroundColor: Colors.gray,
+                  flex: 1,
+                  height: 1,
+                  textAlign: 'center'
+                }}
+              />
+            </View>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('ProfileStack', {
+                  screen: 'Register'
+                })
+              }
+              style={{
+                backgroundColor: Colors.white,
+                paddingVertical: 16,
+                marginHorizontal: 16,
+                borderWidth: 1
+              }}
+            >
+              <MyText
+                fontFamily={'Montserrat-SemiBold'}
+                style={{
+                  color: Colors.black,
+                  textAlign: 'center',
+                  fontWeight: '700',
+                  fontSize: 16
+                }}
+              >
+                Tạo tài khoản mới
+              </MyText>
+            </TouchableOpacity>
+          </View>
+        ) : null}
       </View>
     )
   }
@@ -502,8 +514,7 @@ const BagPage = props => {
             backgroundColor: Colors.white,
             marginTop: 24,
             padding: 12,
-
-            elevation: 4,
+            elevation: 2,
             shadowColor: Colors.gray
           }}
         >
@@ -556,36 +567,38 @@ const BagPage = props => {
             </View>
           )}
         </View>
-
-        <View style={{ paddingHorizontal: 16 }}>
-          <MyText
-            fontFamily={'Montserrat-SemiBold'}
-            style={{ textAlign: 'left', fontSize: 14, marginTop: 16 }}
-          >
-            Đăng nhập để sử dụng các ưu đãi cá nhân!
-          </MyText>
-          <TouchableOpacity
-            style={{
-              backgroundColor: Colors.white,
-              paddingVertical: 16,
-
-              borderWidth: 1,
-              marginTop: 16
-            }}
-          >
+        {user ? null : (
+          <View style={{ paddingHorizontal: 16 }}>
             <MyText
               fontFamily={'Montserrat-SemiBold'}
+              style={{ textAlign: 'left', fontSize: 14, marginTop: 16 }}
+            >
+              Đăng nhập để sử dụng các ưu đãi cá nhân!
+            </MyText>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('UserNavigation')}
               style={{
-                color: Colors.black,
-                textAlign: 'center',
-                fontWeight: '700',
-                fontSize: 16
+                backgroundColor: Colors.white,
+                paddingVertical: 16,
+
+                borderWidth: 1,
+                marginTop: 16
               }}
             >
-              Đăng Nhập
-            </MyText>
-          </TouchableOpacity>
-        </View>
+              <MyText
+                fontFamily={'Montserrat-SemiBold'}
+                style={{
+                  color: Colors.black,
+                  textAlign: 'center',
+                  fontWeight: '700',
+                  fontSize: 16
+                }}
+              >
+                Đăng Nhập
+              </MyText>
+            </TouchableOpacity>
+          </View>
+        )}
 
         <View
           style={{
@@ -695,8 +708,7 @@ const BagPage = props => {
         backgroundColor: Colors.grayBg
       }}
     >
-      <View style={[styles.header, { backgroundColor: Colors.white }]}>
-        <View style={{ height: 32 }} />
+      <View style={[styles.header]}>
         <View style={{ flexDirection: 'row' }}>
           <TouchableOpacity onPress={() => props.navigation.goBack()}>
             <Icons.Ionicons name={'arrow-back-sharp'} size={24} color={Colors.black} />
@@ -819,6 +831,7 @@ const BagPage = props => {
             <Icons.MaterialIcons name={'navigate-next'} size={24} />
           </TouchableOpacity>
         </View>
+        {/* <View style={{ height: 32 }} /> */}
       </ScrollView>
       <BottomSheet
         height={windowHeight / 1.6}
@@ -881,7 +894,8 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: Colors.white,
-    paddingVertical: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
     paddingHorizontal: 16
   },
   btn_apply_txt: {

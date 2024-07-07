@@ -3,6 +3,7 @@ import {
   Dimensions,
   FlatList,
   Image,
+  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   Text,
@@ -40,15 +41,11 @@ const ItemCategoryWomen = props => {
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
-        borderTopEndRadius: 12,
-        borderTopStartRadius: 12,
-        paddingTop: 10,
-        paddingBottom: 10,
-        height: 68,
         backgroundColor: Colors.white,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute'
+        bottom: 0,
+        paddingVertical: 16,
+        height: 68
+        // position: 'absolute'
       }
     })
   }
@@ -134,6 +131,8 @@ const ItemCategoryWomen = props => {
     setBottomBar()
   }
 
+  const [productsParent, setproductsParent] = useState([])
+
   // Logic: onclick set product by category Id
   const handlePressedCategoryId = async _id => {
     ;(async () => {
@@ -141,8 +140,13 @@ const ItemCategoryWomen = props => {
       const category_id = _id
       try {
         const products = await getProducts({ version, category_id })
+        const productsParent = await getProducts({ version: 1, category_id })
+        // setproductsParent(productsParent[0])
+        setproductsParent(productsParent[0].category_id)
         setproducts(products)
         setselectedProductId(_id)
+
+        // console.log(JSON.stringify(products, null, 2))
       } catch (error) {
         console.error('Error:', error)
         // Handle errors appropriately in your application
@@ -167,7 +171,7 @@ const ItemCategoryWomen = props => {
           style={{
             backgroundColor: selectedProductId === item._id ? Colors.red : Colors.white,
             marginStart: 16,
-            borderRadius: 29,
+            borderRadius: 28,
             paddingVertical: 8,
             paddingHorizontal: 16,
             justifyContent: 'center',
@@ -189,6 +193,8 @@ const ItemCategoryWomen = props => {
     )
   }
 
+  // const product_id = products.map(item => item._id)
+  // console.log(product_id)
   // if numColumns = null  => render
   const renderItems = ({ item }) => {
     const {
@@ -221,11 +227,11 @@ const ItemCategoryWomen = props => {
     const formattedCurrency = formatCurrency(amount)
     // Output: 499.000,00 VND
     return (
-      <View style={[styles.renderItems.container]}>
+      <KeyboardAvoidingView style={{ flexDirection: 'row' }}>
         <View
           style={{
             marginBottom: 16,
-            width: windowWith
+            width: windowWith - 20
           }}
         >
           <ScrollView
@@ -233,28 +239,38 @@ const ItemCategoryWomen = props => {
             onScroll={this.change}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{
-              backgroundColor: Colors.bgBottomSheet,
-              display: 'flex'
+              backgroundColor: Colors.bgBottomSheet
             }}
             horizontal
           >
             {images.map((image, index) => (
               <Image
-                resizeMode="cover"
+                resizeMode={numColumns ? 'contain' : 'cover'}
                 key={index}
-                style={{ width: windowWith, height: windowHeight }}
+                style={{
+                  width: windowWith - 20,
+                  height: windowHeight
+                }}
                 source={{ uri: image.url }}
               />
             ))}
           </ScrollView>
 
-          <TouchableOpacity style={styles.StyleFavorites}>
+          <TouchableOpacity
+            style={[
+              styles.StyleFavorites,
+              { right: numColumns ? 12 : 32 },
+              { bottom: numColumns ? windowHeight / 3 : windowHeight / 4 },
+              { width: numColumns ? 32 : 40 },
+              { height: numColumns ? 32 : 40 }
+            ]}
+          >
             <Icons.MaterialIcons
               style={{
                 textAlign: 'center'
               }}
               name={'favorite-outline'}
-              size={20}
+              size={numColumns ? 20 : 28}
               color={Colors.gray}
             />
           </TouchableOpacity>
@@ -275,7 +291,7 @@ const ItemCategoryWomen = props => {
             style={{
               alignItems: 'flex-start',
               justifyContent: 'center',
-              paddingHorizontal: 16
+              paddingBottom: 16
             }}
           >
             <MyText style={styles.renderItems.txt_category_name}>{/* {category_name} */}</MyText>
@@ -285,7 +301,8 @@ const ItemCategoryWomen = props => {
             <MyText style={styles.renderItems.txt_price}>{formattedCurrency}</MyText>
           </TouchableOpacity>
         </View>
-      </View>
+        <View style={{ width: 8 }} />
+      </KeyboardAvoidingView>
     )
   }
 
@@ -323,7 +340,7 @@ const ItemCategoryWomen = props => {
           </TouchableOpacity>
         </View>
 
-        <View>
+        <View style={{ paddingTop: 8, paddingBottom: 16 }}>
           {/* <Text>{categoryNameById}</Text> */}
           <FlatList
             showsHorizontalScrollIndicator={false}
@@ -331,46 +348,60 @@ const ItemCategoryWomen = props => {
             renderItem={renderListCategoryById}
             data={categoriesById}
           />
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingVertical: 32,
-              justifyContent: 'center'
-            }}
-          >
-            <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_filters}>
-              Bộ lọc & sắp xếp
-            </MyText>
-            <Icons.MaterialIcons name={'filter-list'} size={28} style={{ marginStart: 16 }} />
-          </TouchableOpacity>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              elevation: 8,
-              shadowColor: Colors.gray,
-              paddingHorizontal: 16,
-              paddingBottom: 16
-            }}
-          >
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <TouchableOpacity
-                onPress={() => handlePressModel()}
-                style={isShowProducts ? styles.btn_model_active : styles.btn_model_no_active}
-              >
-                <MyText style={{ fontSize: 12 }}>Người mẫu</MyText>
-              </TouchableOpacity>
-              <View style={{ width: 16 }} />
-              <TouchableOpacity
-                onPress={() => handlePressProduct()}
-                style={!isShowProducts ? styles.btn_model_active : styles.btn_model_no_active}
-              >
-                <MyText style={{ fontSize: 12 }}>Sản phẩm</MyText>
-              </TouchableOpacity>
-            </View>
-            {/* <TouchableOpacity
+        </View>
+      </View>
+      <ScrollView
+        style={{
+          backgroundColor: Colors.white
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('Filter', {
+              category_id: productsParent,
+              quantityPr: products.length
+            })
+          }
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: 16,
+            justifyContent: 'center'
+          }}
+        >
+          <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_filters}>
+            Bộ lọc & sắp xếp
+          </MyText>
+          <Icons.MaterialIcons name={'filter-list'} size={28} style={{ marginStart: 16 }} />
+        </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            elevation: 8,
+            shadowColor: Colors.gray,
+            paddingHorizontal: 16,
+            paddingBottom: 16
+          }}
+        >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <TouchableOpacity
+              onPress={() => handlePressModel()}
+              style={isShowProducts ? styles.btn_model_active : styles.btn_model_no_active}
+            >
+              <MyText style={{ fontSize: 12 }}>Người mẫu</MyText>
+            </TouchableOpacity>
+            <View style={{ width: 16 }} />
+            <TouchableOpacity
+              onPress={() => handlePressProduct()}
+              style={!isShowProducts ? styles.btn_model_active : styles.btn_model_no_active}
+            >
+              <MyText style={{ fontSize: 12 }}>Sản phẩm</MyText>
+            </TouchableOpacity>
+          </View>
+          {/* <TouchableOpacity
               // Logic: Open Bottom Sheet and set BottomNavigation -> off
               style={{
                 flexDirection: 'row',
@@ -381,28 +412,20 @@ const ItemCategoryWomen = props => {
               <Icons.MaterialCommunityIcons name={'sort'} size={28} />
               <MyText style={styles.txt_filters}>Sort by to</MyText>
             </TouchableOpacity> */}
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <MyText style={{ fontSize: 12 }}>{products.length} Sản phẩm</MyText>
-              <TouchableOpacity onPress={() => handleColum()} style={{ marginStart: 16 }}>
-                <Icons.MaterialCommunityIcons
-                  name={!numColumns ? 'view-module' : 'view-list'}
-                  size={28}
-                  color={Colors.red}
-                />
-              </TouchableOpacity>
-            </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MyText style={{ fontSize: 12 }}>{products.length} Sản phẩm</MyText>
+            <TouchableOpacity onPress={() => handleColum()} style={{ marginStart: 16 }}>
+              <Icons.MaterialCommunityIcons
+                name={!numColumns ? 'view-module' : 'view-list'}
+                size={28}
+                color={Colors.red}
+              />
+            </TouchableOpacity>
           </View>
         </View>
-      </View>
-      <ScrollView
-        style={{
-          backgroundColor: Colors.white
-        }}
-        showsVerticalScrollIndicator={false}
-      >
         <FlatList
           // render Item Product by Category
-          style={{ marginBottom: '25%' }}
+          style={{ marginBottom: '25%', paddingHorizontal: 16 }}
           scrollEnabled={false}
           numColumns={numColumns}
           key={numColumns}
@@ -495,33 +518,29 @@ const styles = StyleSheet.create({
   },
   StyleFavorites: {
     backgroundColor: Colors.white,
-    width: 32,
-    height: 32,
+
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
     borderRadius: 36,
-    bottom: 90,
+    bottom: 80,
     elevation: 8,
-    shadowColor: '#52006A',
-    right: 16
+    shadowColor: '#52006A'
   },
   renderItems: {
     container: { backgroundColor: Colors.white },
     txt_product_name: {
       fontSize: 16,
-      marginTop: 5,
+      marginTop: 8,
       color: Colors.black,
-      fontWeight: '500',
       fontStyle: 'normal',
       fontFamily: 'Montserrat-SemiBold'
     },
     txt_category_name: {
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: '400',
       color: Colors.gray,
-      fontStyle: 'normal',
-      marginTop: 6
+      fontStyle: 'normal'
     },
     img_activated: {
       width: 14,
@@ -556,17 +575,14 @@ const styles = StyleSheet.create({
   txt_title: {
     fontSize: 18,
     Colors: Colors.black,
-    fontWeight: '500',
-    lineHeight: 22
+    fontWeight: '500'
   },
 
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 8,
-    marginTop: 36,
-    marginBottom: 8
+    padding: 8
   }
 })
 

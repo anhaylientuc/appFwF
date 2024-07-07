@@ -1,9 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createStackNavigator } from '@react-navigation/stack'
 import Favorites from '@screens/Favorites'
-import Profile from '@screens/Profile'
 import { useContext } from 'react'
+import { View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
+import DetailFilter from 'src/components/screens/DetailFilter'
+import Filter from 'src/components/screens/Filter'
+import Profile from 'src/components/screens/Profile'
 import SearchPage from 'src/components/screens/SearchPage'
 import ShopPage from 'src/components/screens/ShopPage'
 import BagPage from 'src/components/screens/bagPages/BagPage'
@@ -15,13 +18,31 @@ import ProductWomen from 'src/components/screens/shopPages/ProductDetail'
 import ReviewProduct from 'src/components/screens/shopPages/ReviewProduct'
 import SizeInfo from 'src/components/screens/shopPages/SizeInfo'
 import UserContext from 'src/components/screens/user/UserContext'
+import ForgotPassword from 'src/components/screens/user/screen/ForgotPassword/ForgotPassword'
+import Login from 'src/components/screens/user/screen/Login'
+import Register from 'src/components/screens/user/screen/Register'
 import Colors from 'src/constants/Colors'
 import StorageProvider from 'src/contexts/StorageProvider'
-import UserNavigation from './UserNavigation'
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
 
 function MainNavigator() {
+  // const [keyboardStatus, setKeyboardStatus] = useState(false)
+
+  // useEffect(() => {
+  //   const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+  //     setKeyboardStatus(true)
+  //   })
+  //   const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+  //     setKeyboardStatus(false)
+  //   })
+
+  //   return () => {
+  //     showSubscription.remove()
+  //     hideSubscription.remove()
+  //   }
+  // }, [])
+
   const { user } = useContext(UserContext)
   const ShopStack = () => {
     return (
@@ -72,8 +93,7 @@ function MainNavigator() {
           name="BagPage"
           component={BagPage}
           options={{
-            title: 'BagPage',
-            tabBarStyle: { display: 'none' }
+            title: 'BagPage'
           }}
         ></Stack.Screen>
         <Stack.Screen
@@ -81,6 +101,22 @@ function MainNavigator() {
           component={SearchPage}
           options={{
             title: 'SearchPage',
+            tabBarStyle: { display: 'none' }
+          }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="Filter"
+          component={Filter}
+          options={{
+            title: 'Filter',
+            tabBarStyle: { display: 'none' }
+          }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="DetailFilter"
+          component={DetailFilter}
+          options={{
+            title: 'DetailFilter',
             tabBarStyle: { display: 'none' }
           }}
         ></Stack.Screen>
@@ -103,6 +139,11 @@ function MainNavigator() {
           name="Favorites"
           component={Favorites}
           options={{ title: 'Favorite' }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="UserNavigation"
+          component={UserNavigation}
+          options={{ title: 'UserNavigation', tabBarStyle: { display: 'none' } }}
         ></Stack.Screen>
       </Stack.Navigator>
     )
@@ -138,28 +179,33 @@ function MainNavigator() {
         <Stack.Screen
           name="BagPage"
           component={BagPage}
-          options={{ title: 'BagPage', tabBarStyle: { display: 'none' } }}
+          options={{ title: 'BagPage' }}
         ></Stack.Screen>
         <Stack.Screen
           name="ReturnMethod"
           component={ReturnMethod}
           options={{ title: 'ReturnMethod' }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="UserNavigation"
+          component={ProfileStack}
+          options={{ title: 'UserNavigation' }}
         ></Stack.Screen>
       </Stack.Navigator>
     )
   }
 
   const ProfileStack = () => {
-    return (
+    return user ? (
       <Stack.Navigator
         screenOptions={{
           headerShown: false
         }}
       >
         <Stack.Screen
-          name="BagPage"
+          name="Profile"
           component={Profile}
-          options={{ title: 'BagPage', tabBarStyle: { display: 'none' } }}
+          options={{ title: 'Profile' }}
         ></Stack.Screen>
         <Stack.Screen
           name="ReturnMethod"
@@ -167,29 +213,40 @@ function MainNavigator() {
           options={{ title: 'ReturnMethod' }}
         ></Stack.Screen>
       </Stack.Navigator>
+    ) : (
+      UserNavigation()
     )
   }
-  const UserStack = () => {
-    return <UserNavigation />
+
+  const UserNavigation = props => {
+    return (
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle: { display: 'none' }
+        }}
+      >
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      </Stack.Navigator>
+    )
   }
 
   return (
     <StorageProvider>
+      <View style={{ height: 32, backgroundColor: Colors.grayBg }} />
       <Button.Navigator
         initialRouteName="HomeStack"
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: Colors.red,
           tabBarStyle: {
-            borderTopEndRadius: 12,
-            borderTopStartRadius: 12,
-            height: 68,
-            paddingTop: 10,
-            paddingBottom: 10,
             backgroundColor: Colors.white,
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'absolute'
+            bottom: 0,
+            paddingVertical: 16,
+            height: 68
+            // position: 'absolute'
           }
         }}
       >
@@ -198,7 +255,8 @@ function MainNavigator() {
           component={HomeStack}
           options={{
             tabBarColor: Colors.white,
-            tabBarLabel: 'Trang chủ',
+            tabBarLabel: '',
+
             tabBarIcon: ({ focused }) => (
               <Icons.MaterialCommunityIcons
                 name={focused ? 'home' : 'home-outline'}
@@ -208,15 +266,28 @@ function MainNavigator() {
             )
           }}
         />
-
         <Button.Screen
           name="ShopStack"
           component={ShopStack}
           options={{
-            tabBarLabel: 'Cửa hàng',
+            tabBarLabel: '',
+            tabBarIcon: ({ focused }) => (
+              <Icons.Ionicons
+                name={focused ? 'menu-outline' : 'menu-outline'}
+                color={!focused ? Colors.gray : Colors.red}
+                size={30}
+              />
+            )
+          }}
+        />
+        <Button.Screen
+          name="FavoriteStack"
+          component={FavoriteStack}
+          options={{
+            tabBarLabel: '',
             tabBarIcon: ({ focused }) => (
               <Icons.MaterialIcons
-                name={focused ? 'shopping-cart' : 'add-shopping-cart'}
+                name={focused ? 'favorite' : 'favorite-border'}
                 color={!focused ? Colors.gray : Colors.red}
                 size={30}
               />
@@ -228,8 +299,8 @@ function MainNavigator() {
           name="BagStack"
           component={BagStack}
           options={{
-            tabBarLabel: 'Giỏ hàng',
-            tabBarStyle: { display: 'none' },
+            tabBarLabel: '',
+            // tabBarStyle: { display: 'none' },
             tabBarColor: Colors.white,
             tabBarIcon: ({ focused }) => (
               <Icons.Ionicons
@@ -242,25 +313,10 @@ function MainNavigator() {
         />
 
         <Button.Screen
-          name="FavoriteStack"
-          component={FavoriteStack}
+          name="ProfileStack"
+          component={ProfileStack}
           options={{
-            tabBarLabel: 'Yêu thích',
-            tabBarIcon: ({ focused }) => (
-              <Icons.MaterialIcons
-                name={focused ? 'favorite' : 'favorite-border'}
-                color={!focused ? Colors.gray : Colors.red}
-                size={30}
-              />
-            )
-          }}
-        />
-
-        <Button.Screen
-          name="Profile"
-          component={user ? ProfileStack : UserStack}
-          options={{
-            tabBarLabel: 'Hồ sơ',
+            tabBarLabel: '',
             tabBarIcon: ({ focused }) => (
               <Icons.FontAwesome
                 name={focused ? 'user' : 'user-o'}

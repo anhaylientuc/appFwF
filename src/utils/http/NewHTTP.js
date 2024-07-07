@@ -62,3 +62,18 @@ export const getProductById = async query => {
     throw error
   }
 }
+
+//serverfwf.onrender.com/filters?product_id=6673e40596ac1564a3099996&array=M,L
+
+export const getFilter = async query => {
+  try {
+    const axiosInstance = AxiosInstance()
+    const url = `/filters`
+    const params = query
+    const response = await axiosInstance.get(url, { params: params })
+    return response
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}

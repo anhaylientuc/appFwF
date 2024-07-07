@@ -28,15 +28,11 @@ const SearchPage = props => {
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
-        borderTopEndRadius: 12,
-        borderTopStartRadius: 12,
-        paddingTop: 10,
-        paddingBottom: 10,
-        height: 68,
         backgroundColor: Colors.white,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute'
+        bottom: 0,
+        paddingVertical: 16,
+        height: 68
+        // position: 'absolute'
       }
     })
   }
@@ -49,7 +45,6 @@ const SearchPage = props => {
         transform: [{ translateX: position.x }, { translateY: position.y }]
       }}
     >
-      <View style={{ height: windowHeight / 20 }} />
       <View
         style={{
           flexDirection: 'row',

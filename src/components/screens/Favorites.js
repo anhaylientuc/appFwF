@@ -29,15 +29,11 @@ const Favorites = props => {
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
-        borderTopEndRadius: 12,
-        borderTopStartRadius: 12,
-        paddingTop: 10,
-        paddingBottom: 10,
-        height: 68,
         backgroundColor: Colors.white,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute'
+        bottom: 0,
+        paddingVertical: 16,
+        height: 68
+        // position: 'absolute'
       }
     })
   }
@@ -223,7 +219,7 @@ const Favorites = props => {
               textAlign: 'center',
               fontSize: 28,
               fontWeight: '600',
-              marginTop: 44
+              marginTop: 8
             }}
           >
             Yêu thích

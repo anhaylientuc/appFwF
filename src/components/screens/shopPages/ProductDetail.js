@@ -219,16 +219,11 @@ const ProductDetail = props => {
     {
       navigation.getParent().setOptions({
         tabBarStyle: {
-          display: 'flex',
-          borderTopEndRadius: 12,
-          borderTopStartRadius: 12,
-          paddingTop: 10,
-          paddingBottom: 10,
-          height: 68,
           backgroundColor: Colors.white,
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'absolute'
+          bottom: 0,
+          paddingVertical: 16,
+          height: 68
+          // position: 'absolute'
         }
       })
       props.navigation.goBack()
@@ -896,7 +891,7 @@ const ProductDetail = props => {
               style={{
                 justifyContent: 'space-between',
                 flexDirection: 'row',
-                paddingVertical: 8
+                paddingVertical: 16
               }}
             >
               <MyText>Hướng dẫn chọn kích cỡ</MyText>
@@ -1047,7 +1042,6 @@ const styles = StyleSheet.create({
   },
   container_header: {
     padding: 16,
-    marginTop: 24,
     backgroundColor: Colors.grayBg,
     width: '100%',
     justifyContent: 'space-between',
