@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
   Animated,
   Dimensions,
@@ -10,77 +10,100 @@ import {
 } from 'react-native'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
+import { FilterContext } from 'src/contexts/FilterProvider'
 import Icons from '../icons/Icon'
-const windowWith = Dimensions.get('window').width
-const windowHeight = Dimensions.get('window').height
+
+const windowWidth = Dimensions.get('window').width
+
 const DetailFilter = props => {
   const {
     navigation,
     route: {
-      params: { child }
+      params: { child, keySelected }
     }
   } = props
-  const position = new Animated.ValueXY({ x: 500, y: 0 })
-  Animated.timing(position, {
-    toValue: { x: 0, y: 0 },
-    duration: 250,
-    useNativeDriver: true
-  }).start()
+
+  const position = useRef(new Animated.ValueXY({ x: 500, y: 0 })).current
+  const [isListItem, setListItem] = useState([])
+  const [selectedId, setSelectedId] = useState(child)
+  const [quantity, setQuantity] = useState()
+  const [map, setmap] = useState([])
+  const { filterState, setFilterState } = useContext(FilterContext)
+  const [myHashMap, setmyHashMap] = useState(null)
+  console.log('>>>', isListItem)
+
+  useEffect(() => {
+    Animated.timing(position, {
+      toValue: { x: 0, y: 0 },
+      duration: 250,
+      useNativeDriver: true
+    }).start()
+  }, [position])
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = child
-        setChecked(response)
-      } catch (error) {}
+        setvalues(child)
+        const newHashMap = new Map()
+        setSelectedId(response)
+        if (filterState) {
+          let it = filterState.entries()
+          for (const [key, value] of filterState.entries()) {
+            if (keySelected == key) {
+              setListItem(value)
+            }
+            newHashMap.set(key, value)
+          }
+          setmyHashMap(newHashMap)
+        }
+      } catch (error) {
+        // Handle error
+      }
     }
     fetchData()
-  }, [])
-
-  const [isListItem, setListItem] = useState([])
-  const [selectedId, setSelectedId] = useState(child)
-  const [quantity, setQuantity] = useState() // Initialize with an array or empty array
+  }, [child])
+  const [values, setvalues] = useState([])
 
   const handleChecked = (item, index) => {
-    // Create a copy of the selectedId array to avoid mutation
-    const newSelectedId = [...selectedId]
-    // Find the index of the item based on value (assuming unique values)
-    const itemIndex = newSelectedId.findIndex(e => e.value === item.value)
-    // Toggle the selected state for the matching item
-    if (itemIndex !== -1) {
-      newSelectedId[itemIndex] = {
-        ...newSelectedId[itemIndex],
-        selected: !newSelectedId[itemIndex].selected
-      }
-    } else {
-      // Add the item to the array if not already present
-      newSelectedId.push({ ...item, selected: true })
-    }
+    console.log(index)
+    const newValues = values.map((obj, i) => {
+      const { selected } = obj
 
-    // Update the state with the modified array
-    setSelectedId(newSelectedId)
-    setQuantity(selectedId[index].quantity)
-    // console.log(JSON.stringify(selectedId[index], null, 2))
+      if (index == i) {
+        console.log(i)
+        return { ...obj, selected: !selected }
+      }
+      return obj
+    })
+    setvalues(newValues)
+    console.log(newValues)
 
     const isDuplicate = isListItem.some(listItemValue => listItemValue === item.value)
-
-    // Add unique values to isListItem
+    console.log('Before: ', myHashMap)
     if (!isDuplicate) {
-      setListItem([...isListItem, item.value])
-      console.log('Đã thêm giá trị duy nhất:', item.value) // For debugging
+      const newList = [...isListItem, item.value]
+      setListItem(newList)
+      myHashMap.set(keySelected, newList)
+      console.log('Check', myHashMap)
     } else {
-      console.log('Xóa giá trị đã chọn khỏi mảng:', item.value) // For debuggin
-      const newCompanies = isListItem.filter(listItem => listItem !== item.value)
-      // Cập nhật state
+      const newCompanies = isListItem.filter(listItem => {
+        if (listItem !== item.value) return listItem
+      })
       setListItem(newCompanies)
+      myHashMap.set(keySelected, newCompanies)
+      console.log('Uncheck', myHashMap)
     }
+
+    setFilterState(myHashMap)
   }
-  console.log('>>> Các giá trị đã select', JSON.stringify(isListItem, null, 2))
+
   return (
     <KeyboardAvoidingView>
       <Animated.View
         style={{
           backgroundColor: Colors.white,
-          width: windowWith,
+          width: windowWidth,
           height: '100%',
           transform: [{ translateX: position.x }, { translateY: position.y }]
         }}
@@ -91,7 +114,9 @@ const DetailFilter = props => {
           >
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('Filter', { listItemSelected: isListItem.toString() })
+                navigation.navigate('Filter', {
+                  map: map
+                })
               }
             >
               <Icons.AntDesign name="arrowleft" size={30} />
@@ -104,14 +129,14 @@ const DetailFilter = props => {
             </MyText>
           </View>
           <View />
-          {child.map((item, index) => (
+          {values.map((item, index) => (
             <View key={index} style={styles.section}>
               <TouchableOpacity
                 style={{ flexDirection: 'row', alignItems: 'center' }}
                 onPress={() => handleChecked(item, index)}
               >
                 <Icons.MaterialCommunityIcons
-                  name={selectedId[index].selected ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                  name={values[index].selected ? 'checkbox-marked' : 'checkbox-blank-outline'}
                   size={24}
                 />
                 <Text style={{ marginStart: 16 }}>{item.value}</Text>

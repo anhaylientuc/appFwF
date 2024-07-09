@@ -22,6 +22,7 @@ import ForgotPassword from 'src/components/screens/user/screen/ForgotPassword/Fo
 import Login from 'src/components/screens/user/screen/Login'
 import Register from 'src/components/screens/user/screen/Register'
 import Colors from 'src/constants/Colors'
+import { FilterProvider } from 'src/contexts/FilterProvider'
 import StorageProvider from 'src/contexts/StorageProvider'
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
@@ -235,98 +236,100 @@ function MainNavigator() {
 
   return (
     <StorageProvider>
-      <View style={{ height: 32, backgroundColor: Colors.grayBg }} />
-      <Button.Navigator
-        initialRouteName="HomeStack"
-        screenOptions={{
-          headerShown: false,
-          tabBarActiveTintColor: Colors.red,
-          tabBarStyle: {
-            backgroundColor: Colors.white,
-            bottom: 0,
-            paddingVertical: 16,
-            height: 68
-            // position: 'absolute'
-          }
-        }}
-      >
-        <Button.Screen
-          name="HomeStack"
-          component={HomeStack}
-          options={{
-            tabBarColor: Colors.white,
-            tabBarLabel: '',
+      <FilterProvider>
+        <View style={{ height: 32, backgroundColor: Colors.grayBg }} />
+        <Button.Navigator
+          initialRouteName="HomeStack"
+          screenOptions={{
+            headerShown: false,
+            tabBarActiveTintColor: Colors.red,
+            tabBarStyle: {
+              backgroundColor: Colors.white,
+              bottom: 0,
+              paddingVertical: 16,
+              height: 68
+              // position: 'absolute'
+            }
+          }}
+        >
+          <Button.Screen
+            name="HomeStack"
+            component={HomeStack}
+            options={{
+              tabBarColor: Colors.white,
+              tabBarLabel: '',
 
-            tabBarIcon: ({ focused }) => (
-              <Icons.MaterialCommunityIcons
-                name={focused ? 'home' : 'home-outline'}
-                color={!focused ? Colors.gray : Colors.red}
-                size={30}
-              />
-            )
-          }}
-        />
-        <Button.Screen
-          name="ShopStack"
-          component={ShopStack}
-          options={{
-            tabBarLabel: '',
-            tabBarIcon: ({ focused }) => (
-              <Icons.Ionicons
-                name={focused ? 'menu-outline' : 'menu-outline'}
-                color={!focused ? Colors.gray : Colors.red}
-                size={30}
-              />
-            )
-          }}
-        />
-        <Button.Screen
-          name="FavoriteStack"
-          component={FavoriteStack}
-          options={{
-            tabBarLabel: '',
-            tabBarIcon: ({ focused }) => (
-              <Icons.MaterialIcons
-                name={focused ? 'favorite' : 'favorite-border'}
-                color={!focused ? Colors.gray : Colors.red}
-                size={30}
-              />
-            )
-          }}
-        />
+              tabBarIcon: ({ focused }) => (
+                <Icons.MaterialCommunityIcons
+                  name={focused ? 'home' : 'home-outline'}
+                  color={!focused ? Colors.gray : Colors.red}
+                  size={30}
+                />
+              )
+            }}
+          />
+          <Button.Screen
+            name="ShopStack"
+            component={ShopStack}
+            options={{
+              tabBarLabel: '',
+              tabBarIcon: ({ focused }) => (
+                <Icons.Ionicons
+                  name={focused ? 'menu-outline' : 'menu-outline'}
+                  color={!focused ? Colors.gray : Colors.red}
+                  size={30}
+                />
+              )
+            }}
+          />
+          <Button.Screen
+            name="FavoriteStack"
+            component={FavoriteStack}
+            options={{
+              tabBarLabel: '',
+              tabBarIcon: ({ focused }) => (
+                <Icons.MaterialIcons
+                  name={focused ? 'favorite' : 'favorite-border'}
+                  color={!focused ? Colors.gray : Colors.red}
+                  size={30}
+                />
+              )
+            }}
+          />
 
-        <Button.Screen
-          name="BagStack"
-          component={BagStack}
-          options={{
-            tabBarLabel: '',
-            // tabBarStyle: { display: 'none' },
-            tabBarColor: Colors.white,
-            tabBarIcon: ({ focused }) => (
-              <Icons.Ionicons
-                name={focused ? 'bag-handle' : 'bag-handle-outline'}
-                color={!focused ? Colors.gray : Colors.red}
-                size={30}
-              />
-            )
-          }}
-        />
+          <Button.Screen
+            name="BagStack"
+            component={BagStack}
+            options={{
+              tabBarLabel: '',
+              // tabBarStyle: { display: 'none' },
+              tabBarColor: Colors.white,
+              tabBarIcon: ({ focused }) => (
+                <Icons.Ionicons
+                  name={focused ? 'bag-handle' : 'bag-handle-outline'}
+                  color={!focused ? Colors.gray : Colors.red}
+                  size={30}
+                />
+              )
+            }}
+          />
 
-        <Button.Screen
-          name="ProfileStack"
-          component={ProfileStack}
-          options={{
-            tabBarLabel: '',
-            tabBarIcon: ({ focused }) => (
-              <Icons.FontAwesome
-                name={focused ? 'user' : 'user-o'}
-                color={!focused ? Colors.gray : Colors.red}
-                size={30}
-              />
-            )
-          }}
-        />
-      </Button.Navigator>
+          <Button.Screen
+            name="ProfileStack"
+            component={ProfileStack}
+            options={{
+              tabBarLabel: '',
+              tabBarIcon: ({ focused }) => (
+                <Icons.FontAwesome
+                  name={focused ? 'user' : 'user-o'}
+                  color={!focused ? Colors.gray : Colors.red}
+                  size={30}
+                />
+              )
+            }}
+          />
+        </Button.Navigator>
+      </FilterProvider>
     </StorageProvider>
   )
 }

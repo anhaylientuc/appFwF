@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -11,8 +11,10 @@ import {
 } from 'react-native'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
+import { FilterContext } from 'src/contexts/FilterProvider'
 import { getFilter } from 'src/utils/http/NewHTTP'
 import Icons from '../icons/Icon'
+
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
@@ -20,14 +22,15 @@ const Filter = props => {
   const {
     navigation,
     route: {
-      params: { category_id, quantityPr, listItemSelected }
+      params: { category_id, quantityPr, map }
     }
   } = props
 
   const [Filter, setFilter] = useState([])
-
-  const vaLueSelect = listItemSelected
-  console.log('ok', listItemSelected)
+  const { filterState, setFilterState } = useContext(FilterContext)
+  console.log('mh1', filterState)
+  const [newValues, setnewValues] = useState([])
+  const [newKey, setnewKey] = useState()
 
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
@@ -38,7 +41,8 @@ const Filter = props => {
       } catch (error) {}
     }
     fetchData()
-  }, [])
+  }, [filterState])
+  // console.log('Data nè cu :))', JSON.stringify(filterState, null, 2))
 
   // set Bottom navigation on
   const setBottomBar = () => {
@@ -53,13 +57,24 @@ const Filter = props => {
     })
   }
 
+  const handleBack = () => {
+    props.navigation.goBack()
+    setBottomBar()
+    setFilterState([])
+  }
+
   const renderItem = ({ item, index }) => {
     const { key, quantity, child } = item
     const value = child
+    if(filterState&&filterState.size>0)
+      console.log('dkm',filterState.get(key))
 
+    // const newMap = map.map(obj => obj.values)
     return (
       <Pressable
-        onPress={() => props.navigation.navigate('DetailFilter', { child: item.child })}
+        onPress={() =>
+          props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key })
+        }
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -70,9 +85,9 @@ const Filter = props => {
         <MyText>{key}</MyText>
 
         <View style={{ flexDirection: 'row' }}>
-          {vaLueSelect ? (
+          {true? (
             <Text numberOfLines={1} style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}>
-              {vaLueSelect}
+              cmm
             </Text>
           ) : null}
           <Icons.AntDesign name="arrowright" size={20} />
@@ -87,7 +102,7 @@ const Filter = props => {
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
         >
-          <TouchableOpacity onPress={() => props.navigation.goBack() & setBottomBar()}>
+          <TouchableOpacity onPress={() => handleBack()}>
             <Icons.Feather name="x" size={30} />
           </TouchableOpacity>
           <MyText

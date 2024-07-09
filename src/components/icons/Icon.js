@@ -10,7 +10,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Octicons from 'react-native-vector-icons/Octicons'
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
-import  {Fontisto}  from '@expo/vector-icons'
+import { Fontisto } from '@expo/vector-icons'
 
 export const Icons = {
   MaterialCommunityIcons,
