@@ -28,7 +28,6 @@ const Filter = props => {
   const [Filter, setFilter] = useState([])
   const { filterState, setFilterState } = useContext(FilterContext)
   const { _category_id, set_category_id } = useContext(FilterContext)
-  console.log('mh1', filterState)
   const [newValues, setnewValues] = useState([])
   const [newKey, setnewKey] = useState()
   const isFocusScreen = useIsFocused()
@@ -36,6 +35,7 @@ const Filter = props => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const fetchData = async () => {
       try {
+        console.log('cate',_category_id)
         if(_category_id==null){
             set_category_id(category_id)
         }
@@ -52,7 +52,7 @@ const Filter = props => {
   const loadFilters = async () => {
     
     try {
-      var array = "";
+      var array = null;
       for (const [key, value] of filterState.entries()) {
         for (const value of filterState.get(key)) {
 
@@ -63,12 +63,10 @@ const Filter = props => {
 
         }
       }
-      console.log('array: ', array)
       const query = {};
       query['array'] = array
       query['category_id'] = _category_id
       const res = await getFilter(query)
-      console.log('kq: ',JSON.stringify(res))
 
       setFilter(res)
     } catch (error) {
@@ -92,6 +90,8 @@ const Filter = props => {
     props.navigation.goBack()
     setBottomBar()
     setFilterState([])
+    set_category_id(null)
+    console.log('okkkk')
   }
   const renderItem = ({ item, index }) => {
     const { key, quantity, child } = item
@@ -114,7 +114,7 @@ const Filter = props => {
       >
         <MyText>{key}</MyText>
 
-        <View style={{ flexDirection: 'row' }}>
+        <View key={index} style={{ flexDirection: 'row' }}>
           {(filterState instanceof Map && filterState.has(key)) ?
 
             filterState.get(key).map((item, index) => (

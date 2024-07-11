@@ -92,7 +92,6 @@ const DetailFilter = props => {
       return obj
     })
     setvalues(newValues)
-    console.log(newValues)
 
     const isDuplicate = isListItem.some(listItemValue => listItemValue === item.value)
     if (!isDuplicate) {
