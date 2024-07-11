@@ -19,7 +19,7 @@ const DetailFilter = props => {
   const {
     navigation,
     route: {
-      params: { child, keySelected }
+      params: { child, keySelected },
     }
   } = props
 
@@ -30,7 +30,6 @@ const DetailFilter = props => {
   const [map, setmap] = useState([])
   const { filterState, setFilterState } = useContext(FilterContext)
   const [myHashMap, setmyHashMap] = useState(null)
-  console.log('>>>', isListItem)
 
   useEffect(() => {
     Animated.timing(position, {
@@ -45,10 +44,10 @@ const DetailFilter = props => {
       try {
         const response = child
         setvalues(child)
+
         const newHashMap = new Map()
         setSelectedId(response)
         if (filterState) {
-          let it = filterState.entries()
           for (const [key, value] of filterState.entries()) {
             if (keySelected == key) {
               setListItem(value)
@@ -56,6 +55,7 @@ const DetailFilter = props => {
             newHashMap.set(key, value)
           }
           setmyHashMap(newHashMap)
+          fetchValues()
         }
       } catch (error) {
         // Handle error
@@ -64,14 +64,29 @@ const DetailFilter = props => {
     fetchData()
   }, [child])
   const [values, setvalues] = useState([])
+  const fetchValues = () => {
+    const newValues = child.map((item, index) => {
+      var isCheck = false
+      for (const value of filterState.get(keySelected)) {
+        if (item.value == value) {
+          isCheck = true;
+          break;
+        }
+      }
+      return { ...item, selected: isCheck }
+    });
+    if (newValues.length > 0) {
+
+      setvalues(newValues)
+
+    }
+  }
 
   const handleChecked = (item, index) => {
-    console.log(index)
     const newValues = values.map((obj, i) => {
       const { selected } = obj
 
       if (index == i) {
-        console.log(i)
         return { ...obj, selected: !selected }
       }
       return obj
@@ -80,19 +95,16 @@ const DetailFilter = props => {
     console.log(newValues)
 
     const isDuplicate = isListItem.some(listItemValue => listItemValue === item.value)
-    console.log('Before: ', myHashMap)
     if (!isDuplicate) {
       const newList = [...isListItem, item.value]
       setListItem(newList)
       myHashMap.set(keySelected, newList)
-      console.log('Check', myHashMap)
     } else {
       const newCompanies = isListItem.filter(listItem => {
         if (listItem !== item.value) return listItem
       })
       setListItem(newCompanies)
       myHashMap.set(keySelected, newCompanies)
-      console.log('Uncheck', myHashMap)
     }
 
     setFilterState(myHashMap)
@@ -113,11 +125,15 @@ const DetailFilter = props => {
             style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
           >
             <TouchableOpacity
-              onPress={() =>
+              onPress={() => {
                 navigation.navigate('Filter', {
-                  map: map
+                  map: map,
+                 
+                  
                 })
               }
+              }
+
             >
               <Icons.AntDesign name="arrowleft" size={30} />
             </TouchableOpacity>
