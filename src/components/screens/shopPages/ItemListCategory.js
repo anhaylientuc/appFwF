@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState,useContext } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -8,12 +8,15 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  
 } from 'react-native'
-
+import { FilterContext } from 'src/contexts/FilterProvider'
 import BottomSheet from '@devvie/bottom-sheet'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
+import { useIsFocused } from '@react-navigation/native'
+
 import MyText from 'src/constants/FontsStyle'
 import { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
 
@@ -24,9 +27,11 @@ const ItemCategoryWomen = props => {
   const {
     navigation,
     route: {
-      params: { categoryById }
+      params: { categoryById, _products, params }
+
     }
   } = props
+  console.log(params)
   const [windowWith, setwindowWith] = useState(width)
   const [windowHeight, setwindowHeight] = useState(height)
   const [categoriesById, setCategoriesById] = useState([])
@@ -36,8 +41,11 @@ const ItemCategoryWomen = props => {
   const [selected, setSelected] = useState(DataSortBy)
   const [nameCategoryById, setnameCategoryById] = useState('')
   const [selectedProductId, setselectedProductId] = useState(null)
+  const { filterState, setFilterState } = useContext(FilterContext)
+  const isFocusScreen = useIsFocused()
   // const dataLength = stor
   // set Bottom navigation on
+
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -52,12 +60,28 @@ const ItemCategoryWomen = props => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if (isFocusScreen) {
+
+          if (_products) {
+
+            setproducts(_products)
+          }
+          else {
+            setproducts(products)
+
+          }
+
+
+        }
+
+
         const response = await getCategoryById(categoryById)
         setnameCategoryById(response.name)
         const { _id, name, parentID, image } = response
         const arr = response.child
         setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
-        setproducts(products)
+
+
         setwindowWith(width / 2)
         setwindowHeight(height / 2.4)
       } catch (error) {
@@ -66,7 +90,7 @@ const ItemCategoryWomen = props => {
       }
     }
     fetchData()
-  }, [])
+  }, [isFocusScreen])
 
   // set useRef
   const imagesModel = products.map(item => item.images)
@@ -135,10 +159,11 @@ const ItemCategoryWomen = props => {
 
   // Logic: onclick set product by category Id
   const handlePressedCategoryId = async _id => {
-    ;(async () => {
+    ; (async () => {
       const version = 2
       const category_id = _id
       try {
+        setFilterState([])
         const products = await getProducts({ version, category_id })
         const productsParent = await getProducts({ version: 1, category_id })
         // setproductsParent(productsParent[0])

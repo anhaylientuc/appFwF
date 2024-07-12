@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, version } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -12,7 +12,7 @@ import {
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { FilterContext } from 'src/contexts/FilterProvider'
-import { getFilter } from 'src/utils/http/NewHTTP'
+import NewHTTP, { getFilter } from 'src/utils/http/NewHTTP'
 import Icons from '../icons/Icon'
 import { useIsFocused } from '@react-navigation/native'
 const windowWith = Dimensions.get('window').width
@@ -28,38 +28,49 @@ const Filter = props => {
   const [Filter, setFilter] = useState([])
   const { filterState, setFilterState } = useContext(FilterContext)
   const { _category_id, set_category_id } = useContext(FilterContext)
+  const [_products, set_products] = useState(null)
   const [newValues, setnewValues] = useState([])
   const [newKey, setnewKey] = useState()
   const isFocusScreen = useIsFocused()
+  
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    //navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const fetchData = async () => {
       try {
-        console.log('cate',_category_id)
-        if(_category_id==null){
+        
+          
+
+          if(category_id){
             set_category_id(category_id)
-        }
-        const response = await getFilter({ category_id: _category_id })
-        const {products,table}=response
-        setFilter(table)
-      
+            console.log('>>>',_category_id)
+          }
+          const query={};
+          query["category_id"]=_category_id
+
+          for (const [key, value] of filterState.entries()) {
+            if (value.length > 0) {
+              query[key]=value.join(',')
+            }
+          }
+          const response = await getFilter(query)
+          const { products, table } = response
+          set_products(products)
+          setFilter(table)
+        
+
+
+
       } catch (error) {
         console.log(error)
       }
     }
     fetchData()
-    loadFilters()
-  }, [filterState, isFocusScreen])
+  }, [filterState, isFocusScreen,_category_id])
   const loadFilters = async () => {
-    
+
     try {
-      var query = {};
-      for (const [key, value] of filterState.entries()) {
-        if(value.length>0)
-          query[key]=value.join(',')
-      }
-      console.log(query)
-      
+
+
     } catch (error) {
       console.log('cccccccccccccccccccccccc', error)
     }
@@ -77,12 +88,15 @@ const Filter = props => {
     })
   }
 
-  const handleBack = () => {
-    props.navigation.goBack()
+  const handleBack = async() => {
+    
     setBottomBar()
     setFilterState([])
-    set_category_id(null)
-    console.log('okkkk')
+    console.log('ccccccc',_category_id)
+    const query={category_id:_category_id,version:2}
+    const response=await NewHTTP.getProducts(query)
+    console.log('res',JSON.stringify(response))
+    navigation.navigate("ItemCategoryWomen",{params:category_id,_products:response})
   }
   const renderItem = ({ item, index }) => {
     const { key, quantity, child } = item
@@ -178,6 +192,11 @@ const Filter = props => {
           style={{
             backgroundColor: Colors.black,
             padding: 16
+          }}
+          onPress={()=>{
+            console.log(_products)
+            navigation.navigate("ItemCategoryWomen",{params:category_id,_products})
+            
           }}
         >
           <Text
