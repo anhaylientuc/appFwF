@@ -1,67 +1,244 @@
-import React from 'react'
-import {
-  StyleSheet,
-  Text,
-  View
-} from 'react-native'
+import Slider from '@react-native-community/slider'
+import React, { useContext, useState } from 'react'
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import Colors from 'src/constants/Colors'
+import MyText from 'src/constants/FontsStyle'
+import Icons from '../icons/Icon'
+import UserContext from './user/UserContext'
 
-const Profile = () => {
-  const windowWith = Dimensions.get('window').width
-  const windowHeight = Dimensions.get('window').height
+const windowWith = Dimensions.get('window').width
+const windowHeight = Dimensions.get('window').height
+const Profile = props => {
+  const { navigation } = props
+  const [score, setScore] = useState(0)
+  const { user } = useContext(UserContext)
+  // console.log('>>>', user)
 
   return (
-    <View>
-      <Text>Profile</Text>
-    </View>
+    <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+      <View style={styles.header}>
+        <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 24 }}>
+          Xin chào Vỹ
+        </MyText>
+        <Icons.Ionicons name="settings-outline" size={32} />
+      </View>
+      <View
+        style={{
+          backgroundColor: '#EEE8AA',
+          width: '100%',
+          paddingHorizontal: 16,
+          paddingBottom: 32,
+          paddingTop: 16
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 24 }}>
+            0 Điểm
+          </MyText>
+          <View style={{ justifyContent: 'space-evenly' }}>
+            <MyText style={{ borderBottomWidth: 1 }}>Điểm</MyText>
+          </View>
+        </View>
+        <Slider
+          style={styles.slider}
+          minimumValue={0}
+          maximumValue={100}
+          step={1}
+          value={score}
+          onValueChange={value => setScore(value)}
+          minimumTrackTintColor="#1FB28A"
+          maximumTrackTintColor="#d3d3d3"
+          thumbTintColor="#1FB28A"
+        />
+        <Text
+          style={{
+            fontSize: 14,
+            textAlign: 'justify',
+            marginEnd: 32,
+            fontFamily: 'Montserrat-SemiBold'
+          }}
+        >
+          Bạn còn thiếu 200 điểm nữa để nhận được phiếu giảm giá tiếp theo và còn thiếu 800 điểm nữa
+          để nâng hạng thành Plus member. Phiếu giảm giá sẽ khả dụng sau 30 ngày.
+        </Text>
+        <TouchableOpacity
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 16,
+            borderWidth: 1.5,
+            marginTop: 32,
+            borderRadius: 8
+          }}
+        >
+          <Icons.FontAwesome5 name="barcode" size={24} />
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ marginStart: 16 }}>
+            XEM MÃ THÀNH VIÊN
+          </MyText>
+        </TouchableOpacity>
+      </View>
+      <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <TouchableOpacity
+            style={styles.container_setting}
+            onPress={() => props.navigation.navigate('MyOder')}
+          >
+            <Icons.AntDesign name="inbox" size={32} />
+            <Text style={styles.txtSetting}>Đơn hàng</Text>
+          </TouchableOpacity>
+          <View style={{ width: 12 }} />
+          <TouchableOpacity style={styles.container_setting}>
+            <Icons.Ionicons name="settings-outline" size={32} />
+            <View
+              style={{
+                backgroundColor: Colors.red,
+                width: 12,
+                height: 12,
+                position: 'absolute',
+                borderRadius: 50,
+                left: 70,
+                top: 12
+              }}
+            />
+
+            <Text style={styles.txtSetting}>Cài đặt</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ height: 12 }} />
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <TouchableOpacity style={styles.container_setting}>
+            <Icons.SimpleLineIcons name="user" size={32} />
+            <Text style={styles.txtSetting}>Tư cách thành viên FwF</Text>
+          </TouchableOpacity>
+          <View style={{ width: 12 }} />
+          <TouchableOpacity style={styles.container_setting}>
+            <Icons.MaterialCommunityIcons name="account-star-outline" size={32} />
+            <Text style={styles.txtSetting}>Điểm</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={{ padding: 16 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 20 }}>
+            Các ưu đãi của tôi
+          </Text>
+          <View style={{ justifyContent: 'space-evenly' }}>
+            <MyText style={{ borderBottomWidth: 1 }}>Xem tất cả</MyText>
+          </View>
+        </View>
+      </View>
+      <View>
+        <View style={styles.container_option}>
+          <Icons.AntDesign name="inbox" size={24} />
+          <View>
+            <Text style={styles.txtOption}>Đơn hàng của tôi</Text>
+          </View>
+        </View>
+        <View style={styles.container_option2}>
+          <Icons.MaterialIcons name="payment" size={24} />
+          <View>
+            <Text style={styles.txtOption}>Thông tin thanh toán</Text>
+          </View>
+        </View>
+        <View style={styles.container_option}>
+          <Icons.Ionicons name="settings-outline" size={24} />
+          <View>
+            <Text style={styles.txtOption}>Chi tiết tài khoản</Text>
+          </View>
+        </View>
+        <View style={styles.container_option2}>
+          <Icons.MaterialCommunityIcons name="account-star-outline" size={24} />
+          <View>
+            <Text style={styles.txtOption}>Điểm của tôi</Text>
+          </View>
+        </View>
+        <View style={styles.container_option}>
+          <Icons.SimpleLineIcons name="user" size={24} />
+          <View>
+            <Text style={styles.txtOption}>Tư cách thành viên</Text>
+          </View>
+        </View>
+        <View style={styles.container_option2}>
+          <Icons.FontAwesome name="commenting-o" size={24} />
+          <View>
+            <Text style={styles.txtOption}>Dịch vụ khách hàng</Text>
+          </View>
+        </View>
+        <View style={styles.container_option}>
+          <Icons.MaterialIcons name="logout" size={24} />
+          <View>
+            <Text style={styles.txtOption}>Đăng xuất</Text>
+          </View>
+        </View>
+        <View style={styles.container_option2}>
+          <Icons.MaterialCommunityIcons name="comment-edit-outline" size={24} />
+          <View>
+            <Text style={styles.txtOption}>Hãy giúp chúng tôi cải thiện ứng dụng</Text>
+          </View>
+        </View>
+        <View style={styles.container_option}>
+          <Icons.Feather name="user-plus" size={24} />
+          <View>
+            <Text style={styles.txtOption}>Mời một người bạn</Text>
+          </View>
+        </View>
+      </View>
+
+      <View>
+        <Text style={{ fontSize: 16, fontFamily: 'Montserrat-SemiBold', marginStart: 16 }}>
+          Đã xem gần đây
+        </Text>
+      </View>
+    </ScrollView>
   )
 }
 
 export default Profile
 
 const styles = StyleSheet.create({
-  txt_underinfo: {
-    marginTop: 10,
-    width: 121,
-    height: 11,
-
-    fontSize: 11,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 11,
-    color: '#9B9B9B'
-  },
-  txt_info: {
-    width: 200,
-    height: 16,
-    fontSize: 16,
-    fontWeight: '600',
-    fontStyle: 'normal',
-    lineHeight: 16,
-    color: '#222222'
-  },
-  view_info: {
-    width: 350,
-    height: 45
-  },
-  view_search: {
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    padding: 8,
-    marginTop: 44
-  },
-  txt_profile: {
-    width: 169,
-    height: 34,
-
-    fontSize: 34,
-    fontWeight: '700',
-    fontStyle: 'normal',
-    lineHeight: 34,
-    color: '#222222'
-  },
-  view_pic: {
-    marginTop: 24,
+  txtOption: { marginStart: 16, fontSize: 14, fontFamily: 'Montserrat-SemiBold' },
+  container_option2: {
     flexDirection: 'row',
-    backgroundColor: '#F9F9F9'
-  }
+    alignItems: 'center',
+    padding: 16
+  },
+  container_option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: Colors.white
+  },
+  txtSetting: { fontSize: 14, fontFamily: 'Montserrat-SemiBold', marginStart: 8, maxWidth: 120 },
+  container_setting: {
+    backgroundColor: Colors.white,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 16,
+    flex: 1,
+    borderRadius: 8
+  },
+  scoreText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10
+  },
+  slider: {
+    width: '100%',
+    height: 40
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    alignItems: 'center'
+  },
+  container: { backgroundColor: Colors.grayBg, width: '100%', height: '100%' }
 })

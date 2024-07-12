@@ -6,16 +6,15 @@ import { View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import DetailFilter from 'src/components/screens/DetailFilter'
 import Filter from 'src/components/screens/Filter'
-import Profile from 'src/components/screens/Profile'
 import SearchPage from 'src/components/screens/SearchPage'
 import ShopPage from 'src/components/screens/ShopPage'
 import BagPage from 'src/components/screens/bagPages/BagPage'
 import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
 import HomePage from 'src/components/screens/homePages/HomePage'
+import MyOder from 'src/components/screens/profilePage/MyOder'
 import CategoryWomen from 'src/components/screens/shopPages/Categories'
 import ItemCategoryWomen from 'src/components/screens/shopPages/ItemListCategory'
 import ProductDetail from 'src/components/screens/shopPages/ProductDetail'
-
 import ReviewProduct from 'src/components/screens/shopPages/ReviewProduct'
 import SizeInfo from 'src/components/screens/shopPages/SizeInfo'
 import UserContext from 'src/components/screens/user/UserContext'
@@ -25,6 +24,7 @@ import Register from 'src/components/screens/user/screen/Register'
 import Colors from 'src/constants/Colors'
 import { FilterProvider } from 'src/contexts/FilterProvider'
 import StorageProvider from 'src/contexts/StorageProvider'
+import Profile from '../components/screens/Profile'
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
 
@@ -187,7 +187,7 @@ function MainNavigator() {
   }
 
   const ProfileStack = () => {
-    return user ? (
+    return !user ? (
       <Stack.Navigator
         screenOptions={{
           headerShown: false
@@ -203,6 +203,7 @@ function MainNavigator() {
           component={ReturnMethod}
           options={{ title: 'ReturnMethod' }}
         ></Stack.Screen>
+        <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }}></Stack.Screen>
       </Stack.Navigator>
     ) : (
       UserNavigation()
