@@ -39,8 +39,9 @@ const Filter = props => {
         if(_category_id==null){
             set_category_id(category_id)
         }
-        //const response = await getFilter({ category_id: _category_id })
-        setFilter(response)
+        const response = await getFilter({ category_id: _category_id })
+        const {products,table}=response
+        setFilter(table)
       
       } catch (error) {
         console.log(error)
