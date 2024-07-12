@@ -52,23 +52,13 @@ const Filter = props => {
   const loadFilters = async () => {
     
     try {
-      var array = null;
+      var query = {};
       for (const [key, value] of filterState.entries()) {
-        for (const value of filterState.get(key)) {
-
-          if (array != "")
-            array += ',' + value
-          else
-            array = value
-
-        }
+        if(value.length>0)
+          query[key]=value.join(',')
       }
-      const query = {};
-      query['array'] = array
-      query['category_id'] = _category_id
-      const res = await getFilter(query)
-
-      setFilter(res)
+      console.log(query)
+      
     } catch (error) {
       console.log('cccccccccccccccccccccccc', error)
     }
