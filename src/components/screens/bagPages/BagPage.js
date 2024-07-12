@@ -12,8 +12,10 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
@@ -35,6 +37,17 @@ const BagPage = props => {
   const [price, setPrice] = useState()
   const [cart, setCart] = useState([])
   const [transportFee, setTransportFee] = useState()
+
+  const showToastDeleted = title => {
+    Toast.show({
+      type: 'info', // 'info' | 'error' | 'success'
+      text1: 'Xóa sản phẩm thành công ✔',
+      // text2: title + ' đã được xóa khỏi giỏ hàng',
+      text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
+      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
+      //  text2: 'Đây là một cái gì đó '
+    })
+  }
 
   // onClick title itemProduct set attributes_id
   const handleStatusProduct = attributes => {
@@ -106,7 +119,8 @@ const BagPage = props => {
 
   // PopupMenu
 
-  const handleAddFavorites = () => {
+  const handleAddFavorites = attributes => {
+    console.log(attributes)
     ;setAddFavorite(!addFavorite) &
       console.log('Thêm vào yêu thích') &
       setTimeout(() => {
@@ -115,7 +129,7 @@ const BagPage = props => {
   }
 
   // Logic: onClick delete Item from List
-  const handleDeleteFromList = async attributes => {
+  const handleDeleteFromList = async (attributes, product_Name) => {
     const result = await AsyncStorage.getItem('my-cart')
     let storage = []
     if (result !== null) {
@@ -125,10 +139,14 @@ const BagPage = props => {
     const newStorage = storage.filter(s => s.attributes !== visiblePopupMenu)
     setStorageData(newStorage)
     await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
+    let title = product_Name
+    showToastDeleted(title)
   }
 
   // Menu popup Item
-  const popupMenu = ({ attributes }) => {
+  const popupMenu = (attributes, item) => {
+    const { product_Name } = item
+
     return (
       <View
         style={{
@@ -169,7 +187,7 @@ const BagPage = props => {
           }}
         />
         <TouchableOpacity
-          onPress={() => handleDeleteFromList(attributes)}
+          onPress={() => handleDeleteFromList(attributes, product_Name)}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -329,12 +347,22 @@ const BagPage = props => {
     setStorageData(newStorageData)
   }
 
+  const handlePressProductItem = item => {
+    const { product_id, _id } = item
+    navigation.navigate('ProductDetail', {
+      product_id: product_id,
+      _id: _id
+    })
+    console.log('product_id', item.product_id)
+    console.log('_id', item._id)
+  }
+
   const ItemCart = ({ item, index }) => {
     const { product_Name, base_price, cnt, size, _id, color, image, code, quantity, attributes } =
       item
     const priceProduct = base_price
     const newPrice = { ...item, newPrice: base_price * quantity }
-    console.log(newPrice.newPrice)
+
     const formattedPriceProduct = formatCurrency(newPrice.newPrice)
 
     return (
@@ -347,15 +375,17 @@ const BagPage = props => {
             marginHorizontal: 16
           }}
         >
-          <Image
-            style={{
-              width: 104,
-              height: '100%',
-              borderTopLeftRadius: 8,
-              borderBottomLeftRadius: 8
-            }}
-            source={{ uri: image }}
-          />
+          <TouchableWithoutFeedback onPress={() => handlePressProductItem(item)}>
+            <Image
+              style={{
+                width: 104,
+                height: '100%',
+                borderTopLeftRadius: 8,
+                borderBottomLeftRadius: 8
+              }}
+              source={{ uri: image }}
+            />
+          </TouchableWithoutFeedback>
 
           <View
             style={{
@@ -455,7 +485,7 @@ const BagPage = props => {
               </View>
               <MyText style={{ fontSize: 14, fontWeight: '500' }}>{formattedPriceProduct}</MyText>
             </View>
-            {visiblePopupMenu === attributes ? popupMenu(attributes) : null}
+            {visiblePopupMenu === attributes ? popupMenu(attributes, item) : null}
           </View>
           <TouchableOpacity
             onPress={() => handleStatusProduct(attributes)}
@@ -700,6 +730,11 @@ const BagPage = props => {
       </View>
     )
   }
+
+  const goBack = () => {
+    navigation.goBack()
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+  }
   return (
     <View
       style={{
@@ -710,7 +745,7 @@ const BagPage = props => {
     >
       <View style={[styles.header]}>
         <View style={{ flexDirection: 'row' }}>
-          <TouchableOpacity onPress={() => props.navigation.goBack()}>
+          <TouchableOpacity onPress={() => goBack()}>
             <Icons.Ionicons name={'arrow-back-sharp'} size={24} color={Colors.black} />
           </TouchableOpacity>
           <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_header}>

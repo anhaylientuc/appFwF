@@ -51,6 +51,7 @@
     "react-native-gesture-handler": "~2.16.1",
     "react-native-image-viewing": "^0.2.2",
     "react-native-linear-gradient": "^2.8.3",
+    "react-native-modal": "^13.0.1",
     "react-native-pager-view": "6.3.0",
     "react-native-paper": "^5.12.3",
     "react-native-picasso": "^1.1.12",
@@ -59,6 +60,7 @@
     "react-native-screens": "3.31.1",
     "react-native-svg": "15.2.0",
     "react-native-tab-view": "^3.5.2",
+    "react-native-toast-message": "^2.2.0",
     "react-native-vector-icons": "^10.1.0",
     "typescript": "~5.3.3"
   },

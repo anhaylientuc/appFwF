@@ -66,8 +66,7 @@ const Filter = props => {
   const renderItem = ({ item, index }) => {
     const { key, quantity, child } = item
     const value = child
-    if(filterState&&filterState.size>0)
-      console.log('dkm',filterState.get(key))
+    if (filterState && filterState.size > 0) console.log('dkm', filterState.get(key))
 
     // const newMap = map.map(obj => obj.values)
     return (
@@ -85,7 +84,7 @@ const Filter = props => {
         <MyText>{key}</MyText>
 
         <View style={{ flexDirection: 'row' }}>
-          {true? (
+          {true ? (
             <Text numberOfLines={1} style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}>
               cmm
             </Text>

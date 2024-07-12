@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View
 } from 'react-native'
 
@@ -244,23 +245,40 @@ const ItemCategoryWomen = props => {
             horizontal
           >
             {images.map((image, index) => (
-              <Image
-                resizeMode={numColumns ? 'contain' : 'cover'}
+              <TouchableWithoutFeedback
                 key={index}
-                style={{
-                  width: windowWith - 20,
-                  height: windowHeight
-                }}
-                source={{ uri: image.url }}
-              />
+                onPress={() =>
+                  props.navigation.navigate('ProductDetail', {
+                    _id: _id,
+                    product_id: product_id,
+                    product_Name: name,
+                    images: images,
+                    base_price: base_price,
+                    category_id: category_id,
+                    attributes: attributes,
+                    description: description,
+                    code: code
+                  })
+                }
+              >
+                <Image
+                  resizeMode={numColumns ? 'contain' : 'cover'}
+                  key={index}
+                  style={{
+                    width: windowWith - 20,
+                    height: windowHeight
+                  }}
+                  source={{ uri: image.url }}
+                />
+              </TouchableWithoutFeedback>
             ))}
           </ScrollView>
 
           <TouchableOpacity
             style={[
               styles.StyleFavorites,
-              { right: numColumns ? 12 : 32 },
-              { bottom: numColumns ? windowHeight / 3 : windowHeight / 4 },
+              { right: numColumns ? 8 : 24 },
+              { bottom: numColumns ? windowHeight / 3 : windowHeight / 7 },
               { width: numColumns ? 32 : 40 },
               { height: numColumns ? 32 : 40 }
             ]}
@@ -274,24 +292,10 @@ const ItemCategoryWomen = props => {
               color={Colors.gray}
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              props.navigation.navigate('ProductWomen', {
-                _id: _id,
-                product_id: product_id,
-                product_Name: name,
-                images: images,
-                base_price: base_price,
-                category_id: category_id,
-                attributes: attributes,
-                description: description,
-                code: code
-              })
-            }
+          <View
             style={{
               alignItems: 'flex-start',
-              justifyContent: 'center',
-              paddingBottom: 16
+              justifyContent: 'center'
             }}
           >
             <MyText style={styles.renderItems.txt_category_name}>{/* {category_name} */}</MyText>
@@ -299,7 +303,7 @@ const ItemCategoryWomen = props => {
               {name}
             </Text>
             <MyText style={styles.renderItems.txt_price}>{formattedCurrency}</MyText>
-          </TouchableOpacity>
+          </View>
         </View>
         <View style={{ width: 8 }} />
       </KeyboardAvoidingView>
@@ -531,7 +535,6 @@ const styles = StyleSheet.create({
     container: { backgroundColor: Colors.white },
     txt_product_name: {
       fontSize: 16,
-      marginTop: 8,
       color: Colors.black,
       fontStyle: 'normal',
       fontFamily: 'Montserrat-SemiBold'

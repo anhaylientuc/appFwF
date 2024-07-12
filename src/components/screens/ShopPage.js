@@ -6,6 +6,7 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { getCategory } from 'src/utils/http/NewHTTP'
+
 const ShopPage = props => {
   const PicassoImage = createPicassoComponent(Image)
   const navigation = useNavigation()

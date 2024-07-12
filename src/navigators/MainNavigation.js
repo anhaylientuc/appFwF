@@ -14,7 +14,8 @@ import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
 import HomePage from 'src/components/screens/homePages/HomePage'
 import CategoryWomen from 'src/components/screens/shopPages/Categories'
 import ItemCategoryWomen from 'src/components/screens/shopPages/ItemListCategory'
-import ProductWomen from 'src/components/screens/shopPages/ProductDetail'
+import ProductDetail from 'src/components/screens/shopPages/ProductDetail'
+
 import ReviewProduct from 'src/components/screens/shopPages/ReviewProduct'
 import SizeInfo from 'src/components/screens/shopPages/SizeInfo'
 import UserContext from 'src/components/screens/user/UserContext'
@@ -28,22 +29,6 @@ const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
 
 function MainNavigator() {
-  // const [keyboardStatus, setKeyboardStatus] = useState(false)
-
-  // useEffect(() => {
-  //   const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
-  //     setKeyboardStatus(true)
-  //   })
-  //   const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-  //     setKeyboardStatus(false)
-  //   })
-
-  //   return () => {
-  //     showSubscription.remove()
-  //     hideSubscription.remove()
-  //   }
-  // }, [])
-
   const { user } = useContext(UserContext)
   const ShopStack = () => {
     return (
@@ -68,10 +53,10 @@ function MainNavigator() {
           options={{ title: 'Tab Category Women' }}
         ></Stack.Screen>
         <Stack.Screen
-          name="ProductWomen"
-          component={ProductWomen}
+          name="ProductDetail"
+          component={ProductDetail}
           options={{
-            title: 'ProductWomen',
+            title: 'ProductDetail',
             tabBarStyle: { display: 'none' }
           }}
         ></Stack.Screen>
@@ -192,6 +177,11 @@ function MainNavigator() {
           component={ProfileStack}
           options={{ title: 'UserNavigation' }}
         ></Stack.Screen>
+        <Stack.Screen
+          name="ProductDetail"
+          component={ProductDetail}
+          options={{ title: 'ProductDetail' }}
+        ></Stack.Screen>
       </Stack.Navigator>
     )
   }
@@ -237,7 +227,7 @@ function MainNavigator() {
   return (
     <StorageProvider>
       <FilterProvider>
-        <View style={{ height: 32, backgroundColor: Colors.grayBg }} />
+        <View style={{ height: '4.8%', backgroundColor: '#CCCCCC' }} />
         <Button.Navigator
           initialRouteName="HomeStack"
           screenOptions={{
@@ -248,7 +238,6 @@ function MainNavigator() {
               bottom: 0,
               paddingVertical: 16,
               height: 68
-              // position: 'absolute'
             }
           }}
         >
