@@ -77,3 +77,4 @@ export const getFilter = async query => {
     throw error
   }
 }
+export default {getProducts}

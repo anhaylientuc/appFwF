@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, version } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -12,7 +12,7 @@ import {
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { FilterContext } from 'src/contexts/FilterProvider'
-import { getFilter } from 'src/utils/http/NewHTTP'
+import NewHTTP, { getFilter } from 'src/utils/http/NewHTTP'
 import Icons from '../icons/Icon'
 
 const windowWith = Dimensions.get('window').width
@@ -28,22 +28,43 @@ const Filter = props => {
 
   const [Filter, setFilter] = useState([])
   const { filterState, setFilterState } = useContext(FilterContext)
-  console.log('mh1', filterState)
+  const { _category_id, set_category_id } = useContext(FilterContext)
   const [newValues, setnewValues] = useState([])
   const [newKey, setnewKey] = useState()
-
+  const isFocusScreen = useIsFocused()
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    //navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const fetchData = async () => {
       try {
-        const response = await getFilter({ category_id: category_id })
-        setFilter(response)
-      } catch (error) {}
+        console.log('cate',_category_id)
+        if(_category_id==null){
+            set_category_id(category_id)
+        }
+        const response = await getFilter({ category_id: _category_id })
+        const {products,table}=response
+        setFilter(table)
+      
+      } catch (error) {
+        console.log(error)
+      }
     }
     fetchData()
-  }, [filterState])
-  // console.log('Data nè cu :))', JSON.stringify(filterState, null, 2))
-
+    loadFilters()
+  }, [filterState, isFocusScreen])
+  const loadFilters = async () => {
+    
+    try {
+      var query = {};
+      for (const [key, value] of filterState.entries()) {
+        if(value.length>0)
+          query[key]=value.join(',')
+      }
+      console.log(query)
+      
+    } catch (error) {
+      console.log('cccccccccccccccccccccccc', error)
+    }
+  }
   // set Bottom navigation on
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -57,10 +78,12 @@ const Filter = props => {
     })
   }
 
-  const handleBack = () => {
-    props.navigation.goBack()
+  const handleBack = async() => {
+    
     setBottomBar()
     setFilterState([])
+    set_category_id(null)
+    console.log('okkkk')
   }
 
   const renderItem = ({ item, index }) => {
@@ -151,6 +174,11 @@ const Filter = props => {
           style={{
             backgroundColor: Colors.black,
             padding: 16
+          }}
+          onPress={()=>{
+            console.log(_products)
+            navigation.navigate("ItemCategoryWomen",{params:category_id,_products})
+            
           }}
         >
           <Text
