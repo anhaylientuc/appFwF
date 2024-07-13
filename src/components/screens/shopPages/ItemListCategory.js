@@ -1,6 +1,4 @@
-import BottomSheet from '@devvie/bottom-sheet'
-import { useIsFocused } from '@react-navigation/native'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState,useContext } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -10,12 +8,14 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
+  View,
+  
 } from 'react-native'
+import { FilterContext } from 'src/contexts/FilterProvider'
+import BottomSheet from '@devvie/bottom-sheet'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import { FilterContext } from 'src/contexts/FilterProvider'
+import { useIsFocused } from '@react-navigation/native'
 
 import MyText from 'src/constants/FontsStyle'
 import { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
@@ -27,10 +27,11 @@ const ItemCategoryWomen = props => {
   const {
     navigation,
     route: {
-      params: { categoryById, _products, category_id }
+      params: { categoryById, _products, params }
+
     }
   } = props
-
+  console.log(params)
   const [windowWith, setwindowWith] = useState(width)
   const [windowHeight, setwindowHeight] = useState(height)
   const [categoriesById, setCategoriesById] = useState([])
@@ -60,18 +61,26 @@ const ItemCategoryWomen = props => {
     const fetchData = async () => {
       try {
         if (isFocusScreen) {
+
           if (_products) {
+
             setproducts(_products)
-          } else {
-            setproducts(products)
           }
+          else {
+            setproducts(products)
+
+          }
+
+
         }
+
 
         const response = await getCategoryById(categoryById)
         setnameCategoryById(response.name)
         const { _id, name, parentID, image } = response
         const arr = response.child
         setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
+
 
         setwindowWith(width / 2)
         setwindowHeight(height / 2.4)
@@ -82,8 +91,6 @@ const ItemCategoryWomen = props => {
     }
     fetchData()
   }, [isFocusScreen])
-
-  // console.log('>>>', JSON.stringify(products, null, 2))
 
   // set useRef
   const imagesModel = products.map(item => item.images)
@@ -150,24 +157,9 @@ const ItemCategoryWomen = props => {
 
   const [productsParent, setproductsParent] = useState([])
 
-  // console.log(
-  //   JSON.stringify(
-  //     _products.map(item => item.name),
-  //     null,
-  //     2
-  //   )
-  // )
-
-  // if (_products) {
-  //   const colors = filterState.get('Color')
-  //   colors.forEach(color => {
-  //     console.log(color)
-  //   })
-  // }
-
   // Logic: onclick set product by category Id
   const handlePressedCategoryId = async _id => {
-    ;(async () => {
+    ; (async () => {
       const version = 2
       const category_id = _id
       try {
@@ -277,40 +269,23 @@ const ItemCategoryWomen = props => {
             horizontal
           >
             {images.map((image, index) => (
-              <TouchableWithoutFeedback
+              <Image
+                resizeMode={numColumns ? 'contain' : 'cover'}
                 key={index}
-                onPress={() =>
-                  props.navigation.navigate('ProductDetail', {
-                    _id: _id,
-                    product_id: product_id,
-                    product_Name: name,
-                    images: images,
-                    base_price: base_price,
-                    category_id: category_id,
-                    attributes: attributes,
-                    description: description,
-                    code: code
-                  })
-                }
-              >
-                <Image
-                  resizeMode={numColumns ? 'contain' : 'cover'}
-                  key={index}
-                  style={{
-                    width: windowWith - 20,
-                    height: windowHeight
-                  }}
-                  source={{ uri: image.url }}
-                />
-              </TouchableWithoutFeedback>
+                style={{
+                  width: windowWith - 20,
+                  height: windowHeight
+                }}
+                source={{ uri: image.url }}
+              />
             ))}
           </ScrollView>
 
           <TouchableOpacity
             style={[
               styles.StyleFavorites,
-              { right: numColumns ? 8 : 24 },
-              { bottom: numColumns ? windowHeight / 3 : windowHeight / 7 },
+              { right: numColumns ? 12 : 32 },
+              { bottom: numColumns ? windowHeight / 3 : windowHeight / 4 },
               { width: numColumns ? 32 : 40 },
               { height: numColumns ? 32 : 40 }
             ]}
@@ -324,10 +299,24 @@ const ItemCategoryWomen = props => {
               color={Colors.gray}
             />
           </TouchableOpacity>
-          <View
+          <TouchableOpacity
+            onPress={() =>
+              props.navigation.navigate('ProductWomen', {
+                _id: _id,
+                product_id: product_id,
+                product_Name: name,
+                images: images,
+                base_price: base_price,
+                category_id: category_id,
+                attributes: attributes,
+                description: description,
+                code: code
+              })
+            }
             style={{
               alignItems: 'flex-start',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              paddingBottom: 16
             }}
           >
             <MyText style={styles.renderItems.txt_category_name}>{/* {category_name} */}</MyText>
@@ -335,7 +324,7 @@ const ItemCategoryWomen = props => {
               {name}
             </Text>
             <MyText style={styles.renderItems.txt_price}>{formattedCurrency}</MyText>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={{ width: 8 }} />
       </KeyboardAvoidingView>
@@ -411,7 +400,6 @@ const ItemCategoryWomen = props => {
           </MyText>
           <Icons.MaterialIcons name={'filter-list'} size={28} style={{ marginStart: 16 }} />
         </TouchableOpacity>
-
         <View
           style={{
             flexDirection: 'row',
@@ -460,13 +448,6 @@ const ItemCategoryWomen = props => {
             </TouchableOpacity>
           </View>
         </View>
-        {/* {filterState instanceof Map && filterState.has(key)
-          ? filterState.get(key).map((item, index) => (
-              <Text numberOfLines={1} style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}>
-                {item}
-              </Text>
-            ))
-          : null} */}
         <FlatList
           // render Item Product by Category
           style={{ marginBottom: '25%', paddingHorizontal: 16 }}
@@ -575,6 +556,7 @@ const styles = StyleSheet.create({
     container: { backgroundColor: Colors.white },
     txt_product_name: {
       fontSize: 16,
+      marginTop: 8,
       color: Colors.black,
       fontStyle: 'normal',
       fontFamily: 'Montserrat-SemiBold'
