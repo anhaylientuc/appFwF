@@ -511,6 +511,7 @@ const ProductDetail = props => {
           useNativeDriver: false
         })}
         scrollEventThrottle={16}
+        
       >
         <View>
           <FlatList
@@ -518,14 +519,14 @@ const ProductDetail = props => {
             onScroll={this.change}
             showsHorizontalScrollIndicator={false}
             horizontal
-            style={{ width: windowWith, height: windowHeight / 1.4 }}
+            style={{ width: windowWith, height: windowHeight / 1.2 }}
             data={wallPaper}
             renderItem={({ item, index }) => (
               <Pressable>
                 <Image
                   resizeMode="cover"
                   key={index}
-                  style={{ width: windowWith, height: windowHeight / 1.4 }}
+                  style={{ width: windowWith, height: windowHeight / 1.2 }}
                   source={{ uri: item.url }}
                 />
               </Pressable>

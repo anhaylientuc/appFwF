@@ -13,6 +13,7 @@ const CategoryWomen = props => {
       params: { categoryId }
     }
   } = props
+  
 
   const [categoriesId, setCategoriesId] = useState({})
   const [nameCategories, setnameCategories] = useState('')
@@ -37,9 +38,13 @@ const CategoryWomen = props => {
       <TouchableOpacity
         style={{ marginBottom: 15 }}
         onPress={() =>
-          props.navigation.navigate('ItemCategoryWomen', {
-            categoryById: _id
-          })
+          props.navigation.navigate(
+            'ItemCategoryWomen',
+            {
+              categoryById: _id
+            },
+            console.log(_id)
+          )
         }
       >
         <MyText
