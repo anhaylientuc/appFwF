@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState, version } from 'react'
+import { useIsFocused } from '@react-navigation/native'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -14,7 +15,6 @@ import MyText from 'src/constants/FontsStyle'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import NewHTTP, { getFilter } from 'src/utils/http/NewHTTP'
 import Icons from '../icons/Icon'
-import { useIsFocused } from '@react-navigation/native'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 const Filter = props => {
@@ -34,7 +34,7 @@ const Filter = props => {
   const isFocusScreen = useIsFocused()
 
   useEffect(() => {
-    //navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const fetchData = async () => {
       try {
         if (category_id) {
@@ -59,12 +59,12 @@ const Filter = props => {
     }
     fetchData()
   }, [filterState, isFocusScreen, _category_id])
-  const loadFilters = async () => {
-    try {
-    } catch (error) {
-      console.log('cccccccccccccccccccccccc', error)
-    }
-  }
+  // const loadFilters = async () => {
+  //   try {
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
   // set Bottom navigation on
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -77,15 +77,17 @@ const Filter = props => {
       }
     })
   }
+  const handleStartFilter = () => {
+    navigation.navigate('ItemCategoryWomen', { category_id: category_id, _products: _products })
+    setBottomBar()
+  }
 
   const handleBack = async () => {
     setBottomBar()
-    setFilterState([])
-    console.log('ccccccc', _category_id)
     const query = { category_id: _category_id, version: 2 }
     const response = await NewHTTP.getProducts(query)
     console.log('res', JSON.stringify(response))
-    navigation.navigate('ItemCategoryWomen', { params: category_id, _products: response })
+    navigation.navigate('ItemCategoryWomen', { category_id: category_id, _products: response })
   }
   const renderItem = ({ item, index }) => {
     const { key, quantity, child } = item
@@ -178,8 +180,7 @@ const Filter = props => {
             padding: 16
           }}
           onPress={() => {
-            console.log(_products)
-            navigation.navigate('ItemCategoryWomen', { params: category_id, _products })
+            handleStartFilter()
           }}
         >
           <Text
@@ -190,7 +191,7 @@ const Filter = props => {
               fontFamily: 'Montserrat-SemiBold'
             }}
           >
-            Hiện thị {quantityPr} sản phẩm
+            Hiển thị {quantityPr} sản phẩm
           </Text>
         </TouchableOpacity>
       </View>

@@ -27,10 +27,10 @@ const ItemCategoryWomen = props => {
   const {
     navigation,
     route: {
-      params: { categoryById, _products, params }
+      params: { categoryById, _products, category_id }
     }
   } = props
-  console.log(params)
+
   const [windowWith, setwindowWith] = useState(width)
   const [windowHeight, setwindowHeight] = useState(height)
   const [categoriesById, setCategoriesById] = useState([])
@@ -83,7 +83,8 @@ const ItemCategoryWomen = props => {
     fetchData()
   }, [isFocusScreen])
 
-  console.log('>>>', JSON.stringify(products, null, 2))
+  // console.log('>>>', JSON.stringify(products, null, 2))
+
   // set useRef
   const imagesModel = products.map(item => item.images)
 
@@ -148,6 +149,21 @@ const ItemCategoryWomen = props => {
   }
 
   const [productsParent, setproductsParent] = useState([])
+
+  // console.log(
+  //   JSON.stringify(
+  //     _products.map(item => item.name),
+  //     null,
+  //     2
+  //   )
+  // )
+
+  // if (_products) {
+  //   const colors = filterState.get('Color')
+  //   colors.forEach(color => {
+  //     console.log(color)
+  //   })
+  // }
 
   // Logic: onclick set product by category Id
   const handlePressedCategoryId = async _id => {
@@ -395,6 +411,7 @@ const ItemCategoryWomen = props => {
           </MyText>
           <Icons.MaterialIcons name={'filter-list'} size={28} style={{ marginStart: 16 }} />
         </TouchableOpacity>
+
         <View
           style={{
             flexDirection: 'row',
@@ -443,6 +460,13 @@ const ItemCategoryWomen = props => {
             </TouchableOpacity>
           </View>
         </View>
+        {/* {filterState instanceof Map && filterState.has(key)
+          ? filterState.get(key).map((item, index) => (
+              <Text numberOfLines={1} style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}>
+                {item}
+              </Text>
+            ))
+          : null} */}
         <FlatList
           // render Item Product by Category
           style={{ marginBottom: '25%', paddingHorizontal: 16 }}
