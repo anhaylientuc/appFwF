@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState,useContext } from 'react'
+import BottomSheet from '@devvie/bottom-sheet'
+import { useIsFocused } from '@react-navigation/native'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -8,14 +10,11 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  
+  View
 } from 'react-native'
-import { FilterContext } from 'src/contexts/FilterProvider'
-import BottomSheet from '@devvie/bottom-sheet'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import { useIsFocused } from '@react-navigation/native'
+import { FilterContext } from 'src/contexts/FilterProvider'
 
 import MyText from 'src/constants/FontsStyle'
 import { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
@@ -28,10 +27,9 @@ const ItemCategoryWomen = props => {
     navigation,
     route: {
       params: { categoryById, _products, params }
-
     }
   } = props
-  console.log(params)
+
   const [windowWith, setwindowWith] = useState(width)
   const [windowHeight, setwindowHeight] = useState(height)
   const [categoriesById, setCategoriesById] = useState([])
@@ -61,26 +59,18 @@ const ItemCategoryWomen = props => {
     const fetchData = async () => {
       try {
         if (isFocusScreen) {
-
           if (_products) {
-
             setproducts(_products)
-          }
-          else {
+          } else {
             setproducts(products)
-
           }
-
-
         }
-
 
         const response = await getCategoryById(categoryById)
         setnameCategoryById(response.name)
         const { _id, name, parentID, image } = response
         const arr = response.child
         setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
-
 
         setwindowWith(width / 2)
         setwindowHeight(height / 2.4)
@@ -159,7 +149,7 @@ const ItemCategoryWomen = props => {
 
   // Logic: onclick set product by category Id
   const handlePressedCategoryId = async _id => {
-    ; (async () => {
+    ;(async () => {
       const version = 2
       const category_id = _id
       try {
@@ -301,7 +291,7 @@ const ItemCategoryWomen = props => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
-              props.navigation.navigate('ProductWomen', {
+              props.navigation.navigate('ProductDetail', {
                 _id: _id,
                 product_id: product_id,
                 product_Name: name,
@@ -607,7 +597,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 8
+    padding: 16
   }
 })
 

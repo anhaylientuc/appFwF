@@ -8,9 +8,16 @@ export const FilterProvider = ({ children }) => {
   const [_category_id, set_category_id] = useState(null)
   const [attributes, setattributes] = useState([])
   return (
-    <FilterContext.Provider value={{ filterState, setFilterState,_category_id,set_category_id,
-      attributes,setattributes
-     }}>
+    <FilterContext.Provider
+      value={{
+        filterState,
+        setFilterState,
+        _category_id,
+        set_category_id,
+        attributes,
+        setattributes
+      }}
+    >
       {children}
     </FilterContext.Provider>
   )
