@@ -69,6 +69,7 @@ const ItemCategoryWomen = props => {
     fetchData()
   }, [])
 
+  console.log('>>>', JSON.stringify(products, null, 2))
   // set useRef
   const imagesModel = products.map(item => item.images)
 

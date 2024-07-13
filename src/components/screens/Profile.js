@@ -1,4 +1,3 @@
-import Slider from '@react-native-community/slider'
 import React, { useContext, useState } from 'react'
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Colors from 'src/constants/Colors'
@@ -44,19 +43,20 @@ const Profile = props => {
             <MyText style={{ borderBottomWidth: 1 }}>Điểm</MyText>
           </View>
         </View>
-        <Slider
+        {/* <Slider
           style={styles.slider}
-          minimumValue={0}
-          maximumValue={100}
+          minimumValue={100}
+          maximumValue={200}
           step={1}
           value={score}
           onValueChange={value => setScore(value)}
           minimumTrackTintColor="#1FB28A"
           maximumTrackTintColor="#d3d3d3"
           thumbTintColor="#1FB28A"
-        />
+        /> */}
         <Text
           style={{
+            marginTop: 16,
             fontSize: 14,
             textAlign: 'justify',
             marginEnd: 32,
@@ -93,7 +93,10 @@ const Profile = props => {
             <Text style={styles.txtSetting}>Đơn hàng</Text>
           </TouchableOpacity>
           <View style={{ width: 12 }} />
-          <TouchableOpacity style={styles.container_setting}>
+          <TouchableOpacity
+            style={styles.container_setting}
+            onPress={() => navigation.navigate('SettingProfile')}
+          >
             <Icons.Ionicons name="settings-outline" size={32} />
             <View
               style={{

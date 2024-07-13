@@ -12,6 +12,7 @@ import BagPage from 'src/components/screens/bagPages/BagPage'
 import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
 import HomePage from 'src/components/screens/homePages/HomePage'
 import MyOder from 'src/components/screens/profilePage/MyOder'
+import SettingProfile from 'src/components/screens/profilePage/SettingProfile'
 import CategoryWomen from 'src/components/screens/shopPages/Categories'
 import ItemCategoryWomen from 'src/components/screens/shopPages/ItemListCategory'
 import ProductDetail from 'src/components/screens/shopPages/ProductDetail'
@@ -204,6 +205,16 @@ function MainNavigator() {
           options={{ title: 'ReturnMethod' }}
         ></Stack.Screen>
         <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }}></Stack.Screen>
+        <Stack.Screen
+          name="HomePage"
+          component={HomePage}
+          options={{ title: 'HomePage' }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="SettingProfile"
+          component={SettingProfile}
+          options={{ title: 'SettingProfile' }}
+        ></Stack.Screen>
       </Stack.Navigator>
     ) : (
       UserNavigation()
@@ -228,7 +239,7 @@ function MainNavigator() {
   return (
     <StorageProvider>
       <FilterProvider>
-        <View style={{ height: '4.8%', backgroundColor: '#CCCCCC' }} />
+        <View style={{ height: '4%', backgroundColor: '#CCCCCC' }} />
         <Button.Navigator
           initialRouteName="HomeStack"
           screenOptions={{
