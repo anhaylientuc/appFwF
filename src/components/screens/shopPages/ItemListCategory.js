@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState,useContext } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -8,13 +8,15 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
+  View,
+  
 } from 'react-native'
-
+import { FilterContext } from 'src/contexts/FilterProvider'
 import BottomSheet from '@devvie/bottom-sheet'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
+import { useIsFocused } from '@react-navigation/native'
+
 import MyText from 'src/constants/FontsStyle'
 import { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
 
@@ -25,9 +27,11 @@ const ItemCategoryWomen = props => {
   const {
     navigation,
     route: {
-      params: { categoryById }
+      params: { categoryById, _products, params }
+
     }
   } = props
+  console.log(params)
   const [windowWith, setwindowWith] = useState(width)
   const [windowHeight, setwindowHeight] = useState(height)
   const [categoriesById, setCategoriesById] = useState([])
@@ -37,8 +41,11 @@ const ItemCategoryWomen = props => {
   const [selected, setSelected] = useState(DataSortBy)
   const [nameCategoryById, setnameCategoryById] = useState('')
   const [selectedProductId, setselectedProductId] = useState(null)
+  const { filterState, setFilterState } = useContext(FilterContext)
+  const isFocusScreen = useIsFocused()
   // const dataLength = stor
   // set Bottom navigation on
+
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -53,12 +60,28 @@ const ItemCategoryWomen = props => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if (isFocusScreen) {
+
+          if (_products) {
+
+            setproducts(_products)
+          }
+          else {
+            setproducts(products)
+
+          }
+
+
+        }
+
+
         const response = await getCategoryById(categoryById)
         setnameCategoryById(response.name)
         const { _id, name, parentID, image } = response
         const arr = response.child
         setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
-        setproducts(products)
+
+
         setwindowWith(width / 2)
         setwindowHeight(height / 2.4)
       } catch (error) {
@@ -67,7 +90,7 @@ const ItemCategoryWomen = props => {
       }
     }
     fetchData()
-  }, [])
+  }, [isFocusScreen])
 
   // set useRef
   const imagesModel = products.map(item => item.images)
@@ -136,10 +159,11 @@ const ItemCategoryWomen = props => {
 
   // Logic: onclick set product by category Id
   const handlePressedCategoryId = async _id => {
-    ;(async () => {
+    ; (async () => {
       const version = 2
       const category_id = _id
       try {
+        setFilterState([])
         const products = await getProducts({ version, category_id })
         const productsParent = await getProducts({ version: 1, category_id })
         // setproductsParent(productsParent[0])
@@ -245,40 +269,23 @@ const ItemCategoryWomen = props => {
             horizontal
           >
             {images.map((image, index) => (
-              <TouchableWithoutFeedback
+              <Image
+                resizeMode={numColumns ? 'contain' : 'cover'}
                 key={index}
-                onPress={() =>
-                  props.navigation.navigate('ProductDetail', {
-                    _id: _id,
-                    product_id: product_id,
-                    product_Name: name,
-                    images: images,
-                    base_price: base_price,
-                    category_id: category_id,
-                    attributes: attributes,
-                    description: description,
-                    code: code
-                  })
-                }
-              >
-                <Image
-                  resizeMode={numColumns ? 'contain' : 'cover'}
-                  key={index}
-                  style={{
-                    width: windowWith - 20,
-                    height: windowHeight
-                  }}
-                  source={{ uri: image.url }}
-                />
-              </TouchableWithoutFeedback>
+                style={{
+                  width: windowWith - 20,
+                  height: windowHeight
+                }}
+                source={{ uri: image.url }}
+              />
             ))}
           </ScrollView>
 
           <TouchableOpacity
             style={[
               styles.StyleFavorites,
-              { right: numColumns ? 8 : 24 },
-              { bottom: numColumns ? windowHeight / 3 : windowHeight / 7 },
+              { right: numColumns ? 12 : 32 },
+              { bottom: numColumns ? windowHeight / 3 : windowHeight / 4 },
               { width: numColumns ? 32 : 40 },
               { height: numColumns ? 32 : 40 }
             ]}
@@ -292,10 +299,24 @@ const ItemCategoryWomen = props => {
               color={Colors.gray}
             />
           </TouchableOpacity>
-          <View
+          <TouchableOpacity
+            onPress={() =>
+              props.navigation.navigate('ProductWomen', {
+                _id: _id,
+                product_id: product_id,
+                product_Name: name,
+                images: images,
+                base_price: base_price,
+                category_id: category_id,
+                attributes: attributes,
+                description: description,
+                code: code
+              })
+            }
             style={{
               alignItems: 'flex-start',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              paddingBottom: 16
             }}
           >
             <MyText style={styles.renderItems.txt_category_name}>{/* {category_name} */}</MyText>
@@ -303,7 +324,7 @@ const ItemCategoryWomen = props => {
               {name}
             </Text>
             <MyText style={styles.renderItems.txt_price}>{formattedCurrency}</MyText>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={{ width: 8 }} />
       </KeyboardAvoidingView>
@@ -535,6 +556,7 @@ const styles = StyleSheet.create({
     container: { backgroundColor: Colors.white },
     txt_product_name: {
       fontSize: 16,
+      marginTop: 8,
       color: Colors.black,
       fontStyle: 'normal',
       fontFamily: 'Montserrat-SemiBold'
