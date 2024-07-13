@@ -8,12 +8,10 @@ import { getCategoryById } from 'src/utils/http/NewHTTP'
 const CategoryWomen = props => {
   const {
     navigation,
-    goBack,
     route: {
       params: { categoryId }
     }
   } = props
-  
 
   const [categoriesId, setCategoriesId] = useState({})
   const [nameCategories, setnameCategories] = useState('')
@@ -108,7 +106,7 @@ const CategoryWomen = props => {
         </MyText>
 
         <FlatList
-          style={{ marginBottom: '25%' }}
+          style={{ marginBottom: '5%' }}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false} // thanh cuộn
           showsHorizontalScrollIndicator={false}
@@ -134,223 +132,18 @@ const styles = StyleSheet.create({
     // shadowColor: '#52006A'
   },
   icons: {
-    width: 22,
-    height: 22
+    width: 24,
+    height: 24
   },
   txt_search: {
     color: Colors.black,
     textAlign: 'center',
-    fontSize: 18,
-    fontWeight: '400',
-    lineHeight: 22
+    fontSize: 20,
+    fontWeight: '400'
   },
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 8
+    padding: 16
   }
 })
-
-const DataCategoryWomen = [
-  {
-    _id: 1,
-    category_name: 'Alano'
-  },
-  {
-    _id: 2,
-    category_name: 'Orelie'
-  },
-  {
-    _id: 3,
-    category_name: 'Perla'
-  },
-  {
-    _id: 4,
-    category_name: 'Renie'
-  },
-  {
-    _id: 5,
-    category_name: 'Ritchie'
-  },
-  {
-    _id: 6,
-    category_name: 'Alisa'
-  },
-  {
-    _id: 7,
-    category_name: 'Dorothee'
-  },
-  {
-    _id: 8,
-    category_name: 'Jacenta'
-  },
-  {
-    _id: 9,
-    category_name: 'Alberto'
-  },
-  {
-    _id: 10,
-    category_name: 'Rosanne'
-  },
-  {
-    _id: 11,
-    category_name: 'Leah'
-  },
-  {
-    _id: 12,
-    category_name: 'Dedie'
-  },
-  {
-    _id: 13,
-    category_name: 'Clement'
-  },
-  {
-    _id: 14,
-    category_name: 'Derrek'
-  },
-  {
-    _id: 15,
-    category_name: 'Nerti'
-  },
-  {
-    _id: 16,
-    category_name: 'Allianora'
-  },
-  {
-    _id: 17,
-    category_name: 'Denney'
-  },
-  {
-    _id: 18,
-    category_name: 'Garrick'
-  },
-  {
-    _id: 19,
-    category_name: 'Vallie'
-  },
-  {
-    _id: 20,
-    category_name: 'Brandea'
-  },
-  {
-    _id: 21,
-    category_name: 'Myrtice'
-  },
-  {
-    _id: 22,
-    category_name: 'Carmela'
-  },
-  {
-    _id: 23,
-    category_name: 'Mack'
-  },
-  {
-    _id: 24,
-    category_name: 'Daphna'
-  },
-  {
-    _id: 25,
-    category_name: 'Dorene'
-  },
-  {
-    _id: 26,
-    category_name: 'Manda'
-  },
-  {
-    _id: 27,
-    category_name: 'Urson'
-  },
-  {
-    _id: 28,
-    category_name: 'Letisha'
-  },
-  {
-    _id: 29,
-    category_name: 'Stormi'
-  },
-  {
-    _id: 30,
-    category_name: 'Yalonda'
-  },
-  {
-    _id: 31,
-    category_name: 'Tabbi'
-  },
-  {
-    _id: 32,
-    category_name: 'Evangelia'
-  },
-  {
-    _id: 33,
-    category_name: 'Viola'
-  },
-  {
-    _id: 34,
-    category_name: 'Jo ann'
-  },
-  {
-    _id: 35,
-    category_name: 'Patrizio'
-  },
-  {
-    _id: 36,
-    category_name: 'Margeaux'
-  },
-  {
-    _id: 37,
-    category_name: 'Tabb'
-  },
-  {
-    _id: 38,
-    category_name: 'Isis'
-  },
-  {
-    _id: 39,
-    category_name: 'Robyn'
-  },
-  {
-    _id: 40,
-    category_name: 'Fons'
-  },
-  {
-    _id: 41,
-    category_name: 'Franny'
-  },
-  {
-    _id: 42,
-    category_name: 'Kevin'
-  },
-  {
-    _id: 43,
-    category_name: 'Annie'
-  },
-  {
-    _id: 44,
-    category_name: 'Christina'
-  },
-  {
-    _id: 45,
-    category_name: 'Solomon'
-  },
-  {
-    _id: 46,
-    category_name: 'Dun'
-  },
-  {
-    _id: 47,
-    category_name: 'Olimpia'
-  },
-  {
-    _id: 48,
-    category_name: 'Timmie'
-  },
-  {
-    _id: 49,
-    category_name: 'Brita'
-  },
-  {
-    _id: 50,
-    category_name: 'Ariana'
-  }
-]

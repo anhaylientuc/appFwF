@@ -239,7 +239,7 @@ function MainNavigator() {
   return (
     <StorageProvider>
       <FilterProvider>
-        <View style={{ height: '4%', backgroundColor: '#CCCCCC' }} />
+        <View style={{ height: '3%', backgroundColor: '#CCCCCC' }} />
         <Button.Navigator
           initialRouteName="HomeStack"
           screenOptions={{

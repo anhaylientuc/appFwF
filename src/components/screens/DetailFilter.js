@@ -19,7 +19,7 @@ const DetailFilter = props => {
   const {
     navigation,
     route: {
-      params: { child, keySelected },
+      params: { child, keySelected }
     }
   } = props
 
@@ -69,16 +69,14 @@ const DetailFilter = props => {
       var isCheck = false
       for (const value of filterState.get(keySelected)) {
         if (item.value == value) {
-          isCheck = true;
-          break;
+          isCheck = true
+          break
         }
       }
       return { ...item, selected: isCheck }
-    });
+    })
     if (newValues.length > 0) {
-
       setvalues(newValues)
-
     }
   }
 
@@ -126,13 +124,9 @@ const DetailFilter = props => {
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('Filter', {
-                  map: map,
-                 
-                  
+                  map: map
                 })
-              }
-              }
-
+              }}
             >
               <Icons.AntDesign name="arrowleft" size={30} />
             </TouchableOpacity>

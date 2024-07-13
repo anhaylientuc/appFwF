@@ -43,7 +43,7 @@ const ShopPage = props => {
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <PicassoImage
-            style={{ height: 48, width: 48, borderRadius: 50 }}
+            style={{ height: 44, width: 44, borderRadius: 50 }}
             source={{ uri: image }}
           />
 
@@ -84,13 +84,13 @@ const styles = StyleSheet.create({
   txt_search: {
     color: Colors.black,
     textAlign: 'center',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '400'
   },
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 8
+    paddingVertical: 16
   }
 })
