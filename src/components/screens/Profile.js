@@ -16,10 +16,10 @@ const Profile = props => {
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       <View style={styles.header}>
-        <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 24 }}>
+        <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 20 }}>
           Xin chào Vỹ
         </MyText>
-        <Icons.Ionicons name="settings-outline" size={32} />
+        <Icons.Ionicons name="settings-outline" size={28} />
       </View>
       <View
         style={{
@@ -36,7 +36,7 @@ const Profile = props => {
             justifyContent: 'space-between'
           }}
         >
-          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 24 }}>
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 20 }}>
             0 Điểm
           </MyText>
           <View style={{ justifyContent: 'space-evenly' }}>
@@ -57,7 +57,7 @@ const Profile = props => {
         <Text
           style={{
             marginTop: 16,
-            fontSize: 14,
+            fontSize: 12,
             textAlign: 'justify',
             marginEnd: 32,
             fontFamily: 'Montserrat-SemiBold'
@@ -77,8 +77,8 @@ const Profile = props => {
             borderRadius: 8
           }}
         >
-          <Icons.FontAwesome5 name="barcode" size={24} />
-          <MyText fontFamily={'Montserrat-SemiBold'} style={{ marginStart: 16 }}>
+          <Icons.FontAwesome5 name="barcode" size={20} />
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ marginStart: 16, fontSize: 12 }}>
             XEM MÃ THÀNH VIÊN
           </MyText>
         </TouchableOpacity>
@@ -89,7 +89,7 @@ const Profile = props => {
             style={styles.container_setting}
             onPress={() => props.navigation.navigate('MyOder')}
           >
-            <Icons.AntDesign name="inbox" size={32} />
+            <Icons.AntDesign name="inbox" size={28} />
             <Text style={styles.txtSetting}>Đơn hàng</Text>
           </TouchableOpacity>
           <View style={{ width: 12 }} />
@@ -97,7 +97,7 @@ const Profile = props => {
             style={styles.container_setting}
             onPress={() => navigation.navigate('SettingProfile')}
           >
-            <Icons.Ionicons name="settings-outline" size={32} />
+            <Icons.Ionicons name="settings-outline" size={28} />
             <View
               style={{
                 backgroundColor: Colors.red,
@@ -109,84 +109,83 @@ const Profile = props => {
                 top: 12
               }}
             />
-
             <Text style={styles.txtSetting}>Cài đặt</Text>
           </TouchableOpacity>
         </View>
         <View style={{ height: 12 }} />
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <TouchableOpacity style={styles.container_setting}>
-            <Icons.SimpleLineIcons name="user" size={32} />
+            <Icons.SimpleLineIcons name="user" size={28} />
             <Text style={styles.txtSetting}>Tư cách thành viên FwF</Text>
           </TouchableOpacity>
           <View style={{ width: 12 }} />
           <TouchableOpacity style={styles.container_setting}>
-            <Icons.MaterialCommunityIcons name="account-star-outline" size={32} />
+            <Icons.MaterialCommunityIcons name="account-star-outline" size={28} />
             <Text style={styles.txtSetting}>Điểm</Text>
           </TouchableOpacity>
         </View>
       </View>
       <View style={{ padding: 16 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 20 }}>
+          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>
             Các ưu đãi của tôi
           </Text>
           <View style={{ justifyContent: 'space-evenly' }}>
-            <MyText style={{ borderBottomWidth: 1 }}>Xem tất cả</MyText>
+            <MyText style={{ borderBottomWidth: 1, fontSize: 12 }}>Xem tất cả</MyText>
           </View>
         </View>
       </View>
       <View>
         <View style={styles.container_option}>
-          <Icons.AntDesign name="inbox" size={24} />
+          <Icons.AntDesign name="inbox" size={20} />
           <View>
             <Text style={styles.txtOption}>Đơn hàng của tôi</Text>
           </View>
         </View>
         <View style={styles.container_option2}>
-          <Icons.MaterialIcons name="payment" size={24} />
+          <Icons.MaterialIcons name="payment" size={20} />
           <View>
             <Text style={styles.txtOption}>Thông tin thanh toán</Text>
           </View>
         </View>
         <View style={styles.container_option}>
-          <Icons.Ionicons name="settings-outline" size={24} />
+          <Icons.Ionicons name="settings-outline" size={20} />
           <View>
             <Text style={styles.txtOption}>Chi tiết tài khoản</Text>
           </View>
         </View>
         <View style={styles.container_option2}>
-          <Icons.MaterialCommunityIcons name="account-star-outline" size={24} />
+          <Icons.MaterialCommunityIcons name="account-star-outline" size={20} />
           <View>
             <Text style={styles.txtOption}>Điểm của tôi</Text>
           </View>
         </View>
         <View style={styles.container_option}>
-          <Icons.SimpleLineIcons name="user" size={24} />
+          <Icons.SimpleLineIcons name="user" size={20} />
           <View>
             <Text style={styles.txtOption}>Tư cách thành viên</Text>
           </View>
         </View>
         <View style={styles.container_option2}>
-          <Icons.FontAwesome name="commenting-o" size={24} />
+          <Icons.FontAwesome name="commenting-o" size={20} />
           <View>
             <Text style={styles.txtOption}>Dịch vụ khách hàng</Text>
           </View>
         </View>
         <View style={styles.container_option}>
-          <Icons.MaterialIcons name="logout" size={24} />
+          <Icons.MaterialIcons name="logout" size={20} />
           <View>
             <Text style={styles.txtOption}>Đăng xuất</Text>
           </View>
         </View>
         <View style={styles.container_option2}>
-          <Icons.MaterialCommunityIcons name="comment-edit-outline" size={24} />
+          <Icons.MaterialCommunityIcons name="comment-edit-outline" size={20} />
           <View>
             <Text style={styles.txtOption}>Hãy giúp chúng tôi cải thiện ứng dụng</Text>
           </View>
         </View>
         <View style={styles.container_option}>
-          <Icons.Feather name="user-plus" size={24} />
+          <Icons.Feather name="user-plus" size={20} />
           <View>
             <Text style={styles.txtOption}>Mời một người bạn</Text>
           </View>
@@ -205,7 +204,12 @@ const Profile = props => {
 export default Profile
 
 const styles = StyleSheet.create({
-  txtOption: { marginStart: 16, fontSize: 14, fontFamily: 'Montserrat-SemiBold' },
+  txtOption: {
+    marginStart: 16,
+    fontSize: 12,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.black2
+  },
   container_option2: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -217,18 +221,18 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: Colors.white
   },
-  txtSetting: { fontSize: 14, fontFamily: 'Montserrat-SemiBold', marginStart: 8, maxWidth: 120 },
+  txtSetting: { fontSize: 12, fontFamily: 'Montserrat-Medium', marginStart: 8, maxWidth: 100 },
   container_setting: {
     backgroundColor: Colors.white,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 16,
+    padding: 16,
     flex: 1,
     borderRadius: 8
   },
   scoreText: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10
   },

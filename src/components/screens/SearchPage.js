@@ -30,8 +30,8 @@ const SearchPage = props => {
       tabBarStyle: {
         backgroundColor: Colors.white,
         bottom: 0,
-        paddingVertical: 16,
-        height: 68
+        paddingVertical: 8,
+        height: 54
         // position: 'absolute'
       }
     })

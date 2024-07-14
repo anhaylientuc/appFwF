@@ -13,7 +13,7 @@ import {
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { FilterContext } from 'src/contexts/FilterProvider'
-import NewHTTP, { getFilter } from 'src/utils/http/NewHTTP'
+import { getFilter } from 'src/utils/http/NewHTTP'
 import Icons from '../icons/Icon'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
@@ -21,7 +21,7 @@ const Filter = props => {
   const {
     navigation,
     route: {
-      params: { category_id, quantityPr, map }
+      params: { category_id, quantityPr }
     }
   } = props
 
@@ -29,17 +29,14 @@ const Filter = props => {
   const { filterState, setFilterState } = useContext(FilterContext)
   const { _category_id, set_category_id } = useContext(FilterContext)
   const [_products, set_products] = useState(null)
-  const [newValues, setnewValues] = useState([])
-  const [newKey, setnewKey] = useState()
   const isFocusScreen = useIsFocused()
 
   useEffect(() => {
-    //navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const fetchData = async () => {
       try {
         if (category_id) {
           set_category_id(category_id)
-          console.log('>>>', _category_id)
         }
         const query = {}
         query['category_id'] = _category_id
@@ -59,12 +56,7 @@ const Filter = props => {
     }
     fetchData()
   }, [filterState, isFocusScreen, _category_id])
-  const loadFilters = async () => {
-    try {
-    } catch (error) {
-      console.log('cccccccccccccccccccccccc', error)
-    }
-  }
+
   // set Bottom navigation on
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -78,24 +70,26 @@ const Filter = props => {
     })
   }
 
-  const handleBack = async () => {
-    setBottomBar()
-    setFilterState([])
-    console.log('ccccccc', _category_id)
-    const query = { category_id: _category_id, version: 2 }
-    const response = await NewHTTP.getProducts(query)
-    console.log('res', JSON.stringify(response))
-    navigation.navigate('ItemCategoryWomen', { params: category_id, _products: response })
-  }
-  const renderItem = ({ item, index }) => {
-    const { key, quantity, child } = item
+  // const handlePressFilter = async () => {
+  //   console.log('ccccccc', _category_id)
+  //   const query = { category_id: _category_id, version: 2 }
+  //   const response = await NewHTTP.getProducts(query)
+  //   console.log('res', JSON.stringify(response))
+  //   navigation.navigate('ItemCategories', { params: category_id, _products: response })
+  //   setBottomBar()
+  // }
 
-    const value = child
+  const handlePressFilter = () => {
+    navigation.navigate('ItemCategories', { params: category_id, _products: _products })
+  }
+
+  const renderItem = ({ item, index }) => {
+    const { key } = item
 
     return (
       <Pressable
         onPress={() => {
-          props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key })
+          navigation.navigate('DetailFilter', { child: item.child, keySelected: key })
         }}
         style={{
           flexDirection: 'row',
@@ -109,7 +103,11 @@ const Filter = props => {
         <View key={index} style={{ flexDirection: 'row' }}>
           {filterState instanceof Map && filterState.has(key)
             ? filterState.get(key).map((item, index) => (
-                <Text numberOfLines={1} style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}>
+                <Text
+                  key={index}
+                  numberOfLines={1}
+                  style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
+                >
                   {item}
                 </Text>
               ))
@@ -126,7 +124,7 @@ const Filter = props => {
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
         >
-          <TouchableOpacity onPress={() => handleBack()}>
+          <TouchableOpacity onPress={() => handlePressFilter()}>
             <Icons.Feather name="x" size={30} />
           </TouchableOpacity>
           <MyText
@@ -178,8 +176,7 @@ const Filter = props => {
             padding: 16
           }}
           onPress={() => {
-            console.log(_products)
-            navigation.navigate('ItemCategoryWomen', { params: category_id, _products })
+            handlePressFilter()
           }}
         >
           <Text

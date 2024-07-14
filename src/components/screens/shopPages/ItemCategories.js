@@ -21,12 +21,12 @@ import { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
-const ItemCategoryWomen = props => {
+const ItemCategories = props => {
   const sheetRef = useRef(null)
   const {
     navigation,
     route: {
-      params: { categoryById, _products, params }
+      params: { categoryById, _products }
     }
   } = props
 
@@ -49,8 +49,8 @@ const ItemCategoryWomen = props => {
       tabBarStyle: {
         backgroundColor: Colors.white,
         bottom: 0,
-        paddingVertical: 16,
-        height: 68
+        paddingVertical: 8,
+        height: 54
         // position: 'absolute'
       }
     })
@@ -63,17 +63,15 @@ const ItemCategoryWomen = props => {
             setproducts(_products)
           } else {
             setproducts(products)
+            const response = await getCategoryById(categoryById)
+            setnameCategoryById(response.name)
+            const { _id, name, parentID, image } = response
+            const arr = response.child
+            setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
+            setwindowWith(width / 2)
+            setwindowHeight(height / 2.4)
           }
         }
-
-        const response = await getCategoryById(categoryById)
-        setnameCategoryById(response.name)
-        const { _id, name, parentID, image } = response
-        const arr = response.child
-        setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
-
-        setwindowWith(width / 2)
-        setwindowHeight(height / 2.4)
       } catch (error) {
         console.log(error)
         throw error
@@ -88,7 +86,7 @@ const ItemCategoryWomen = props => {
   const [isShowProducts, setIsShowProducts] = useState(false)
   const handlePressModel = () => {
     if (isShowProducts == false) {
-      console.log(JSON.stringify(imagesModel, null, 2))
+      // console.log(JSON.stringify(imagesModel, null, 2))
       const newData = products.map((item, index) => {
         ;[item.images[1], item.images[0]] = [item.images[0], item.images[1]]
         return item
@@ -99,7 +97,7 @@ const ItemCategoryWomen = props => {
   }
   const handlePressProduct = () => {
     if (isShowProducts == true) {
-      console.log(JSON.stringify(imagesModel, null, 2))
+      // console.log(JSON.stringify(imagesModel, null, 2))
       const newData = products.map((item, index) => {
         ;[item.images[0], item.images[1]] = [item.images[1], item.images[0]]
         return item
@@ -516,7 +514,7 @@ const ItemCategoryWomen = props => {
   )
 }
 
-export default ItemCategoryWomen
+export default ItemCategories
 
 const styles = StyleSheet.create({
   btn_model_active: {

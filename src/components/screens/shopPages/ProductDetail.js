@@ -79,8 +79,8 @@ const ProductDetail = props => {
       tabBarStyle: {
         backgroundColor: Colors.white,
         bottom: 0,
-        paddingVertical: 16,
-        height: 68
+        paddingVertical: 8,
+        height: 54
         // position: 'absolute'
       }
     })
@@ -511,7 +511,6 @@ const ProductDetail = props => {
           useNativeDriver: false
         })}
         scrollEventThrottle={16}
-        
       >
         <View>
           <FlatList

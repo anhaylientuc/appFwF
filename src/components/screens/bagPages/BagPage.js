@@ -43,7 +43,7 @@ const BagPage = props => {
       type: 'info', // 'info' | 'error' | 'success'
       text1: 'Xóa sản phẩm thành công ✔',
       // text2: title + ' đã được xóa khỏi giỏ hàng',
-      text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
+      text1Style: { fontSize: 12, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
       text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
       //  text2: 'Đây là một cái gì đó '
     })
@@ -97,8 +97,8 @@ const BagPage = props => {
       tabBarStyle: {
         backgroundColor: Colors.white,
         bottom: 0,
-        paddingVertical: 16,
-        height: 68
+        paddingVertical: 8,
+        height: 54
         // position: 'absolute'
       }
     })
@@ -236,7 +236,7 @@ const BagPage = props => {
                   color: Colors.white,
                   textAlign: 'center',
                   fontWeight: '700',
-                  fontSize: 16
+                  fontSize: 12
                 }}
               >
                 Đăng Nhập
@@ -295,7 +295,7 @@ const BagPage = props => {
                   color: Colors.black,
                   textAlign: 'center',
                   fontWeight: '700',
-                  fontSize: 16
+                  fontSize: 12
                 }}
               >
                 Tạo tài khoản mới
@@ -406,7 +406,10 @@ const BagPage = props => {
               }}
             >
               <View style={{ flexDirection: 'row', width: windowWith / 2.2 }}>
-                <MyText fontFamily={'Montserrat-SemiBold'} style={{ color: Colors.gray }}>
+                <MyText
+                  fontFamily={'Montserrat-SemiBold'}
+                  style={{ color: Colors.gray, fontSize: 12 }}
+                >
                   Màu sắc:
                 </MyText>
                 <Text
@@ -415,7 +418,8 @@ const BagPage = props => {
                     color: Colors.black,
                     marginStart: 8,
                     fontWeight: '500',
-                    fontFamily: 'Montserrat-SemiBold'
+                    fontFamily: 'Montserrat-SemiBold',
+                    fontSize: 12
                   }}
                 >
                   {color}
@@ -427,12 +431,15 @@ const BagPage = props => {
                   flexDirection: 'row'
                 }}
               >
-                <MyText fontFamily={'Montserrat-SemiBold'} style={{ color: Colors.gray }}>
+                <MyText
+                  fontFamily={'Montserrat-SemiBold'}
+                  style={{ color: Colors.gray, fontSize: 12 }}
+                >
                   Size:
                 </MyText>
                 <MyText
                   fontFamily={'Montserrat-SemiBold'}
-                  style={{ color: Colors.black, marginStart: 8 }}
+                  style={{ color: Colors.black, marginStart: 8, fontSize: 12 }}
                 >
                   {size}
                 </MyText>
@@ -466,7 +473,7 @@ const BagPage = props => {
                 </TouchableOpacity>
                 <MyText
                   fontFamily={'Montserrat-SemiBold'}
-                  style={{ textAlign: 'center', marginHorizontal: 15 }}
+                  style={{ textAlign: 'center', marginHorizontal: 16, fontSize: 12 }}
                 >
                   {quantity}
                 </MyText>
@@ -483,7 +490,7 @@ const BagPage = props => {
                   <Icons.AntDesign name={'minus'} size={18} />
                 </TouchableOpacity>
               </View>
-              <MyText style={{ fontSize: 14, fontWeight: '500' }}>{formattedPriceProduct}</MyText>
+              <MyText style={{ fontSize: 12, fontWeight: '500' }}>{formattedPriceProduct}</MyText>
             </View>
             {visiblePopupMenu === attributes ? popupMenu(attributes, item) : null}
           </View>
@@ -554,7 +561,7 @@ const BagPage = props => {
               marginStart: 8,
               color: Colors.black,
               fontWeight: '600',
-              fontSize: 14
+              fontSize: 12
             }}
           >
             Mã giảm giá:
@@ -566,8 +573,9 @@ const BagPage = props => {
                 style={{
                   color: Colors.black,
                   fontWeight: '600',
-                  fontSize: 14,
-                  borderBottomWidth: 1
+                  fontSize: 12,
+                  borderBottomWidth: 1,
+                  fontSize: 12
                 }}
               >
                 Thêm mã giảm giá
@@ -586,7 +594,7 @@ const BagPage = props => {
                 style={{
                   color: Colors.red,
                   fontWeight: '600',
-                  fontSize: 14
+                  fontSize: 12
                 }}
               >
                 {selectedCodeSale}
@@ -601,7 +609,7 @@ const BagPage = props => {
           <View style={{ paddingHorizontal: 16 }}>
             <MyText
               fontFamily={'Montserrat-SemiBold'}
-              style={{ textAlign: 'left', fontSize: 14, marginTop: 16 }}
+              style={{ textAlign: 'left', fontSize: 12, marginTop: 16, fontSize: 12 }}
             >
               Đăng nhập để sử dụng các ưu đãi cá nhân!
             </MyText>
@@ -621,7 +629,7 @@ const BagPage = props => {
                   color: Colors.black,
                   textAlign: 'center',
                   fontWeight: '700',
-                  fontSize: 16
+                  fontSize: 12
                 }}
               >
                 Đăng Nhập
@@ -642,13 +650,17 @@ const BagPage = props => {
           }}
         >
           <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-            <MyText>Giá trị đơn hàng</MyText>
-            <MyText fontFamily={'Montserrat-SemiBold'}>{formattedCurrency}</MyText>
+            <MyText style={{ fontSize: 12 }}>Giá trị đơn hàng</MyText>
+            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 12 }}>
+              {formattedCurrency}
+            </MyText>
           </View>
           <View style={{ height: 8 }} />
           <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-            <MyText>Phí giao hàng</MyText>
-            <MyText fontFamily={'Montserrat-SemiBold'}>{formattedTransportfee}</MyText>
+            <MyText style={{ fontSize: 12 }}>Phí giao hàng</MyText>
+            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 12 }}>
+              {formattedTransportfee}
+            </MyText>
           </View>
         </View>
 
@@ -660,7 +672,7 @@ const BagPage = props => {
             marginHorizontal: 16
           }}
         >
-          <MyText fontFamily={'Montserrat-SemiBold'} style={{ color: Colors.black, fontSize: 16 }}>
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ color: Colors.black, fontSize: 12 }}>
             Thành tiền:
           </MyText>
           <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_price}>
@@ -699,12 +711,12 @@ const BagPage = props => {
               style={{
                 color: Colors.black,
                 fontWeight: '600',
-                fontSize: 14
+                fontSize: 12
               }}
             >
               {name_saleOff}
             </MyText>
-            <MyText style={{ marginTop: 4, color: Colors.black, fontSize: 14 }}>
+            <MyText style={{ marginTop: 4, color: Colors.black, fontSize: 12 }}>
               {code_saleOff}
             </MyText>
           </View>
@@ -767,7 +779,7 @@ const BagPage = props => {
                 color: Colors.white,
                 textAlign: 'center',
                 fontWeight: '500',
-                fontSize: 16
+                fontSize: 12
               }}
             >
               Tiếp tục thanh toán
@@ -776,7 +788,7 @@ const BagPage = props => {
         ) : null}
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: Colors.grayBg }}>
-        <MyText style={{ textAlign: 'center', marginVertical: 32 }}>
+        <MyText style={{ textAlign: 'center', padding: 16, fontSize: 12 }}>
           Miễn phí giao hàng cho Member với đơn từ 499k
         </MyText>
         {/* {noCart()} */}
@@ -788,7 +800,7 @@ const BagPage = props => {
             style={{
               fontWeight: '500',
               color: Colors.black,
-              fontSize: 14,
+              fontSize: 12,
               marginHorizontal: 16
             }}
           >
@@ -830,15 +842,21 @@ const BagPage = props => {
           <View
             style={{
               backgroundColor: Colors.white,
-              paddingVertical: 16,
-              paddingHorizontal: 16
+              padding: 16,
+              width: windowWith
             }}
           >
             <MyText style={{ fontSize: 12 }}>
               Giá cả và chi phí giao hàng này chưa phải là cuối cùng cho đến khi bạn tới phần thanh
               toán.
             </MyText>
-            <View style={{ flexDirection: 'row', marginTop: 8 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginTop: 8,
+                width: windowWith - 16
+              }}
+            >
               <MyText style={{ fontSize: 12 }}>Miễn phí trả hàng trong 30 ngày.</MyText>
               <MyText style={{ borderBottomWidth: 0.5, marginStart: 4, fontSize: 12 }}>
                 trả hàng và hoàn tiền
@@ -859,7 +877,7 @@ const BagPage = props => {
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Icons.Feather name={'box'} size={32} />
-              <MyText style={{ marginStart: 16, fontWeight: '500' }}>
+              <MyText style={{ marginStart: 16, fontWeight: '500', fontSize: 12 }}>
                 Giao hàng và chọn phương thức đổi trả
               </MyText>
             </View>
@@ -902,7 +920,7 @@ const BagPage = props => {
             showsVerticalScrollIndicator={false}
             style={{ marginTop: 32, marginHorizontal: 16 }}
           >
-            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 18, fontWeight: '500' }}>
+            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16, fontWeight: '500' }}>
               Mã khuyến mãi của bạn
             </MyText>
 
@@ -919,7 +937,7 @@ export default BagPage
 
 const styles = StyleSheet.create({
   txt_price: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '500'
   },
   txt_header: {
@@ -929,14 +947,12 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: Colors.white,
-    paddingTop: 8,
-    paddingBottom: 16,
-    paddingHorizontal: 16
+    padding: 16
   },
   btn_apply_txt: {
     color: Colors.white,
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500'
   },
   btn_apply: {
@@ -946,7 +962,7 @@ const styles = StyleSheet.create({
     borderRadius: 25
   },
   wrapper_btn_apply: {
-    marginEnd: 14,
+    marginEnd: 12,
     justifyContent: 'space-between',
     marginVertical: 20
   },

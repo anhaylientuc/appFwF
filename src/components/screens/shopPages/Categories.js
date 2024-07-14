@@ -5,7 +5,7 @@ import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { getCategoryById } from 'src/utils/http/NewHTTP'
 
-const CategoryWomen = props => {
+const Categories = props => {
   const {
     navigation,
     route: {
@@ -37,7 +37,7 @@ const CategoryWomen = props => {
         style={{ marginBottom: 15 }}
         onPress={() =>
           props.navigation.navigate(
-            'ItemCategoryWomen',
+            'ItemCategories',
             {
               categoryById: _id
             },
@@ -48,7 +48,7 @@ const CategoryWomen = props => {
         <MyText
           style={{
             color: Colors.black,
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: '400',
             left: 40,
             bottom: 17
@@ -98,7 +98,7 @@ const CategoryWomen = props => {
             marginStart: 16,
             marginTop: 16,
             color: Colors.gray,
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: '500'
           }}
         >
@@ -118,16 +118,15 @@ const CategoryWomen = props => {
   )
 }
 
-export default CategoryWomen
+export default Categories
 
 const styles = StyleSheet.create({
   txt_VIEW_ALL_ITEMS: {
     color: Colors.white,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
-    lineHeight: 20,
     textAlign: 'center',
-    padding: 15
+    padding: 16
     // elevation: 50,
     // shadowColor: '#52006A'
   },
@@ -138,7 +137,7 @@ const styles = StyleSheet.create({
   txt_search: {
     color: Colors.black,
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '400'
   },
   view_search: {

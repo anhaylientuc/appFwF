@@ -31,8 +31,8 @@ const Favorites = props => {
       tabBarStyle: {
         backgroundColor: Colors.white,
         bottom: 0,
-        paddingVertical: 16,
-        height: 68
+        paddingVertical: 8,
+        height: 54
         // position: 'absolute'
       }
     })
@@ -64,17 +64,17 @@ const Favorites = props => {
           height: '100%',
           justifyContent: 'center',
           alignItems: 'center',
-          paddingHorizontal: 20,
+          paddingHorizontal: 16,
           backgroundColor: Colors.grayBg
         }}
       >
-        <MyText style={{ fontSize: 14, fontWeight: '500' }}>
+        <MyText style={{ fontSize: 12, fontWeight: '500' }}>
           Bạn chưa có sản phẩm yêu thích nào...
         </MyText>
         <MyText
           style={{
             marginTop: 24,
-            fontSize: 14,
+            fontSize: 12,
             maxWidth: '80%',
             textAlign: 'center'
           }}
@@ -91,7 +91,7 @@ const Favorites = props => {
           }}
           onPress={() => props.navigation.navigate('HomeStack')}
         >
-          <MyText style={{ fontSize: 16, color: Colors.white, fontWeight: '700' }}>Xem ngay</MyText>
+          <MyText style={{ fontSize: 12, color: Colors.white, fontWeight: '700' }}>Xem ngay</MyText>
         </TouchableOpacity>
       </View>
     )
@@ -101,7 +101,7 @@ const Favorites = props => {
     const { id, image, name_product, category, price, color } = item
     return (
       <KeyboardAvoidingView style={{ flex: 1 }}>
-        <View style={{ width: 190, marginTop: 17, marginBottom: 12 }}>
+        <View style={{ width: '100%' }}>
           <View
             style={{
               backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.grayBg
@@ -188,7 +188,7 @@ const Favorites = props => {
                 fontFamily={'Montserrat-SemiBold'}
                 style={{
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 12,
                   fontWeight: '600',
                   marginStart: 8
                 }}
@@ -217,22 +217,21 @@ const Favorites = props => {
             fontFamily={'Montserrat-SemiBold'}
             style={{
               textAlign: 'center',
-              fontSize: 28,
+              fontSize: 24,
               fontWeight: '600',
-              marginTop: 8
+              paddingVertical: 16
             }}
           >
             Yêu thích
           </MyText>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View />
-            <MyText style={{ fontSize: 14, color: Colors.gray }}>1 sản phẩm</MyText>
+            <MyText style={{ fontSize: 12, color: Colors.gray }}>1 sản phẩm</MyText>
           </View>
           <MyText
             style={{
-              marginVertical: 16,
-              textAlign: 'center',
-              paddingHorizontal: 50
+              padding: 16,
+              textAlign: 'center'
             }}
           >
             Lưu và xem lại các sản phẩm này bất cứ lúc nào trên mọi thiết bị bằng cách đăng nhập
@@ -262,7 +261,7 @@ const Favorites = props => {
             style={{
               color: Colors.black,
               textAlign: 'center',
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: '500'
             }}
           >
@@ -302,7 +301,7 @@ const Favorites = props => {
                       <MyText
                         fontFamily={'Montserrat-SemiBold'}
                         style={{
-                          fontSize: 16,
+                          fontSize: 12,
                           fontWeight: '400',
                           color: Colors.black
                         }}
