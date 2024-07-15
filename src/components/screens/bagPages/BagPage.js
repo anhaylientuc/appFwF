@@ -813,7 +813,7 @@ const BagPage = props => {
               </MyText>
             </View>
 
-            {/* <Image
+            <Image
               style={{ width: 120, height: 36 }}
               source={require('@assets/images/logo_primary.png')}
             />
@@ -824,7 +824,7 @@ const BagPage = props => {
             <Image
               style={{ width: 52, height: 32 }}
               source={require('@assets/images/ic_master_card.png')}
-            /> */}
+            />
             <View />
           </View>
           <View
