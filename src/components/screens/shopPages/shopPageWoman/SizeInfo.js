@@ -1,9 +1,16 @@
 import React, { useState } from 'react'
-import { Image, KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import {
+  Image,
+  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
 
 const Tab1 = () => {
   return (
@@ -22,13 +29,13 @@ const Tab1 = () => {
         }}
       >
         <Pressable onPress={() => {}} style={styles.btn_size}>
-          <MyText style={styles.txt_size}>XSS-S</MyText>
+          <Text style={styles.txt_size}>XSS-S</Text>
         </Pressable>
         <Pressable style={styles.btn_size}>
-          <MyText style={styles.txt_size}>M-XL</MyText>
+          <Text style={styles.txt_size}>M-XL</Text>
         </Pressable>
         <Pressable style={styles.btn_size}>
-          <MyText style={styles.txt_size}>XXL-3XL</MyText>
+          <Text style={styles.txt_size}>XXL-3XL</Text>
         </Pressable>
       </View>
 
@@ -50,62 +57,77 @@ const Tab1 = () => {
             flex: 3
           }}
         >
-          <MyText style={styles.txt_size_parameters}>XXL</MyText>
-          <MyText style={styles.txt_size_parameters}>XS</MyText>
-          <MyText style={styles.txt_size_parameters}>S</MyText>
+          <Text style={styles.txt_size_parameters}>XXL</Text>
+          <Text style={styles.txt_size_parameters}>XS</Text>
+          <Text style={styles.txt_size_parameters}>S</Text>
         </View>
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>EUR</MyText>
+        <Text style={styles.txt_body_parameters}>EUR</Text>
         <View style={styles.container_size_parameters}>
-          <MyText style={styles.txt_size_parameters}>38</MyText>
-          <MyText style={styles.txt_size_parameters}>40-42</MyText>
-          <MyText style={styles.txt_size_parameters}>44-46</MyText>
+          <Text style={styles.txt_size_parameters}>38</Text>
+          <Text style={styles.txt_size_parameters}>40-42</Text>
+          <Text style={styles.txt_size_parameters}>44-46</Text>
         </View>
       </View>
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>US</MyText>
-        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
-          <MyText style={styles.txt_size_parameters}>28</MyText>
-          <MyText style={styles.txt_size_parameters}>30R-32</MyText>
-          <MyText style={styles.txt_size_parameters}>34R-36R</MyText>
+        <Text style={styles.txt_body_parameters}>US</Text>
+        <View
+          style={[
+            styles.container_size_parameters,
+            styles.container_size_parameters_pink
+          ]}
+        >
+          <Text style={styles.txt_size_parameters}>28</Text>
+          <Text style={styles.txt_size_parameters}>30R-32</Text>
+          <Text style={styles.txt_size_parameters}>34R-36R</Text>
         </View>
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>Ngực cm</MyText>
+        <Text style={styles.txt_body_parameters}>Ngực cm</Text>
         <View style={styles.container_size_parameters}>
-          <MyText style={styles.txt_size_parameters}>74-78</MyText>
-          <MyText style={styles.txt_size_parameters}>78-86</MyText>
-          <MyText style={styles.txt_size_parameters}>86-90</MyText>
+          <Text style={styles.txt_size_parameters}>74-78</Text>
+          <Text style={styles.txt_size_parameters}>78-86</Text>
+          <Text style={styles.txt_size_parameters}>86-90</Text>
         </View>
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>Eo cm</MyText>
-        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
-          <MyText style={styles.txt_size_parameters}>62-66</MyText>
-          <MyText style={styles.txt_size_parameters}>66-74</MyText>
-          <MyText style={styles.txt_size_parameters}>74-78</MyText>
+        <Text style={styles.txt_body_parameters}>Eo cm</Text>
+        <View
+          style={[
+            styles.container_size_parameters,
+            styles.container_size_parameters_pink
+          ]}
+        >
+          <Text style={styles.txt_size_parameters}>62-66</Text>
+          <Text style={styles.txt_size_parameters}>66-74</Text>
+          <Text style={styles.txt_size_parameters}>74-78</Text>
         </View>
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>Chiều dài cánh tay cm</MyText>
+        <Text style={styles.txt_body_parameters}>Chiều dài cánh tay cm</Text>
         <View style={styles.container_size_parameters}>
-          <MyText style={styles.txt_size_parameters}>59</MyText>
-          <MyText style={styles.txt_size_parameters}>59</MyText>
-          <MyText style={styles.txt_size_parameters}>59-60</MyText>
+          <Text style={styles.txt_size_parameters}>59</Text>
+          <Text style={styles.txt_size_parameters}>59</Text>
+          <Text style={styles.txt_size_parameters}>59-60</Text>
         </View>
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>Cổ cm</MyText>
-        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
-          <MyText style={styles.txt_size_parameters}>33</MyText>
-          <MyText style={styles.txt_size_parameters}>34-35</MyText>
-          <MyText style={styles.txt_size_parameters}>36</MyText>
+        <Text style={styles.txt_body_parameters}>Cổ cm</Text>
+        <View
+          style={[
+            styles.container_size_parameters,
+            styles.container_size_parameters_pink
+          ]}
+        >
+          <Text style={styles.txt_size_parameters}>33</Text>
+          <Text style={styles.txt_size_parameters}>34-35</Text>
+          <Text style={styles.txt_size_parameters}>36</Text>
         </View>
       </View>
     </View>
@@ -128,13 +150,13 @@ const Tab2 = () => {
         }}
       >
         <Pressable onPress={() => {}} style={styles.btn_size}>
-          <MyText style={styles.txt_size}>XS/L-M/L</MyText>
+          <Text style={styles.txt_size}>XS/L-M/L</Text>
         </Pressable>
         <Pressable style={styles.btn_size}>
-          <MyText style={styles.txt_size}>L/L-XXL/L</MyText>
+          <Text style={styles.txt_size}>L/L-XXL/L</Text>
         </Pressable>
         <Pressable style={styles.btn_size}>
-          <MyText style={styles.txt_size}>3XL/L</MyText>
+          <Text style={styles.txt_size}>3XL/L</Text>
         </Pressable>
       </View>
 
@@ -156,62 +178,77 @@ const Tab2 = () => {
             flex: 3
           }}
         >
-          <MyText style={styles.txt_size_parameters}>XS/L</MyText>
-          <MyText style={styles.txt_size_parameters}>S/L</MyText>
-          <MyText style={styles.txt_size_parameters}>M/L</MyText>
+          <Text style={styles.txt_size_parameters}>XS/L</Text>
+          <Text style={styles.txt_size_parameters}>S/L</Text>
+          <Text style={styles.txt_size_parameters}>M/L</Text>
         </View>
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>EUR</MyText>
+        <Text style={styles.txt_body_parameters}>EUR</Text>
         <View style={styles.container_size_parameters}>
-          <MyText style={styles.txt_size_parameters}>38</MyText>
-          <MyText style={styles.txt_size_parameters}>40-42</MyText>
-          <MyText style={styles.txt_size_parameters}>44-46</MyText>
+          <Text style={styles.txt_size_parameters}>38</Text>
+          <Text style={styles.txt_size_parameters}>40-42</Text>
+          <Text style={styles.txt_size_parameters}>44-46</Text>
         </View>
       </View>
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>US</MyText>
-        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
-          <MyText style={styles.txt_size_parameters}>28</MyText>
-          <MyText style={styles.txt_size_parameters}>30R-32</MyText>
-          <MyText style={styles.txt_size_parameters}>34R-36R</MyText>
+        <Text style={styles.txt_body_parameters}>US</Text>
+        <View
+          style={[
+            styles.container_size_parameters,
+            styles.container_size_parameters_pink
+          ]}
+        >
+          <Text style={styles.txt_size_parameters}>28</Text>
+          <Text style={styles.txt_size_parameters}>30R-32</Text>
+          <Text style={styles.txt_size_parameters}>34R-36R</Text>
         </View>
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>Ngực cm</MyText>
+        <Text style={styles.txt_body_parameters}>Ngực cm</Text>
         <View style={styles.container_size_parameters}>
-          <MyText style={styles.txt_size_parameters}>74-78</MyText>
-          <MyText style={styles.txt_size_parameters}>78-86</MyText>
-          <MyText style={styles.txt_size_parameters}>86-90</MyText>
+          <Text style={styles.txt_size_parameters}>74-78</Text>
+          <Text style={styles.txt_size_parameters}>78-86</Text>
+          <Text style={styles.txt_size_parameters}>86-90</Text>
         </View>
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>Eo cm</MyText>
-        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
-          <MyText style={styles.txt_size_parameters}>62-66</MyText>
-          <MyText style={styles.txt_size_parameters}>66-74</MyText>
-          <MyText style={styles.txt_size_parameters}>74-78</MyText>
+        <Text style={styles.txt_body_parameters}>Eo cm</Text>
+        <View
+          style={[
+            styles.container_size_parameters,
+            styles.container_size_parameters_pink
+          ]}
+        >
+          <Text style={styles.txt_size_parameters}>62-66</Text>
+          <Text style={styles.txt_size_parameters}>66-74</Text>
+          <Text style={styles.txt_size_parameters}>74-78</Text>
         </View>
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>Chiều dài cánh tay cm</MyText>
+        <Text style={styles.txt_body_parameters}>Chiều dài cánh tay cm</Text>
         <View style={styles.container_size_parameters}>
-          <MyText style={styles.txt_size_parameters}>59</MyText>
-          <MyText style={styles.txt_size_parameters}>59</MyText>
-          <MyText style={styles.txt_size_parameters}>59-60</MyText>
+          <Text style={styles.txt_size_parameters}>59</Text>
+          <Text style={styles.txt_size_parameters}>59</Text>
+          <Text style={styles.txt_size_parameters}>59-60</Text>
         </View>
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <MyText style={styles.txt_body_parameters}>Cổ cm</MyText>
-        <View style={[styles.container_size_parameters, styles.container_size_parameters_pink]}>
-          <MyText style={styles.txt_size_parameters}>33</MyText>
-          <MyText style={styles.txt_size_parameters}>34-35</MyText>
-          <MyText style={styles.txt_size_parameters}>36</MyText>
+        <Text style={styles.txt_body_parameters}>Cổ cm</Text>
+        <View
+          style={[
+            styles.container_size_parameters,
+            styles.container_size_parameters_pink
+          ]}
+        >
+          <Text style={styles.txt_size_parameters}>33</Text>
+          <Text style={styles.txt_size_parameters}>34-35</Text>
+          <Text style={styles.txt_size_parameters}>36</Text>
         </View>
       </View>
     </View>
@@ -222,7 +259,7 @@ const SizeInfo = props => {
     navigation: { goBack }
   } = props
   const [isShowSize, setIsShowSize] = useState(false)
-  const [isShowMeasureSize, setIsShowMeasureSize] = useState(false)
+
   // Logic: Onclick show size parameters  thông thường
   const handleNormally = () => {
     setIsShowSize(false)
@@ -231,6 +268,8 @@ const SizeInfo = props => {
   const handleLongShape = () => {
     setIsShowSize(true)
   }
+
+  const [isShowMeasureSize, setIsShowMeasureSize] = useState(false)
 
   const measureSize = () => {
     return (
@@ -249,7 +288,7 @@ const SizeInfo = props => {
               width: 210,
               height: 250
             }}
-            source={require('@assets/images/image_size_body.png')}
+            source={require('@assets/image_size_body.png')}
           />
         </View>
 
@@ -258,15 +297,14 @@ const SizeInfo = props => {
             <Icons.MaterialCommunityIcons name={'numeric-1'} size={30} />
           </View>
           <View>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
+            <Text
               style={{ fontSize: 16, color: Colors.black, fontWeight: '700' }}
             >
               Ngực
-            </MyText>
-            <MyText style={styles.txt_measure_title}>
+            </Text>
+            <Text style={styles.txt_measure_title}>
               Đo vòng ngực đầy đặn nhất khu vực xung quanh của ngực
-            </MyText>
+            </Text>
           </View>
         </View>
         <View style={{ flexDirection: 'row', marginBottom: 20 }}>
@@ -274,15 +312,14 @@ const SizeInfo = props => {
             <Icons.MaterialCommunityIcons name={'numeric-2'} size={30} />
           </View>
           <View>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
+            <Text
               style={{ fontSize: 16, color: Colors.black, fontWeight: '700' }}
             >
               Eo
-            </MyText>
-            <MyText style={{ fontSize: 12, color: Colors.black, marginTop: 8 }}>
+            </Text>
+            <Text style={{ fontSize: 12, color: Colors.black, marginTop: 8 }}>
               Đo vòng eo tại vị trí hẹp nhất
-            </MyText>
+            </Text>
           </View>
         </View>
 
@@ -291,15 +328,14 @@ const SizeInfo = props => {
             <Icons.MaterialCommunityIcons name={'numeric-3'} size={30} />
           </View>
           <View>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
+            <Text
               style={{ fontSize: 16, color: Colors.black, fontWeight: '700' }}
             >
               Chiều dài cánh tay
-            </MyText>
-            <MyText style={{ fontSize: 12, color: Colors.black, marginTop: 8 }}>
+            </Text>
+            <Text style={{ fontSize: 12, color: Colors.black, marginTop: 8 }}>
               Đo từ vai đến cổ tay
-            </MyText>
+            </Text>
           </View>
         </View>
 
@@ -308,15 +344,14 @@ const SizeInfo = props => {
             <Icons.MaterialCommunityIcons name={'numeric-4'} size={30} />
           </View>
           <View>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
+            <Text
               style={{ fontSize: 16, color: Colors.black, fontWeight: '700' }}
             >
               Đường viền cổ áo
-            </MyText>
-            <MyText style={{ fontSize: 12, color: Colors.black, marginTop: 8 }}>
+            </Text>
+            <Text style={{ fontSize: 12, color: Colors.black, marginTop: 8 }}>
               Để có kích thước chuẩn cho áo sơ mi khi đeo cà vạt
-            </MyText>
+            </Text>
           </View>
         </View>
       </View>
@@ -334,42 +369,53 @@ const SizeInfo = props => {
             }}
           >
             <View />
-            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 24, fontWeight: '600' }}>
+            <Text style={{ fontSize: 24, fontWeight: '600' }}>
               Áo và áo khoác
-            </MyText>
+            </Text>
             <TouchableOpacity onPress={() => goBack()}>
               <Icons.EvilIcons name={'close'} size={30} />
             </TouchableOpacity>
           </View>
         </View>
         <View style={styles.container_measure}>
-          <MyText
-            fontFamily={'Montserrat-SemiBold'}
-            style={isShowMeasureSize ? styles.txt_measure_active : styles.txt_measure}
+          <Text
+            style={
+              isShowMeasureSize ? styles.txt_measure_active : styles.txt_measure
+            }
           >
             Cách đo lường
-          </MyText>
-          <TouchableOpacity onPress={() => setIsShowMeasureSize(!isShowMeasureSize)}>
+          </Text>
+          <TouchableOpacity
+            onPress={() => setIsShowMeasureSize(!isShowMeasureSize)}
+          >
             <Icons.Entypo
-              name={!isShowMeasureSize ? 'chevron-small-down' : 'chevron-small-up'}
+              name={
+                !isShowMeasureSize ? 'chevron-small-down' : 'chevron-small-up'
+              }
               size={20}
             />
           </TouchableOpacity>
         </View>
         {isShowMeasureSize ? measureSize() : null}
         <View style={{ backgroundColor: Colors.white, paddingBottom: 50 }}>
-          <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_size_range}>
-            Chọn phạm vi kích cỡ
-          </MyText>
+          <Text style={styles.txt_size_range}>Chọn phạm vi kích cỡ</Text>
           <View style={styles.container_btn_tab}>
-            <View style={!isShowSize ? styles.btn_Active_Tab : styles.btn_no_Active_Tab}>
+            <View
+              style={
+                !isShowSize ? styles.btn_Active_Tab : styles.btn_no_Active_Tab
+              }
+            >
               <TouchableOpacity onPress={() => handleNormally()}>
-                <MyText style={{ textAlign: 'center' }}>Thông thường</MyText>
+                <Text style={{ textAlign: 'center' }}>Thông thường</Text>
               </TouchableOpacity>
             </View>
-            <View style={isShowSize ? styles.btn_Active_Tab : styles.btn_no_Active_Tab}>
+            <View
+              style={
+                isShowSize ? styles.btn_Active_Tab : styles.btn_no_Active_Tab
+              }
+            >
               <TouchableOpacity onPress={() => handleLongShape()}>
-                <MyText style={{ textAlign: 'center' }}>Dáng dài</MyText>
+                <Text style={{ textAlign: 'center' }}>Dáng dài</Text>
               </TouchableOpacity>
             </View>
           </View>

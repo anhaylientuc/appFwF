@@ -1,51 +1,37 @@
-import React, { useEffect, useState } from 'react'
-import { FlatList, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import React from 'react'
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
-import { getCategoryById } from 'src/utils/http/NewHTTP'
 
 const CategoryWomen = props => {
+<<<<<<< HEAD:src/components/screens/shopPages/Categories.js
   const {
     navigation,
     route: {
       params: { categoryId }
     }
   } = props
+=======
+  const { navigation } = props
+>>>>>>> parent of 6f228af (Merge branch 'phuong_test' of https://github.com/anhaylientuc/appFwF into phuong_test):src/components/screens/shopPages/shopPageWoman/CategoryWomen.js
 
-  const [categoriesId, setCategoriesId] = useState({})
-  const [nameCategories, setnameCategories] = useState('')
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getCategoryById(categoryId)
-        setCategoriesId(response.child)
-        setnameCategories(response.name)
-      } catch (error) {
-        console.log(error)
-        throw error
-      }
-    }
-    fetchData()
-  }, [])
   // renderItemList Category Women
   const renderItem = ({ item }) => {
-    const { _id, name } = item
+    const { _id, category_name } = item
     return (
       // onClick to ItemCategory Women
       <TouchableOpacity
         style={{ marginBottom: 15 }}
-        onPress={() =>
-          props.navigation.navigate(
-            'ItemCategoryWomen',
-            {
-              categoryById: _id
-            },
-            console.log(_id)
-          )
-        }
+        onPress={() => props.navigation.navigate('ItemCategoryWomen')}
       >
-        <MyText
+        <Text
           style={{
             color: Colors.black,
             fontSize: 16,
@@ -54,28 +40,29 @@ const CategoryWomen = props => {
             bottom: 17
           }}
         >
-          {name}
-        </MyText>
+          {category_name}
+        </Text>
         <View style={{ backgroundColor: Colors.gray }}></View>
       </TouchableOpacity>
     )
   }
 
   return (
-    <View style={{ backgroundColor: Colors.white, width: '100%', height: '100%' }}>
+    <View
+      style={{ backgroundColor: Colors.white, width: '100%', height: '100%' }}
+    >
       <View style={styles.view_search}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => props.navigation.navigate('Women')}>
           <Icons.Ionicons name={'chevron-back'} size={24} />
         </TouchableOpacity>
-        <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_search}>
-          {nameCategories}
-        </MyText>
-        <TouchableOpacity onPress={() => props.navigation.navigate('SearchPage')}>
-          <Icons.Ionicons name={'search'} size={24} />
-        </TouchableOpacity>
+        <Text style={styles.txt_search}>Categories</Text>
+        <Icons.Ionicons name={'search'} size={24} />
       </View>
 
-      <ScrollView style={{ backgroundColor: Colors.grayBg }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ backgroundColor: Colors.grayBg }}
+        showsVerticalScrollIndicator={false}
+      >
         <TouchableOpacity
           style={{
             backgroundColor: Colors.red,
@@ -87,13 +74,10 @@ const CategoryWomen = props => {
             shadowColor: Colors.gray
           }}
         >
-          <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_VIEW_ALL_ITEMS}>
-            VIEW ALL ITEMS
-          </MyText>
+          <Text style={styles.txt_VIEW_ALL_ITEMS}>VIEW ALL ITEMS</Text>
         </TouchableOpacity>
 
-        <MyText
-          fontFamily={'Montserrat-SemiBold'}
+        <Text
           style={{
             marginStart: 16,
             marginTop: 16,
@@ -103,15 +87,16 @@ const CategoryWomen = props => {
           }}
         >
           Choose category
-        </MyText>
+        </Text>
 
         <FlatList
           style={{ marginBottom: '5%' }}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false} // thanh cuộn
           showsHorizontalScrollIndicator={false}
-          data={categoriesId}
+          data={DataCategoryWomen}
           renderItem={renderItem}
+          keyExtractor={item => item._id}
         />
       </ScrollView>
     </View>
@@ -144,6 +129,11 @@ const styles = StyleSheet.create({
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+<<<<<<< HEAD:src/components/screens/shopPages/Categories.js
     padding: 16
+=======
+    padding: 8,
+    marginTop: 44
+>>>>>>> parent of 6f228af (Merge branch 'phuong_test' of https://github.com/anhaylientuc/appFwF into phuong_test):src/components/screens/shopPages/shopPageWoman/CategoryWomen.js
   }
 })

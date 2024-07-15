@@ -10,8 +10,9 @@ export const DaTaSale = [
   },
   {
     _id: '2',
-    title: 'Dorothy Perkins',
-    content: 'Evening Dress',
+    title: 'Lịch thi đánh giá năng lực, tư duy năm 2023',
+    content:
+      'Các kỳ thi đánh giá năng lực, tư duy diễn ra từ tháng 3 đến 7, thí sinh có thể tham dự nhiều đợt và đăng ký từ đầu tháng 2.',
     image:
       'https://lp2.hm.com/hmgoepprod?set=format%5Bwebp%5D%2Cquality%5B79%5D%2Csource%5B%2Fcb%2Fd3%2Fcbd3a13104d3d0fe1ebb45e4207e3b159971f79a.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url%5Bfile%3A%2Fproduct%2Fmain%5D',
     createdAt: '2023-01-12T06:26:17.539Z',
@@ -21,8 +22,9 @@ export const DaTaSale = [
   },
   {
     _id: '3',
-    title: 'Dorothy Perkins',
-    content: 'Evening Dress',
+    title: 'Đối phó với bài tập Tết',
+    content:
+      'Ngày nghỉ Tết cuối cùng, hàng chục trang bài tập Toán, Tiếng Việt và Tiếng Anh của Anh Thư được giải quyết, nhưng do mẹ và dì làm giúp.',
     image:
       'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F7f%2F01%2F7f01170092efe9f45a621a207c09c972e026608d.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5Bladies_lingerie_briefsknickers_brazilian%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/main]',
 
@@ -31,8 +33,9 @@ export const DaTaSale = [
   },
   {
     _id: '4',
-    title: 'Dorothy Perkins',
-    content: 'Evening Dress',
+    title: 'Đường trở thành giáo viên ở Mỹ của một phụ nữ Việt',
+    content:
+      'Chị Đinh Thu Hồng phải theo học chương trình đào tạo giáo viên và hoàn thành nhiều thủ tục để được cấp phép hành nghề dạy học ở Mỹ.',
     image:
       'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F4c%2Fbb%2F4cbb9b4fce8b53feeda801ccfcad96b1d5b49264.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/main]',
     cost: 15,
@@ -40,8 +43,9 @@ export const DaTaSale = [
   },
   {
     _id: '5',
-    title: 'Dorothy Perkins',
-    content: 'Evening Dress',
+    title: 'Cô giáo đèo hai con giữa mưa rét, vượt 100 km đến trường',
+    content:
+      'Cô Nguyễn Thị Hà gây xúc động khi đèo hai con, vượt 100 km trong mưa lạnh để trở lại điểm trường ở xã Trà Dơn, huyện Nam Trà My, sau Tết.',
     image:
       'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Fcc%2F6e%2Fcc6e3e030b0f3797eaef4045a48c858cf2f3c97f.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/fullscreen]',
     cost: 15,
@@ -67,8 +71,9 @@ export const DaTaNews = [
   },
   {
     _id: '2',
-    title: 'Dorothy Perkins',
-    content: 'Evening Dress',
+    title: 'Lịch thi đánh giá năng lực, tư duy năm 2023',
+    content:
+      'Các kỳ thi đánh giá năng lực, tư duy diễn ra từ tháng 3 đến 7, thí sinh có thể tham dự nhiều đợt và đăng ký từ đầu tháng 2.',
     image:
       'https://lp2.hm.com/hmgoepprod?set=format%5Bwebp%5D%2Cquality%5B79%5D%2Csource%5B%2Fcb%2Fd3%2Fcbd3a13104d3d0fe1ebb45e4207e3b159971f79a.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url%5Bfile%3A%2Fproduct%2Fmain%5D',
     createdAt: '2023-01-12T06:26:17.539Z',
@@ -82,8 +87,9 @@ export const DaTaNews = [
   },
   {
     _id: '3',
-    title: 'Dorothy Perkins',
-    content: 'Evening Dress',
+    title: 'Đối phó với bài tập Tết',
+    content:
+      'Ngày nghỉ Tết cuối cùng, hàng chục trang bài tập Toán, Tiếng Việt và Tiếng Anh của Anh Thư được giải quyết, nhưng do mẹ và dì làm giúp.',
     image:
       'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F7f%2F01%2F7f01170092efe9f45a621a207c09c972e026608d.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5Bladies_lingerie_briefsknickers_brazilian%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/main]',
     createdAt: '2023-01-12T06:26:17.539Z',
@@ -97,8 +103,9 @@ export const DaTaNews = [
   },
   {
     _id: '4',
-    title: 'Dorothy Perkins',
-    content: 'Evening Dress',
+    title: 'Đường trở thành giáo viên ở Mỹ của một phụ nữ Việt',
+    content:
+      'Chị Đinh Thu Hồng phải theo học chương trình đào tạo giáo viên và hoàn thành nhiều thủ tục để được cấp phép hành nghề dạy học ở Mỹ.',
     image:
       'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F4c%2Fbb%2F4cbb9b4fce8b53feeda801ccfcad96b1d5b49264.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/main]',
     createdAt: '2023-01-12T06:26:17.539Z',
@@ -112,8 +119,9 @@ export const DaTaNews = [
   },
   {
     _id: '5',
-    title: 'Dorothy Perkins',
-    content: 'Evening Dress',
+    title: 'Cô giáo đèo hai con giữa mưa rét, vượt 100 km đến trường',
+    content:
+      'Cô Nguyễn Thị Hà gây xúc động khi đèo hai con, vượt 100 km trong mưa lạnh để trở lại điểm trường ở xã Trà Dơn, huyện Nam Trà My, sau Tết.',
     image:
       'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Fcc%2F6e%2Fcc6e3e030b0f3797eaef4045a48c858cf2f3c97f.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/fullscreen]',
     createdAt: '2023-01-12T06:26:17.539Z',
