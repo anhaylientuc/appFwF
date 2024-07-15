@@ -61,8 +61,10 @@ const ItemCategories = props => {
         if (isFocusScreen) {
           if (_products) {
             setproducts(_products)
+            console.log(_products)
           } else {
             setproducts(products)
+            console.log(products)
             const response = await getCategoryById(categoryById)
             setnameCategoryById(response.name)
             const { _id, name, parentID, image } = response

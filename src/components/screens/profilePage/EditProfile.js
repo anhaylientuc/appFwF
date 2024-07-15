@@ -1,5 +1,5 @@
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import {
   KeyboardAvoidingView,
   ScrollView,
@@ -12,6 +12,7 @@ import {
 } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
+import UserContext from '../user/UserContext'
 
 const EditProfile = props => {
   const { navigation } = props
@@ -19,7 +20,8 @@ const EditProfile = props => {
   const [isShowGender, setIsShowGender] = useState(false)
   const [gender, setGender] = useState(null) // Initialize gender state
   const [showPassWord, setShowPassWord] = useState(false)
-  console.log(gender)
+
+   const { user, setUser } = useContext(UserContext)
 
   const showDatePicker = () => {
     DateTimePickerAndroid.open({
@@ -57,7 +59,6 @@ const EditProfile = props => {
     <KeyboardAvoidingView>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <Text style={styles.txtHeader}>Thông tin cá nhân</Text>
-
         <View style={styles.container_Information}>
           <TouchableWithoutFeedback onPress={() => setIsShowGender(false)}>
             <View>
@@ -261,7 +262,7 @@ const styles = StyleSheet.create({
   icons: {
     marginEnd: 4
   },
-  container_btn: { backgroundColor: Colors.white, padding: 16, borderWidth: 1, marginTop: 20 },
+  container_btn: { backgroundColor: Colors.white, padding: 16, borderWidth: 1, marginTop: 16 },
   container_title: { marginTop: 16 },
   container_textInput: {
     borderWidth: 1,
@@ -280,7 +281,7 @@ const styles = StyleSheet.create({
   txtTextInput: {
     marginStart: 8,
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 16
+    fontSize: 14
   },
   txtTitleProfile: {
     color: Colors.black,
@@ -313,7 +314,7 @@ const styles = StyleSheet.create({
 
   genderOptionText: {
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 16,
+    fontSize: 14,
     color: Colors.black
   }
 })

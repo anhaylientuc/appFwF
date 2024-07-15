@@ -21,7 +21,7 @@ const Login = props => {
   const navigation = useNavigation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const { setUser } = useContext(UserContext)
+  const { setUser, user } = useContext(UserContext)
   const [emailVerify, setEmailVerify] = useState(false)
   const [passwordVerify, setPasswordVerify] = useState(false)
   const [showPassWord, setShowPassWord] = useState(false)
@@ -66,7 +66,7 @@ const Login = props => {
         !password ? setisShowErrorPass(true) : setisShowErrorPass(false)
       }
       const result = await login(email, password)
-      setUser(JSON.stringify(result, null, 2))
+      setUser(result)
       ToastAndroid.show('Đăng nhập thành công', ToastAndroid.SHORT)
       console.log('Form submitted successfully!')
     } catch (error) {
@@ -77,7 +77,11 @@ const Login = props => {
   }
 
   return (
-    <ScrollView keyboardShouldPersistTaps="always" showsVerticalScrollIndicator={false}>
+    <ScrollView
+      keyboardShouldPersistTaps="always"
+      showsVerticalScrollIndicator={false}
+      style={{ width: '100%', height: '100%', backgroundColor: Colors.grayBg }}
+    >
       <View style={styles.view_search}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icons.Ionicons name={'chevron-back'} size={24} />

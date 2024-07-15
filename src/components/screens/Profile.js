@@ -10,14 +10,14 @@ const windowHeight = Dimensions.get('window').height
 const Profile = props => {
   const { navigation } = props
   const [score, setScore] = useState(0)
-  const { user } = useContext(UserContext)
-  // console.log('>>>', user)
+  const { user, setUser } = useContext(UserContext) // Assuming UserContext provides user and setUser
+  const [isLoading, setIsLoading] = useState(false) // Initially not loading
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       <View style={styles.header}>
         <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 20 }}>
-          Xin chào Vỹ
+          Xin chào {user && user.username ? user.username : 'Guest'}
         </MyText>
         <Icons.Ionicons name="settings-outline" size={28} />
       </View>
@@ -98,17 +98,7 @@ const Profile = props => {
             onPress={() => navigation.navigate('SettingProfile')}
           >
             <Icons.Ionicons name="settings-outline" size={28} />
-            <View
-              style={{
-                backgroundColor: Colors.red,
-                width: 12,
-                height: 12,
-                position: 'absolute',
-                borderRadius: 50,
-                left: 70,
-                top: 12
-              }}
-            />
+
             <Text style={styles.txtSetting}>Cài đặt</Text>
           </TouchableOpacity>
         </View>

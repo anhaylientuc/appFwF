@@ -6,7 +6,8 @@ export const login = async (email, password) => {
       email: email,
       password: password
     }
-    return await AxiosInstance().post(url, body)
+    const res = await AxiosInstance().post(url, body)
+    return res
   } catch (error) {
     throw error
   }

@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
+import UserContext from '../user/UserContext'
 const SettingProfile = props => {
   const { navigation } = props
+
+  const { user, setUser } = useContext(UserContext)
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <Text style={styles.txtHeader}>Cài đặt của tôi</Text>
@@ -46,9 +49,9 @@ const SettingProfile = props => {
         </View>
         <View style={{ paddingVertical: 16 }}>
           <Text style={styles.txtTitleProfile}>Email</Text>
-          <Text style={styles.txtUserName}>nguyenthevy3009@gmail.com</Text>
+          <Text style={styles.txtUserName}>{user.email}</Text>
           <Text style={styles.txtTitleProfile}>Họ và tên</Text>
-          <Text style={styles.txtUserName}>VyDepzai</Text>
+          <Text style={styles.txtUserName}>{user.username}</Text>
           <Text style={styles.txtTitleProfile}>Ngày tháng năm sinh</Text>
           <Text style={styles.txtUserName}>30/09/2003</Text>
           <Text style={styles.txtTitleProfile}>Số điện thoại</Text>

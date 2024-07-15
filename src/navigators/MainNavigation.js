@@ -26,6 +26,7 @@ import Login from 'src/components/screens/user/screen/Login'
 import Register from 'src/components/screens/user/screen/Register'
 import Colors from 'src/constants/Colors'
 import { FilterProvider } from 'src/contexts/FilterProvider'
+import { KeyboardContext } from 'src/contexts/KeyboardContext'
 import StorageProvider from 'src/contexts/StorageProvider'
 import Profile from '../components/screens/Profile'
 const Stack = createStackNavigator()
@@ -34,6 +35,8 @@ const Button = createBottomTabNavigator()
 function MainNavigator() {
   const { user } = useContext(UserContext)
   const windowHeight = Dimensions.get('window').height
+
+  const isKeyboardVisible = useContext(KeyboardContext)
   const ShopStack = () => {
     return (
       <Stack.Navigator
@@ -191,7 +194,7 @@ function MainNavigator() {
   }
 
   const ProfileStack = () => {
-    return !user ? (
+    return user ? (
       <Stack.Navigator
         screenOptions={{
           headerShown: false
@@ -252,7 +255,7 @@ function MainNavigator() {
   return (
     <StorageProvider>
       <FilterProvider>
-        <View style={{ height: windowHeight / 40, backgroundColor: '#CCCCCC' }} />
+        <View style={{ height: '4.5%', backgroundColor: '#CCCCCC' }} />
         <Button.Navigator
           initialRouteName="HomeStack"
           screenOptions={{
@@ -262,7 +265,8 @@ function MainNavigator() {
               backgroundColor: Colors.white,
               bottom: 0,
               paddingVertical: 8,
-              height: 54
+              height: 54,
+              display: isKeyboardVisible ? 'none' : 'flex'
             }
           }}
         >
