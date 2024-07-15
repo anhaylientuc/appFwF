@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createStackNavigator } from '@react-navigation/stack'
 import Favorites from '@screens/Favorites'
 import { useContext } from 'react'
-import { View } from 'react-native'
+import { Dimensions, View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import DetailFilter from 'src/components/screens/DetailFilter'
 import Filter from 'src/components/screens/Filter'
@@ -11,10 +11,12 @@ import ShopPage from 'src/components/screens/ShopPage'
 import BagPage from 'src/components/screens/bagPages/BagPage'
 import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
 import HomePage from 'src/components/screens/homePages/HomePage'
+import EditAddress from 'src/components/screens/profilePage/EditAddress'
+import EditProfile from 'src/components/screens/profilePage/EditProfile'
 import MyOder from 'src/components/screens/profilePage/MyOder'
 import SettingProfile from 'src/components/screens/profilePage/SettingProfile'
-import CategoryWomen from 'src/components/screens/shopPages/Categories'
-import ItemCategoryWomen from 'src/components/screens/shopPages/ItemListCategory'
+import Categories from 'src/components/screens/shopPages/Categories'
+import ItemCategories from 'src/components/screens/shopPages/ItemCategories'
 import ProductDetail from 'src/components/screens/shopPages/ProductDetail'
 import ReviewProduct from 'src/components/screens/shopPages/ReviewProduct'
 import SizeInfo from 'src/components/screens/shopPages/SizeInfo'
@@ -24,6 +26,7 @@ import Login from 'src/components/screens/user/screen/Login'
 import Register from 'src/components/screens/user/screen/Register'
 import Colors from 'src/constants/Colors'
 import { FilterProvider } from 'src/contexts/FilterProvider'
+import { KeyboardContext } from 'src/contexts/KeyboardContext'
 import StorageProvider from 'src/contexts/StorageProvider'
 import Profile from '../components/screens/Profile'
 const Stack = createStackNavigator()
@@ -31,6 +34,9 @@ const Button = createBottomTabNavigator()
 
 function MainNavigator() {
   const { user } = useContext(UserContext)
+  const windowHeight = Dimensions.get('window').height
+
+  const isKeyboardVisible = useContext(KeyboardContext)
   const ShopStack = () => {
     return (
       <Stack.Navigator
@@ -44,13 +50,13 @@ function MainNavigator() {
           options={{ title: 'Trang chủ Shop' }}
         ></Stack.Screen>
         <Stack.Screen
-          name="ItemCategoryWomen"
-          component={ItemCategoryWomen}
+          name="ItemCategories"
+          component={ItemCategories}
           options={{ title: 'List Category Women' }}
         ></Stack.Screen>
         <Stack.Screen
-          name="CategoryWomen"
-          component={CategoryWomen}
+          name="Categories"
+          component={Categories}
           options={{ title: 'Tab Category Women' }}
         ></Stack.Screen>
         <Stack.Screen
@@ -188,7 +194,7 @@ function MainNavigator() {
   }
 
   const ProfileStack = () => {
-    return !user ? (
+    return user ? (
       <Stack.Navigator
         screenOptions={{
           headerShown: false
@@ -215,6 +221,16 @@ function MainNavigator() {
           component={SettingProfile}
           options={{ title: 'SettingProfile' }}
         ></Stack.Screen>
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfile}
+          options={{ title: 'EditProfile' }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="EditAddress"
+          component={EditAddress}
+          options={{ title: 'EditAddress' }}
+        ></Stack.Screen>
       </Stack.Navigator>
     ) : (
       UserNavigation()
@@ -239,7 +255,7 @@ function MainNavigator() {
   return (
     <StorageProvider>
       <FilterProvider>
-        <View style={{ height: '3%', backgroundColor: '#CCCCCC' }} />
+        <View style={{ height: '4.5%', backgroundColor: '#CCCCCC' }} />
         <Button.Navigator
           initialRouteName="HomeStack"
           screenOptions={{
@@ -248,8 +264,9 @@ function MainNavigator() {
             tabBarStyle: {
               backgroundColor: Colors.white,
               bottom: 0,
-              paddingVertical: 16,
-              height: 68
+              paddingVertical: 8,
+              height: 54,
+              display: isKeyboardVisible ? 'none' : 'flex'
             }
           }}
         >

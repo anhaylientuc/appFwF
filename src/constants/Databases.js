@@ -135,7 +135,7 @@ export const DaTaNews = [
   }
 ]
 
-export const DataItemCategoryWomen = [
+export const DataItemCategories = [
   {
     id: 1,
     category_name: 'Bordy',

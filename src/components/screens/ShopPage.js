@@ -29,7 +29,7 @@ const ShopPage = props => {
     return (
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate('CategoryWomen', {
+          navigation.navigate('Categories', {
             categoryId: _id
           })
         }
@@ -37,21 +37,21 @@ const ShopPage = props => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           paddingHorizontal: 16,
-          marginTop: 16,
+          marginBottom: 16,
           alignItems: 'center'
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <PicassoImage
-            style={{ height: 44, width: 44, borderRadius: 50 }}
+            style={{ height: 36, width: 36, borderRadius: 50 }}
             source={{ uri: image }}
           />
 
-          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16, marginLeft: 16 }}>
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 12, marginLeft: 16 }}>
             {name}
           </MyText>
         </View>
-        <Icons.AntDesign name={'arrowright'} size={20} />
+        <Icons.AntDesign name={'arrowright'} size={16} />
       </TouchableOpacity>
     )
   }
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   txt_search: {
     color: Colors.black,
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '400'
   },
   view_search: {
