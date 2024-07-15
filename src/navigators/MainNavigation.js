@@ -13,6 +13,7 @@ import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
 import HomePage from 'src/components/screens/homePages/HomePage'
 import EditAddress from 'src/components/screens/profilePage/EditAddress'
 import EditProfile from 'src/components/screens/profilePage/EditProfile'
+import Edit from 'src/components/screens/profilePage/edit'
 import MyOder from 'src/components/screens/profilePage/MyOder'
 import SettingProfile from 'src/components/screens/profilePage/SettingProfile'
 import Categories from 'src/components/screens/shopPages/Categories'
@@ -231,6 +232,12 @@ function MainNavigator() {
           component={EditAddress}
           options={{ title: 'EditAddress' }}
         ></Stack.Screen>
+        <Stack.Screen
+          name="Edit"
+          component={Edit}
+          options={{ title: 'Edit' }}
+        ></Stack.Screen>
+        
       </Stack.Navigator>
     ) : (
       UserNavigation()
