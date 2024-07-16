@@ -1,12 +1,10 @@
-import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   Keyboard,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  ToastAndroid,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View
@@ -18,15 +16,28 @@ import { login } from 'src/utils/http/UserHTTP'
 import UserContext from '../UserContext'
 
 const Login = props => {
-  const navigation = useNavigation()
+  const { navigation } = props
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const { setUser, user } = useContext(UserContext)
   const [emailVerify, setEmailVerify] = useState(false)
   const [passwordVerify, setPasswordVerify] = useState(false)
-  const [showPassWord, setShowPassWord] = useState(false)
+  const [showPassWord, setShowPassWord] = useState(true)
   const [isShowError, setisShowError] = useState(false)
   const [isShowErrorPass, setisShowErrorPass] = useState(false)
+  const [incorrect, setIncorrect] = useState(false)
+
+  const userError = email === '' || password === '' || !password || !email
+
+  useEffect(() => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+  }, [props])
+  const handleBack = () => {
+    setisShowError(false)
+    setisShowErrorPass(false)
+    setIncorrect(false)
+    navigation.goBack()
+  }
 
   function handleEmail(e) {
     const emailVar = e.nativeEvent.text
@@ -56,23 +67,21 @@ const Login = props => {
     }
   }
 
-  const handleSelectInput = () => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-  }
   const handleLogin = async () => {
     try {
-      if (email === '' || password === '' || !password || !email) {
+      if (userError) {
         !email ? setisShowError(true) : setisShowError(false)
         !password ? setisShowErrorPass(true) : setisShowErrorPass(false)
       }
       const result = await login(email, password)
-      setUser(result)
-      ToastAndroid.show('Đăng nhập thành công', ToastAndroid.SHORT)
-      console.log('Form submitted successfully!')
+      if (userError || result) {
+        setUser(result)
+      } else {
+        setIncorrect(true)
+      }
     } catch (error) {
-      // ToastAndroid.show('Tài khoản hoặc mật khẩu không chính xác', ToastAndroid.SHORT)
-      console.log(error)
-      // throw error
+      // Kiểm tra phản hồi lỗi từ server
+      console.log('Error response:', error)
     }
   }
 
@@ -83,7 +92,7 @@ const Login = props => {
       style={{ width: '100%', height: '100%', backgroundColor: Colors.grayBg }}
     >
       <View style={styles.view_search}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => handleBack()}>
           <Icons.Ionicons name={'chevron-back'} size={24} />
         </TouchableOpacity>
       </View>
@@ -100,11 +109,15 @@ const Login = props => {
                 <MyText>
                   Email <Text style={{ color: Colors.red }}>*</Text>
                 </MyText>
-                <View style={styles.container_userName}>
+                <View
+                  style={[
+                    styles.container_userName,
+                    { borderColor: isShowError ? Colors.red : Colors.gray }
+                  ]}
+                >
                   <View style={styles.container_userName_txtInput}>
                     <TextInput
                       onChange={e => handleEmail(e)}
-                      onFocus={() => handleSelectInput()}
                       style={{ width: '70%', height: '100%', color: Colors.black }}
                     />
                     {!email.length ? null : emailVerify ? (
@@ -143,11 +156,15 @@ const Login = props => {
                 <MyText>
                   Mật khẩu<Text style={{ color: Colors.red }}> *</Text>
                 </MyText>
-                <View style={styles.container_userName}>
+                <View
+                  style={[
+                    styles.container_userName,
+                    { borderColor: isShowErrorPass ? Colors.red : Colors.gray }
+                  ]}
+                >
                   <View style={styles.container_userName_txtInput}>
                     <TextInput
                       onChange={e => handlePassword(e)}
-                      onFocus={() => handleSelectInput()}
                       secureTextEntry={showPassWord}
                       style={{
                         width: '70%',
@@ -175,7 +192,7 @@ const Login = props => {
                       fontSize: 12
                     }}
                   >
-                    * bạn đã nhập mật khẩu không hợp lệ
+                    * Bạn đã nhập mật khẩu không hợp lệ
                   </Text>
                 ) : null}
                 {isShowErrorPass ? (
@@ -188,6 +205,18 @@ const Login = props => {
                     }}
                   >
                     * Mật khẩu không được để trống
+                  </Text>
+                ) : null}
+                {incorrect ? (
+                  <Text
+                    style={{
+                      color: Colors.red,
+                      marginBottom: 16,
+                      fontFamily: 'Montserrat-SemiBold',
+                      fontSize: 12
+                    }}
+                  >
+                    * Tài khoản hoặc mật khẩu không chính xác
                   </Text>
                 ) : null}
               </View>
@@ -235,7 +264,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: Colors.gray,
+
     alignItems: 'center'
   },
   error: {

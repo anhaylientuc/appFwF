@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
-  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Pressable,
@@ -24,35 +23,43 @@ const Register = props => {
     navigation: { goBack }
   } = props
   const [userName, setUserName] = useState('')
-  const [userNameVerify, setUserNameVerify] = useState(false)
   const [email, setEmail] = useState('')
-  const [emailVerify, setEmailVerify] = useState(false)
   const [password, setPassword] = useState('')
-  const [passwordVerify, setPasswordVerify] = useState(false)
-  const [showPassWord, setShowPassWord] = useState(false)
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [userNameVerify, setUserNameVerify] = useState(false)
+  const [emailVerify, setEmailVerify] = useState(false)
+  const [passwordVerify, setPasswordVerify] = useState(false)
+  const [showPassWord, setShowPassWord] = useState(true)
   const [confirmPasswordVerify, setConfirmPasswordVerify] = useState(false)
+  const [emailNull, setemailNull] = useState(false)
+  const [passwordNull, setpasswordNull] = useState(false)
+  const [cfPassNull, setcfPassNull] = useState(false)
+  const [userNameNull, setuserNameNull] = useState(false)
 
-  const setBottomBar = () => {
-    navigation.getParent().setOptions({
-      tabBarStyle: {
-        borderTopEndRadius: 12,
-        borderTopStartRadius: 12,
-        paddingTop: 10,
-        paddingBottom: 10,
-        height: 68,
-        backgroundColor: Colors.white,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute'
-      }
-    })
-  }
+  useEffect(() => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+  }, [])
+
+  const userError =
+    email === '' ||
+    password === '' ||
+    userName === '' ||
+    confirmPassword === '' ||
+    !password ||
+    !email ||
+    !userName ||
+    !confirmPassword
+
+  const emailError = !emailVerify && emailNull
+  const passwordError = passwordNull && !passwordVerify
+  const cfPassError = cfPassNull && !confirmPasswordVerify
+  const userNameError = userNameNull && !userNameVerify
 
   function handleEmail(e) {
     const emailVar = e.nativeEvent.text
     setEmail(emailVar.trim())
     setEmailVerify(false)
+    setemailNull(false)
     if (/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{1,}$/.test(emailVar)) {
       setEmail(emailVar)
       setEmailVerify(true)
@@ -63,6 +70,7 @@ const Register = props => {
     const userNameVar = e.nativeEvent.text
     setUserName(userNameVar)
     setUserNameVerify(false)
+    setuserNameNull(false)
     if (userNameVar.length >= 6) {
       setUserNameVerify(true)
     }
@@ -73,6 +81,7 @@ const Register = props => {
     const PasswordVar = e.nativeEvent.text
     setPassword(PasswordVar)
     setPasswordVerify(false)
+    setpasswordNull(false)
     if (regex.test(PasswordVar)) {
       setPassword(PasswordVar)
       setPasswordVerify(true)
@@ -84,6 +93,7 @@ const Register = props => {
     const passwordVar = password
     setConfirmPassword(confirmPasswordVar)
     setConfirmPasswordVerify(false)
+    setcfPassNull(false)
     if (confirmPasswordVar !== passwordVar) {
     } else {
       setConfirmPassword(confirmPasswordVar)
@@ -93,22 +103,22 @@ const Register = props => {
 
   const handleRegister = async () => {
     try {
-      if (((emailVerify === passwordVerify) === confirmPasswordVerify) === userNameVerify) {
-        const result = await register(email, password, userName)
-        Alert.alert('Success', 'Register Success, please login')
-        console.log(result)
-        return result
-      } else {
-        console.log('Lỗi con mẹ mày')
+      if (userError) {
+        !email ? setemailNull(true) : setemailNull(false)
+        !password ? setpasswordNull(true) : setpasswordNull(false)
+        !confirmPassword ? setcfPassNull(true) : setisShowErrorPass(false)
+        !userName ? setuserNameNull(true) : setisShowErrorPass(false)
       }
-    } catch (error) {
+      const result = await register(email, password, userName)
       Alert.alert('Success', 'Register Success, please login')
+      console.log(result)
+      return result
+    } catch (error) {
+      // Kiểm tra phản hồi lỗi từ server
+      console.log('Error response:', error)
     }
   }
 
-  const handleSelectInput = () => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-  }
   return (
     <KeyboardAvoidingView>
       <ScrollView
@@ -133,10 +143,14 @@ const Register = props => {
                 <MyText>
                   Email <Text style={{ color: Colors.red }}>*</Text>
                 </MyText>
-                <View style={styles.container_userName}>
-                  <View style={styles.container_userName_txtInput}>
+                <View
+                  style={[
+                    styles.container_userName,
+                    { borderColor: emailError ? Colors.red : Colors.gray }
+                  ]}
+                >
+                  <View style={[styles.container_userName_txtInput]}>
                     <TextInput
-                      onPress={() => handleSelectInput()}
                       onChange={e => handleEmail(e)}
                       style={{ width: '70%', height: '100%', color: Colors.black }}
                     />
@@ -150,12 +164,18 @@ const Register = props => {
                 {!email.length ? null : !emailVerify ? (
                   <Text style={styles.error}>* Email không hợp lệ</Text>
                 ) : null}
+                {emailNull ? <Text style={styles.error}>* Email không được để trống</Text> : null}
               </View>
               <View>
                 <MyText>
                   Mật khẩu<Text style={{ color: Colors.red }}> *</Text>
                 </MyText>
-                <View style={styles.container_userName}>
+                <View
+                  style={[
+                    styles.container_userName,
+                    { borderColor: passwordError ? Colors.red : Colors.gray }
+                  ]}
+                >
                   <View style={styles.container_userName_txtInput}>
                     <TextInput
                       onChange={e => handlePassword(e)}
@@ -181,17 +201,24 @@ const Register = props => {
                     * Mật khẩu phải sử dụng chữ hoa, chữ thường, số và không có khoảng trắng
                   </Text>
                 ) : null}
+                {passwordNull ? (
+                  <Text style={styles.error}>* Mật khẩu không được để trống</Text>
+                ) : null}
               </View>
 
               <View>
                 <MyText>
                   Nhập lại mật khẩu<Text style={{ color: Colors.red }}> *</Text>
                 </MyText>
-                <View style={styles.container_userName}>
+                <View
+                  style={[
+                    styles.container_userName,
+                    { borderColor: cfPassError ? Colors.red : Colors.gray }
+                  ]}
+                >
                   <View style={styles.container_userName_txtInput}>
                     <TextInput
                       onChange={e => handleConfirmPassword(e)}
-                      onPress={() => handleSelectInput()}
                       secureTextEntry={showPassWord}
                       style={{ width: '70%', height: '100%', color: Colors.black }}
                     />
@@ -211,17 +238,24 @@ const Register = props => {
                     * Mật khẩu nhắc lại không trung khớp với mật khẩu
                   </Text>
                 ) : null}
+                {cfPassNull ? (
+                  <Text style={styles.error}>* Nhắc lại mật khẩu không được để trống</Text>
+                ) : null}
               </View>
 
               <View>
                 <MyText>
-                  Tên đăng nhập<Text style={{ color: Colors.red }}> *</Text>
+                  Họ và tên<Text style={{ color: Colors.red }}> *</Text>
                 </MyText>
-                <View style={styles.container_userName}>
+                <View
+                  style={[
+                    styles.container_userName,
+                    { borderColor: userNameError ? Colors.red : Colors.gray }
+                  ]}
+                >
                   <View style={styles.container_userName_txtInput}>
                     <TextInput
                       onChange={e => handleUserName(e)}
-                      onPress={() => handleSelectInput()}
                       style={{ width: '70%', height: '100%', color: Colors.black }}
                     />
                     {!userName.length ? null : userNameVerify ? (
@@ -233,6 +267,9 @@ const Register = props => {
                 </View>
                 {!userName.length ? null : !userNameVerify ? (
                   <Text style={styles.error}>* Tên đăng nhập phải dài hơn 6 ký tự.</Text>
+                ) : null}
+                {userNameNull ? (
+                  <Text style={styles.error}>* Tên đăng nhập không được để trống</Text>
                 ) : null}
               </View>
 
@@ -301,7 +338,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: Colors.gray,
+    // borderColor:  Colors.gray,
     alignItems: 'center'
   },
   txtBtnRegister: {

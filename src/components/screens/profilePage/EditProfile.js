@@ -1,5 +1,5 @@
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
-import React, { useState, useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import {
   KeyboardAvoidingView,
   ScrollView,
@@ -21,7 +21,7 @@ const EditProfile = props => {
   const [gender, setGender] = useState(null) // Initialize gender state
   const [showPassWord, setShowPassWord] = useState(false)
 
-   const { user, setUser } = useContext(UserContext)
+  const { user, setUser } = useContext(UserContext)
 
   const showDatePicker = () => {
     DateTimePickerAndroid.open({
@@ -234,7 +234,7 @@ const EditProfile = props => {
                   </Text>
                 </View>
 
-                <View style={styles.container_btn}>
+                <TouchableOpacity style={styles.container_btn} onPress={() => navigation.goBack()}>
                   <Text
                     style={{
                       textAlign: 'center',
@@ -245,7 +245,7 @@ const EditProfile = props => {
                   >
                     Hủy
                   </Text>
-                </View>
+                </TouchableOpacity>
               </View>
             </View>
           </TouchableWithoutFeedback>
