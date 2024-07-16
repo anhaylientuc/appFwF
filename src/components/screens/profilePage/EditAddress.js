@@ -1,6 +1,7 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
 import { Button, Card } from 'react-native-paper'
+import { StyleSheet, Text, View } from 'react-native'
+
 
 const EditAddress = props => {
   const { navigation } = props
@@ -35,7 +36,7 @@ export default EditAddress
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
+    margin: '1',
     margin: '10'
   },
   cardcontainer: {
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: 'Montserrat-SemiBold',
     marginTop: 5,
-    marginBottom: 10,
+    marginBottom: 11,
     
   }
 })

@@ -60,7 +60,7 @@ const MyOder = props => {
             padding: 16
           }}
         >
-          Hiện thại không có lượt mua sắm nào để hiển thị
+          Hiện tại không có lượt mua sắm nào để hiển thị
         </Text>
         <MyText
           style={{
@@ -97,8 +97,8 @@ export default MyOder
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.grayBg,
     width: '100%',
-    height: '100%'
+    height: '100%',
+    backgroundColor: Colors.grayBg
   }
 })

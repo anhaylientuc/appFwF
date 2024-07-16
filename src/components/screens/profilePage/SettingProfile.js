@@ -59,7 +59,7 @@ const SettingProfile = props => {
           <Text style={styles.txtTitleProfile}>Giới tính</Text>
           <Text style={styles.txtUserName}>Nam</Text>
           <Text style={styles.txtTitleProfile}>Mã bưu chính</Text>
-          <Text style={styles.txtUserName}>Ok</Text>
+          <Text style={styles.txtUserName}>18000</Text>
           <Text style={styles.txtTitleProfile}>Quốc gia</Text>
           <Text style={styles.txtUserName}>Việt Nam</Text>
         </View>
@@ -81,7 +81,7 @@ const SettingProfile = props => {
         </View>
         <TouchableOpacity>
           <Text style={[styles.txtTitleProfile, { marginTop: 32 }]}>
-            Bạn cũng có thể thêm và sửa địa chỉ giao hàng tại đấy
+            Bạn cũng có thể thêm và sửa địa chỉ giao hàng tại đây
           </Text>
         </TouchableOpacity>
         <Text style={styles.txtTitleProfile}>Dịa chỉ thanh toán</Text>
