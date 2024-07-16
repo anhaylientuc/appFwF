@@ -6,23 +6,14 @@ const EditAddress = props => {
   const { navigation } = props
   return (
     <View style={styles.container}>
-      <View style={styles.cardcontainer}>
-        <Card>
+      <Text style={styles.txtHeader}>Địa chỉ của tôi</Text>
+      <View style={styles.cardcontainer} >
+        <Card onPress={() => navigation.navigate('Edit')}>
           <Card.Title title="Tên" subtitle="00000xxxx" />
           <Card.Content>
             <Text>Địa chỉ ở dây</Text>
           </Card.Content>
-          <Card.Actions>
-            <Button textColor="black" style={{ borderColor: 'black' }}>
-              Xóa
-            </Button>
-            <Button
-              style={{ backgroundColor: 'black' }}
-              onPress={() => navigation.navigate('Edit')}
-            >
-              Sửa
-            </Button>
-          </Card.Actions>
+          
         </Card>
       </View>
       <View style={styles.cardcontainer}>
@@ -31,17 +22,6 @@ const EditAddress = props => {
           <Card.Content>
             <Text>Địa chỉ ở dây</Text>
           </Card.Content>
-          <Card.Actions>
-            <Button textColor="black" style={{ borderColor: 'black' }}>
-              Xóa
-            </Button>
-            <Button
-              style={{ backgroundColor: 'black' }}
-              onPress={() => navigation.navigate('Edit')}
-            >
-              Sửa
-            </Button>
-          </Card.Actions>
         </Card>
       </View>
     </View>
@@ -55,10 +35,18 @@ export default EditAddress
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+
     margin: '10'
   },
   cardcontainer: {
-    margin: '10'
+    marginBottom: 1
   },
+  txtHeader:{
+    textAlign: 'center',
+    fontSize: 24,
+    fontFamily: 'Montserrat-SemiBold',
+    marginTop: 5,
+    marginBottom: 10,
+    
+  }
 })
