@@ -1,20 +1,18 @@
 import React from 'react'
-import { Button, Card } from 'react-native-paper'
 import { StyleSheet, Text, View } from 'react-native'
-
+import { Card } from 'react-native-paper'
 
 const EditAddress = props => {
   const { navigation } = props
   return (
     <View style={styles.container}>
       <Text style={styles.txtHeader}>Địa chỉ của tôi</Text>
-      <View style={styles.cardcontainer} >
+      <View style={styles.cardcontainer}>
         <Card onPress={() => navigation.navigate('Edit')}>
           <Card.Title title="Tên" subtitle="00000xxxx" />
           <Card.Content>
             <Text>Địa chỉ ở dây</Text>
           </Card.Content>
-          
         </Card>
       </View>
       <View style={styles.cardcontainer}>
@@ -31,8 +29,6 @@ const EditAddress = props => {
 
 export default EditAddress
 
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -42,12 +38,11 @@ const styles = StyleSheet.create({
   cardcontainer: {
     marginBottom: 1
   },
-  txtHeader:{
+  txtHeader: {
     textAlign: 'center',
     fontSize: 24,
     fontFamily: 'Montserrat-SemiBold',
     marginTop: 5,
-    marginBottom: 11,
-    
+    marginBottom: 11
   }
 })

@@ -13,9 +13,10 @@ import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
 import HomePage from 'src/components/screens/homePages/HomePage'
 import EditAddress from 'src/components/screens/profilePage/EditAddress'
 import EditProfile from 'src/components/screens/profilePage/EditProfile'
-import Edit from 'src/components/screens/profilePage/edit'
+import GoogleMaps from 'src/components/screens/profilePage/GoogleMaps'
 import MyOder from 'src/components/screens/profilePage/MyOder'
 import SettingProfile from 'src/components/screens/profilePage/SettingProfile'
+import Edit from 'src/components/screens/profilePage/edit'
 import Categories from 'src/components/screens/shopPages/Categories'
 import ItemCategories from 'src/components/screens/shopPages/ItemCategories'
 import ProductDetail from 'src/components/screens/shopPages/ProductDetail'
@@ -232,12 +233,12 @@ function MainNavigator() {
           component={EditAddress}
           options={{ title: 'EditAddress' }}
         ></Stack.Screen>
+        <Stack.Screen name="Edit" component={Edit} options={{ title: 'Edit' }}></Stack.Screen>
         <Stack.Screen
-          name="Edit"
-          component={Edit}
-          options={{ title: 'Edit' }}
+          name="GoogleMaps"
+          component={GoogleMaps}
+          options={{ title: 'GoogleMaps' }}
         ></Stack.Screen>
-        
       </Stack.Navigator>
     ) : (
       UserNavigation()

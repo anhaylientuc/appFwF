@@ -6,8 +6,8 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableWithoutFeedback,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View
 } from 'react-native'
 import Icons from 'src/components/icons/Icon'

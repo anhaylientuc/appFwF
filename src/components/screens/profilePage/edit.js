@@ -1,5 +1,4 @@
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
-import React, { useState, useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import {
   KeyboardAvoidingView,
   ScrollView,
@@ -10,7 +9,6 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native'
-import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import UserContext from '../user/UserContext'
 
@@ -21,40 +19,7 @@ const Edit = props => {
   const [gender, setGender] = useState(null) // Initialize gender state
   const [showPassWord, setShowPassWord] = useState(false)
 
-   const { user, setUser } = useContext(UserContext)
-
-  const showDatePicker = () => {
-    DateTimePickerAndroid.open({
-      value: date,
-      onChange: (event, selectedDate) => {
-        if (selectedDate) {
-          setDate(selectedDate)
-        }
-      },
-      mode: 'date',
-      is24Hour: true
-    })
-  }
-
-  const showGender = () => {
-    return (
-      <View style={styles.genderOptions}>
-        <TouchableOpacity
-          style={[styles.genderOption, gender === 'Nam']}
-          onPress={() => setGender('Nam') & setIsShowGender(false)}
-        >
-          <Text style={[styles.genderOptionText, gender === 'Nam']}>Nam</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.genderOption, gender === 'Nữ']}
-          onPress={() => setGender('Nữ') & setIsShowGender(false)}
-        >
-          <Text style={[styles.genderOptionText, gender === 'Nữ']}>Nữ</Text>
-        </TouchableOpacity>
-      </View>
-    )
-  }
-
+  const { user, setUser } = useContext(UserContext)
   return (
     <KeyboardAvoidingView>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -70,16 +35,11 @@ const Edit = props => {
                 }}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={{ fontSize: 18, fontFamily: 'Montserrat-SemiBold' }}>
-                  Địa chỉ
-                  </Text>
+                  <Text style={{ fontSize: 18, fontFamily: 'Montserrat-SemiBold' }}>Địa chỉ</Text>
                 </View>
               </View>
 
-              
               <View style={{ marginTop: 16 }}>
-                
-
                 {
                   // Họ và tên
                 }
@@ -89,7 +49,6 @@ const Edit = props => {
                     <TextInput style={styles.txtTextInput} />
                   </View>
                 </View>
-
 
                 {
                   // phone
@@ -136,14 +95,12 @@ const Edit = props => {
                 {
                   // Địa chỉ
                 }
-                <View style={styles.container_title}>
+                <TouchableOpacity style={styles.container_title} onPress={() => navigation.navigate('GoogleMaps')}>
                   <Text style={styles.txtTitleProfile}>*Địa chỉ</Text>
                   <View style={styles.container_textInput}>
                     <TextInput style={styles.txtTextInput} />
                   </View>
-                </View>
-
-               
+                </TouchableOpacity>
 
                 <View style={[styles.container_btn, { backgroundColor: Colors.black2 }]}>
                   <Text
