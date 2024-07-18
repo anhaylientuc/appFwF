@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   KeyboardAvoidingView,
   ScrollView,
@@ -13,13 +13,22 @@ import Colors from 'src/constants/Colors'
 import UserContext from '../user/UserContext'
 
 const Edit = props => {
-  const { navigation } = props
+  const { navigation, route } = props
+  const formattedAddress = route.params?.formattedAddress
   const [date, setDate] = useState(new Date())
   const [isShowGender, setIsShowGender] = useState(false)
   const [gender, setGender] = useState(null) // Initialize gender state
   const [showPassWord, setShowPassWord] = useState(false)
+  const [address, setAddress] = useState('')
 
   const { user, setUser } = useContext(UserContext)
+
+  useEffect(() => {
+    if (formattedAddress) {
+      setAddress(formattedAddress)
+    }
+  }, [formattedAddress])
+
   return (
     <KeyboardAvoidingView>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -95,10 +104,27 @@ const Edit = props => {
                 {
                   // Địa chỉ
                 }
-                <TouchableOpacity style={styles.container_title} onPress={() => navigation.navigate('GoogleMaps')}>
-                  <Text style={styles.txtTitleProfile}>*Địa chỉ</Text>
+                <TouchableOpacity
+                  style={styles.container_title}
+                  onPress={() => navigation.navigate('GoogleMaps')}
+                >
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Text style={styles.txtTitleProfile}>*Địa chỉ</Text>
+                    <Text style={styles.txtTitleProfile}>Vị trí của tôi</Text>
+                  </View>
                   <View style={styles.container_textInput}>
-                    <TextInput style={styles.txtTextInput} />
+                    <TextInput
+                      style={styles.txtTextInput}
+                      value={address || ''}
+                      placeholder="Chọn địa chỉ"
+                      editable={false}
+                    />
                   </View>
                 </TouchableOpacity>
 
@@ -161,7 +187,8 @@ const styles = StyleSheet.create({
   txtTextInput: {
     marginStart: 8,
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 14
+    fontSize: 14,
+    color: Colors.black
   },
   txtTitleProfile: {
     color: Colors.black,
