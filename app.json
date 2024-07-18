@@ -3,10 +3,9 @@
     "name": "MyReactNative",
     "slug": "MyReactNative",
     "version": "1.0.0",
-    "plugins": [
-      "expo-font",
-      "expo-router"
-    ]
+    "platforms": ["ios", "android"],
+    "permissions": ["LOCATION"],
+    "plugins": ["expo-font", "expo-router"]
   },
   "name": "MyReactNative"
 }
