@@ -13,7 +13,7 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { login } from 'src/utils/http/UserHTTP'
-import UserContext from '../UserContext'
+import UserContext from '../../../../contexts/UserContext'
 
 const Login = props => {
   const { navigation } = props
@@ -76,6 +76,7 @@ const Login = props => {
       const result = await login(email, password)
       if (userError || result) {
         setUser(result)
+        navigation.goBack()
       } else {
         setIncorrect(true)
       }

@@ -19,8 +19,8 @@ import Toast from 'react-native-toast-message'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
+import UserContext from '../../../contexts/UserContext'
 import Icons from '../../icons/Icon'
-import UserContext from '../user/UserContext'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 const BagPage = props => {
@@ -56,6 +56,7 @@ const BagPage = props => {
   }
 
   useEffect(() => {
+    setBottomBar()
     setCart(...storageData)
     setPrice(totalBasePrice)
     setTransportFee(49000)
@@ -323,8 +324,6 @@ const BagPage = props => {
         console.log('Chọn tối đa ' + (newQuantity - 1))
         return val
       }
-
-      return val
     })
     setStorageData(newStorageData)
   }
@@ -342,7 +341,6 @@ const BagPage = props => {
         console.log('Chọn tối thiểu 1')
         return val
       }
-      return val
     })
     setStorageData(newStorageData)
   }
@@ -353,13 +351,10 @@ const BagPage = props => {
       product_id: product_id,
       _id: _id
     })
-    console.log('product_id', item.product_id)
-    console.log('_id', item._id)
   }
 
   const ItemCart = ({ item, index }) => {
-    const { product_Name, base_price, cnt, size, _id, color, image, code, quantity, attributes } =
-      item
+    const { product_Name, base_price, size, color, image, quantity, attributes } = item
     const priceProduct = base_price
     const newPrice = { ...item, newPrice: base_price * quantity }
 
@@ -684,7 +679,7 @@ const BagPage = props => {
   }
   // render item list Product
   const renderItem = ({ item, index }) => {
-    const { id, name_saleOff, image_saleOff, date_saleOff, code_saleOff, subject } = item
+    const { name_saleOff, image_saleOff, date_saleOff, code_saleOff, subject } = item
     return (
       <View style={styles.wrapper_promoCodes}>
         <View style={styles.image_promoCodes}>
@@ -766,9 +761,16 @@ const BagPage = props => {
         </View>
         {cart ? (
           <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('PayPage', {
+                totalPrices: totalPrices,
+                valueOfOrders: totalBasePrice,
+                shippingFee: transportFee
+              })
+            }
             style={{
               paddingVertical: 16,
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.black2,
 
               marginTop: 16
             }}
@@ -779,7 +781,7 @@ const BagPage = props => {
                 color: Colors.white,
                 textAlign: 'center',
                 fontWeight: '500',
-                fontSize: 12
+                fontSize: 14
               }}
             >
               Tiếp tục thanh toán

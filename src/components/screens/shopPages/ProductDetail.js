@@ -30,7 +30,17 @@ const ProductDetail = props => {
   const {
     navigation,
     route: {
-      params: { _id, base_price, product_id, product_Name, images, category_id, description, code }
+      params: {
+        _id,
+        base_price,
+        product_id,
+        product_Name,
+        images,
+        category_id,
+        description,
+        code,
+        discount_price
+      }
     }
   } = props
 
@@ -57,7 +67,7 @@ const ProductDetail = props => {
   const scrollY = useRef(new Animated.Value(0)).current
   const [headerBg, setHeaderBg] = useState('transparent')
   const [elevationBg, setElevationBg] = useState(0)
-
+  console.log(discount_price)
   useEffect(() => {
     const listener = scrollY.addListener(({ value }) => {
       if (value > windowHeight / 2) {
@@ -175,7 +185,6 @@ const ProductDetail = props => {
       // Add new product if it doesn't exist
       const newProduct = {
         _id: selectedId,
-        description: description,
         product_Name: product_Name,
         product_id: product_id,
         base_price: base_price,
@@ -186,6 +195,7 @@ const ProductDetail = props => {
         newPrice: base_price * quantity,
         quantity: quantity,
         cnt: cnt,
+        discount_price: discount_price,
         attributes: attributes_id
       }
 

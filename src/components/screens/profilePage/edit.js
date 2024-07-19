@@ -10,7 +10,7 @@ import {
   View
 } from 'react-native'
 import Colors from 'src/constants/Colors'
-import UserContext from '../user/UserContext'
+import UserContext from '../../../contexts/UserContext'
 
 const Edit = props => {
   const { navigation, route } = props

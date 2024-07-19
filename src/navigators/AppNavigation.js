@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import React, { forwardRef, useImperativeHandle, useRef } from 'react'
 import { StyleSheet } from 'react-native'
 import Toast from 'react-native-toast-message'
-import { UserProvider } from 'src/components/screens/user/UserContext'
+import { UserProvider } from 'src/contexts/UserContext'
 import MainNavigator from './MainNavigation'
 
 const AppNavigation = () => {

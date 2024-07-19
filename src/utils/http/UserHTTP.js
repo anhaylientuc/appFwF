@@ -51,16 +51,3 @@ export const register = async (email, password, username) => {
     throw error // Ném lỗi để bên ngoài có thể xử lý tiếp
   }
 }
-
-// export const fogotPass = async email => {
-//   try {
-//     const url = '/users/forgot-password';
-//     const body = {
-//       email: email,
-//     };
-//     return await AxiosInstance().post(url, body);
-//   } catch (error) {
-//     console.log(error);
-//     throw error;
-//   }
-// };

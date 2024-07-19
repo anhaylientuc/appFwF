@@ -1,9 +1,10 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useContext, useState } from 'react'
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
+import UserContext from '../../contexts/UserContext'
 import Icons from '../icons/Icon'
-import UserContext from './user/UserContext'
 
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
@@ -13,6 +14,15 @@ const Profile = props => {
   const { user, setUser } = useContext(UserContext) // Assuming UserContext provides user and setUser
   const [isLoading, setIsLoading] = useState(false) // Initially not loading
 
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('user')
+      setUser(undefined) // Clear user context
+      navigation.navigate('Login') // Redirect to login screen or any other screen
+    } catch (error) {
+      console.error('Failed to logout', error)
+    }
+  }
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       <View style={styles.header}>
@@ -164,9 +174,9 @@ const Profile = props => {
         </View>
         <View style={styles.container_option}>
           <Icons.MaterialIcons name="logout" size={20} />
-          <View>
+          <TouchableOpacity onPress={() => handleLogout()}>
             <Text style={styles.txtOption}>Đăng xuất</Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.container_option2}>
           <Icons.MaterialCommunityIcons name="comment-edit-outline" size={20} />

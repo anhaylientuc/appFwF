@@ -12,7 +12,7 @@ import {
 } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import UserContext from '../user/UserContext'
+import UserContext from '../../../contexts/UserContext'
 
 const EditProfile = props => {
   const { navigation } = props

@@ -3,12 +3,14 @@ import { createStackNavigator } from '@react-navigation/stack'
 import Favorites from '@screens/Favorites'
 import { useContext } from 'react'
 import { Dimensions, View } from 'react-native'
+import MyChecks from 'src/components/screens/bagPages/MyChecks'
 import Icons from 'src/components/icons/Icon'
 import DetailFilter from 'src/components/screens/DetailFilter'
 import Filter from 'src/components/screens/Filter'
 import SearchPage from 'src/components/screens/SearchPage'
 import ShopPage from 'src/components/screens/ShopPage'
 import BagPage from 'src/components/screens/bagPages/BagPage'
+import PayPage from 'src/components/screens/bagPages/PayPage'
 import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
 import HomePage from 'src/components/screens/homePages/HomePage'
 import EditAddress from 'src/components/screens/profilePage/EditAddress'
@@ -22,7 +24,6 @@ import ItemCategories from 'src/components/screens/shopPages/ItemCategories'
 import ProductDetail from 'src/components/screens/shopPages/ProductDetail'
 import ReviewProduct from 'src/components/screens/shopPages/ReviewProduct'
 import SizeInfo from 'src/components/screens/shopPages/SizeInfo'
-import UserContext from 'src/components/screens/user/UserContext'
 import ForgotPassword from 'src/components/screens/user/screen/ForgotPassword/ForgotPassword'
 import Login from 'src/components/screens/user/screen/Login'
 import Register from 'src/components/screens/user/screen/Register'
@@ -30,6 +31,7 @@ import Colors from 'src/constants/Colors'
 import { FilterProvider } from 'src/contexts/FilterProvider'
 import { KeyboardContext } from 'src/contexts/KeyboardContext'
 import StorageProvider from 'src/contexts/StorageProvider'
+import UserContext from 'src/contexts/UserContext'
 import Profile from '../components/screens/Profile'
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
@@ -190,6 +192,29 @@ function MainNavigator() {
           name="ProductDetail"
           component={ProductDetail}
           options={{ title: 'ProductDetail' }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="MyChecks"
+          component={MyChecks}
+          options={{ title: 'MyChecks' }}
+        ></Stack.Screen>
+
+        <Stack.Screen
+          name="PayPage"
+          component={PayPage}
+          options={{ title: 'PayPage' }}
+        ></Stack.Screen>
+        <Stack.Screen name="Login" component={Login} options={{ title: 'Login' }}></Stack.Screen>
+
+        <Stack.Screen
+          name="Register"
+          component={Register}
+          options={{ title: 'Register' }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="ForgotPassword"
+          component={ForgotPassword}
+          options={{ title: 'ForgotPassword' }}
         ></Stack.Screen>
       </Stack.Navigator>
     )

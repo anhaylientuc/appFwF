@@ -70,12 +70,12 @@ export const getFilter = async query => {
     const axiosInstance = AxiosInstance()
     const url = `/filters`
     const params = query
-    console.log('query: ',params)
+    console.log('query: ', params)
     const response = await axiosInstance.get(url, { params: params })
     return response
   } catch (error) {
-    console.log('cc',error)
+    console.log('cc', error)
     throw error
   }
 }
-export default {getProducts}
+export default { getProducts }

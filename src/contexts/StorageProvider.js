@@ -5,14 +5,22 @@ const StorageContext = createContext()
 
 const StorageProvider = ({ children }) => {
   const [storageData, setStorageData] = useState([])
+  const [userData, setuserData] = useState({})
   const getDataProducts = async () => {
     const result = await AsyncStorage.getItem('my-cart')
     if (result !== null) {
       setStorageData(JSON.parse(result))
     }
   }
+  const getDataUser = async () => {
+    const result = await AsyncStorage.getItem('my-profile')
+    if (result !== null) {
+      setuserData(JSON.parse(result))
+    }
+  }
   useEffect(() => {
     getDataProducts()
+    getDataUser()
   }, [])
 
   return (
