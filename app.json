@@ -1,11 +1,15 @@
 {
   "expo": {
+    "scheme": "your-custom-scheme",
     "name": "MyReactNative",
     "slug": "MyReactNative",
     "version": "1.0.0",
     "platforms": ["ios", "android"],
     "permissions": ["LOCATION"],
-    "plugins": ["expo-font", "expo-router"]
+    "plugins": ["expo-font", "expo-router"],
+    "android": {
+      "package": "com.thevysport.MyReactNative"
+    }
   },
   "name": "MyReactNative"
 }

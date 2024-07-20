@@ -17,7 +17,7 @@ import {
 } from 'react-native'
 import Toast from 'react-native-toast-message'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import UserContext from '../../../contexts/UserContext'
 import Icons from '../../icons/Icon'
@@ -33,10 +33,9 @@ const BagPage = props => {
   const { storageData, setStorageData } = useStorage()
   const [visiblePopupMenu, setVisiblePopupMenu] = useState(null)
   const [addFavorite, setAddFavorite] = useState(null)
-  const BottomSheetRef = useRef(null)
   const [price, setPrice] = useState()
-  const [cart, setCart] = useState([])
   const [transportFee, setTransportFee] = useState()
+  const [cart, setCart] = useState([])
 
   const showToastDeleted = title => {
     Toast.show({
@@ -54,20 +53,19 @@ const BagPage = props => {
     // set attributes_id to PopupMenu
     setVisiblePopupMenu(attributes)
   }
-
-  useEffect(() => {
-    setBottomBar()
-    setCart(...storageData)
-    setPrice(totalBasePrice)
-    setTransportFee(49000)
-  }, [storageData])
-
   // duyệt mảng lấy tất cả giá tiền
   const allBasePrices = storageData.map(item => item.newPrice)
   const totalBasePrice = sumBasePrices(allBasePrices)
-
   // tính tổng cần thanh toán -> { tổng giá trị đơn hàng + phí ship }
   const totalPrices = totalBasePrice + transportFee
+
+  // Example usage
+  // đơn giá
+  const formattedCurrency = formatCurrency(price)
+  // phí ship
+  const formattedTransportfee = formatCurrency(transportFee)
+  // thành tiền
+  const formattedTotalPrices = formatCurrency(totalPrices)
 
   // hàm tính tổng các giá trị đơn hàng
   function sumBasePrices(allBasePrices) {
@@ -75,21 +73,9 @@ const BagPage = props => {
     for (const price of allBasePrices) {
       total += price
     }
+    // const newStorage = { ...storageData, total: total, intoMoney: total + transportFee }
+    // console.log(JSON.stringify(newStorage, null, 2))
     return total
-  }
-
-  // Example usage
-  const formattedCurrency = formatCurrency(price)
-  const formattedTransportfee = formatCurrency(transportFee)
-  const formattedTotalPrices = formatCurrency(totalPrices)
-
-  // set sate Bottom sheet to useRef
-
-  // Logic: onclick Open Bottom Sheet Modal
-  const handlePresentModal = () => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-    sheetRef.current?.open()
-    setTimeout(() => {}, 300)
   }
 
   // Logic: onclick show Bottom bar
@@ -104,6 +90,22 @@ const BagPage = props => {
       }
     })
   }
+
+  useEffect(() => {
+    setBottomBar()
+    setCart(...storageData)
+    setPrice(totalBasePrice)
+    setTransportFee(49000)
+  }, [storageData])
+  // set sate Bottom sheet to useRef
+
+  // Logic: onclick Open Bottom Sheet Modal
+  const handlePresentModal = () => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    sheetRef.current?.open()
+    setTimeout(() => {}, 300)
+  }
+
   // Logic: onclick item code sale
   const handleSelectCodeSale = (item, index) => {
     const updatedSelected = [...selected]
@@ -740,7 +742,6 @@ const BagPage = props => {
 
   const goBack = () => {
     navigation.goBack()
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
   }
   return (
     <View
@@ -763,8 +764,6 @@ const BagPage = props => {
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('PayPage', {
-                totalPrices: totalPrices,
-                valueOfOrders: totalBasePrice,
                 shippingFee: transportFee
               })
             }

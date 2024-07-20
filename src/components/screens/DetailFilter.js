@@ -9,7 +9,7 @@ import {
   View
 } from 'react-native'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import Icons from '../icons/Icon'
 

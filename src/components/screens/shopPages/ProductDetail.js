@@ -18,7 +18,7 @@ import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import { DaTaSale } from 'src/constants/Databases'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import { useStorage } from 'src/contexts/StorageProvider'
 import { getProducts } from 'src/utils/http/NewHTTP'
 import ItemListNew from '../homePages/ItemListNews'
@@ -67,7 +67,7 @@ const ProductDetail = props => {
   const scrollY = useRef(new Animated.Value(0)).current
   const [headerBg, setHeaderBg] = useState('transparent')
   const [elevationBg, setElevationBg] = useState(0)
-  console.log(discount_price)
+
   useEffect(() => {
     const listener = scrollY.addListener(({ value }) => {
       if (value > windowHeight / 2) {
@@ -541,7 +541,7 @@ const ProductDetail = props => {
               </Pressable>
             )}
           />
-          {thumbs ? showModalAddToCart() : null}
+          {product_id ? showModalAddToCart() : null}
 
           <View
             style={{

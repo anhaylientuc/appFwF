@@ -12,7 +12,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from '../../constants/FontsStyle'
+import MyText from '../../constants/FontFamily'
 
 const Favorites = props => {
   const { navigation } = props

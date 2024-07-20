@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useContext, useEffect, useState } from 'react'
 import {
   Dimensions,
@@ -11,19 +12,20 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
-import OderHTTP from 'src/utils/http/OderHTTP'
+import OrderHTTP from 'src/utils/http/OrderHTTP'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 const PayPage = props => {
   const {
     navigation,
     route: {
-      params: { shippingFee, valueOfOrders, totalPrices }
+      params: { shippingFee }
     }
   } = props
   const { storageData, setStorageData } = useStorage()
@@ -33,11 +35,31 @@ const PayPage = props => {
     setBottomBar()
   }
   const { user } = useContext(UserContext)
+
+  const allBasePrices = storageData.map(item => item.newPrice)
+  const totalBasePrice = sumBasePrices(allBasePrices)
+  console.log(totalBasePrice)
+  function sumBasePrices(allBasePrices) {
+    let total = 0
+    for (const price of allBasePrices) {
+      total += price
+    }
+    // const newStorage = { ...storageData, total: total, intoMoney: total + transportFee }
+    // console.log(JSON.stringify(newStorage, null, 2))
+    return total
+  }
+
+  // thành tiền
+  const totalPrices = totalBasePrice + shippingFee
+
+  // format phí ships
   const formattedShippingFee = formatCurrency(shippingFee)
-  const formattedValueOfOrders = formatCurrency(valueOfOrders)
+  // format giá trị đơn hàng
+  const formattedValueOfOrders = formatCurrency(totalBasePrice)
+  // format thành tiền
   const formattedTotalPrices = formatCurrency(totalPrices)
 
-  const [oder, setOder] = useState(null)
+  const [order, setOrder] = useState(null)
   const [shippingAddress, setShippingAddress] = useState('')
 
   const setBottomBar = () => {
@@ -53,15 +75,42 @@ const PayPage = props => {
   }
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+
     setShippingAddress('143 Đào Duy Anh, Phường 9 Phú Phuận')
-    setOder({
-      ...oder,
+    setOrder({
+      ...order,
       amount: totalPrices,
       carts: storageData,
       user: user
       // shipping: { shippingAddress }
     })
   }, [props])
+
+  const showToastDeleted = title => {
+    Toast.show({
+      type: 'info', // 'info' | 'error' | 'success'
+      text1: 'Xóa sản phẩm thành công ✔',
+      // text2: title + ' đã được xóa khỏi giỏ hàng',
+      text1Style: { fontSize: 12, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
+      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
+      //  text2: 'Đây là một cái gì đó '
+    })
+  }
+
+  // Logic: onClick delete Item from List
+  const handleDeleteFromList = async (attributes, product_Name) => {
+    const result = await AsyncStorage.getItem('my-cart')
+    let storage = []
+    if (result !== null) {
+      storage = JSON.parse(result)
+    }
+
+    const newStorage = storage.filter(s => s.attributes !== attributes)
+    setStorageData(newStorage)
+    await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
+    let title = product_Name
+    showToastDeleted(title)
+  }
 
   const handleCheck = async () => {
     try {
@@ -70,12 +119,10 @@ const PayPage = props => {
         user: user,
         amount: totalPrices
       }
-      const res = await OderHTTP.insert(body)
-      // console.log(oder.carts)
-
+      const res = await OrderHTTP.insert(body)
       console.log('>>>>', res)
-      setOder(res)
-      navigation.navigate('MyChecks', { oder: oder })
+      setOrder(res)
+      navigation.navigate('MyChecks', { order: order })
       return res
     } catch (error) {
       // Kiểm tra phản hồi lỗi từ server
@@ -396,6 +443,7 @@ const PayPage = props => {
       </View>
     )
   }
+
   const ItemCarts = ({ item, index }) => {
     const { product_Name, base_price, size, color, image, code, quantity, attributes } = item
     const newPrice = { ...item, newPrice: base_price * quantity }
@@ -487,7 +535,7 @@ const PayPage = props => {
           >
             <TouchableOpacity
               // onPress={() => handleDeleteFromList(attributes, product_Name)}
-              onPress={() => console.log(attributes)}
+              onPress={() => handleDeleteFromList(attributes, product_Name)}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',

@@ -16,7 +16,7 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import { FilterContext } from 'src/contexts/FilterProvider'
 
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
 
 const width = Dimensions.get('window').width

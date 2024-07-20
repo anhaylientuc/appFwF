@@ -4,7 +4,7 @@ import { FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-nativ
 import { createPicassoComponent } from 'react-native-picasso'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import { getCategory } from 'src/utils/http/NewHTTP'
 
 const ShopPage = props => {

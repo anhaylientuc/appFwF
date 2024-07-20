@@ -2,7 +2,7 @@ import React from 'react'
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import PaymentHTTP from 'src/utils/http/PaymentHTTP'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
@@ -11,15 +11,14 @@ const MyChecks = props => {
   const {
     navigation,
     route: {
-      params: { oder }
+      params: { order }
     }
   } = props
-  console.log('>>>>', oder.order.amount)
 
   const check = async () => {
     try {
       const body = {
-        amount: oder.order.amount,
+        amount: order.amount,
         orderDescription: 'hoa don ne',
         orderType: 20000,
         bankCode: '',
@@ -27,16 +26,13 @@ const MyChecks = props => {
       }
       console.log(body)
       const res = await PaymentHTTP.create_url(body)
-      // console.log(oder.carts)
-
-      console.log('>>>>', res)
-
-      return res
+      console.log('res: >>>>', res)
+      navigation.navigate('WebViewPayment', { url: res })
     } catch (error) {
-      // Kiểm tra phản hồi lỗi từ server
       console.log('Error response:', error)
     }
   }
+  console.log('Amount:', order.amount)
 
   return (
     <View style={styles.container}>
@@ -67,10 +63,6 @@ const MyChecks = props => {
         </TouchableOpacity>
       </View>
       <View style={[styles.container_method, { marginTop: 16 }]}>
-        {/* <Image
-          style={{ width: 60, height: 18 }}
-          source={require('@assets/images/logo_primary.png')}
-        /> */}
         <View />
         <TouchableOpacity
           onPress={() => check()}

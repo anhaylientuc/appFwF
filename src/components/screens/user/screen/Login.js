@@ -11,7 +11,7 @@ import {
 } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import { login } from 'src/utils/http/UserHTTP'
 import UserContext from '../../../../contexts/UserContext'
 
