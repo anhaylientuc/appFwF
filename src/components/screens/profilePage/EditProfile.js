@@ -1,5 +1,5 @@
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   KeyboardAvoidingView,
   ScrollView,
@@ -22,7 +22,9 @@ const EditProfile = props => {
   const [showPassWord, setShowPassWord] = useState(false)
 
   const { user, setUser } = useContext(UserContext)
-
+  useEffect(() => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+  }, [])
   const showDatePicker = () => {
     DateTimePickerAndroid.open({
       value: date,
@@ -33,6 +35,17 @@ const EditProfile = props => {
       },
       mode: 'date',
       is24Hour: true
+    })
+  }
+  const setBottomBar = () => {
+    navigation.getParent().setOptions({
+      tabBarStyle: {
+        backgroundColor: Colors.white,
+        bottom: 0,
+        paddingVertical: 8,
+        height: 54
+        // position: 'absolute'
+      }
     })
   }
 
@@ -234,7 +247,10 @@ const EditProfile = props => {
                   </Text>
                 </View>
 
-                <TouchableOpacity style={styles.container_btn} onPress={() => navigation.goBack()}>
+                <TouchableOpacity
+                  style={styles.container_btn}
+                  onPress={() => navigation.goBack() & setBottomBar()}
+                >
                   <Text
                     style={{
                       textAlign: 'center',

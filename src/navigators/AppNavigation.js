@@ -1,4 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native'
+import { useFonts } from 'expo-font'
 import React, { forwardRef, useImperativeHandle, useRef } from 'react'
 import { StyleSheet } from 'react-native'
 import Toast from 'react-native-toast-message'
@@ -7,6 +8,16 @@ import MainNavigator from './MainNavigation'
 
 const AppNavigation = () => {
   const toastRef = useRef(null)
+  // fonFamily
+  const [loadFonts] = useFonts({
+    'Montserrat-Medium': require('src/assets/fonts/Montserrat-Medium.ttf'),
+    'Montserrat-Regular': require('src/assets/fonts/Montserrat-Regular.ttf'),
+    'Montserrat-SemiBold': require('src/assets/fonts/Montserrat-SemiBold.ttf')
+  })
+
+  if (!loadFonts) {
+    return null
+  }
 
   return (
     <NavigationContainer>
@@ -18,15 +29,10 @@ const AppNavigation = () => {
   )
 }
 
-// Tạo một wrapper component sử dụng forwardRef để truyền ref xuống Toast
 const ToastComponent = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
-    show: () => {
-      // Thực hiện các hành động hiển thị Toast ở đây
-    },
-    hide: () => {
-      // Thực hiện các hành động ẩn Toast ở đây
-    }
+    show: () => {},
+    hide: () => {}
   }))
 
   return <Toast {...props} />

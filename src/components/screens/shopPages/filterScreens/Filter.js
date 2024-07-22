@@ -14,7 +14,7 @@ import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import { getFilter } from 'src/utils/http/NewHTTP'
-import Icons from '../icons/Icon'
+import Icons from '../../../icons/Icon'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 const Filter = props => {

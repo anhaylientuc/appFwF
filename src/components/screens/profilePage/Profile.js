@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
-import UserContext from '../../contexts/UserContext'
-import Icons from '../icons/Icon'
+import UserContext from '../../../contexts/UserContext'
+import Icons from '../../icons/Icon'
 
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
@@ -13,6 +13,10 @@ const Profile = props => {
   const [score, setScore] = useState(0)
   const { user, setUser } = useContext(UserContext) // Assuming UserContext provides user and setUser
   const [isLoading, setIsLoading] = useState(false) // Initially not loading
+
+  useEffect(() => {
+    setBottomBar()
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -23,6 +27,19 @@ const Profile = props => {
       console.error('Failed to logout', error)
     }
   }
+
+  const setBottomBar = () => {
+    navigation.getParent().setOptions({
+      tabBarStyle: {
+        backgroundColor: Colors.white,
+        bottom: 0,
+        paddingVertical: 8,
+        height: 54
+        // position: 'absolute'
+      }
+    })
+  }
+
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       <View style={styles.header}>
@@ -53,17 +70,7 @@ const Profile = props => {
             <MyText style={{ borderBottomWidth: 1 }}>Điểm</MyText>
           </View>
         </View>
-        {/* <Slider
-          style={styles.slider}
-          minimumValue={100}
-          maximumValue={200}
-          step={1}
-          value={score}
-          onValueChange={value => setScore(value)}
-          minimumTrackTintColor="#1FB28A"
-          maximumTrackTintColor="#d3d3d3"
-          thumbTintColor="#1FB28A"
-        /> */}
+
         <Text
           style={{
             marginTop: 16,
