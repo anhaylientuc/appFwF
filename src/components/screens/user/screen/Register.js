@@ -135,7 +135,7 @@ const Register = props => {
           <Text style={styles.txtTitle}>Trở thành thành viên FwF</Text>
           <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <View style={{ paddingHorizontal: 8 }}>
-              <MyText style={{ textAlign: 'center', fontSize: 12, color: Colors.black }}>
+              <MyText style={{ fontSize: 12, color: Colors.black,  textAlign: 'center' }}>
                 Hãy trở thành thành viên để không bỏ lỡ các ưu đãi, giảm giá và voucher dành riêng
                 cho bạn.
               </MyText>
@@ -266,7 +266,7 @@ const Register = props => {
                   </View>
                 </View>
                 {!userName.length ? null : !userNameVerify ? (
-                  <Text style={styles.error}>* Tên đăng nhập phải dài hơn 6 ký tự.</Text>
+                  <Text style={styles.error}>* Tên đăng nhập phải dài hơn 6 ký tự</Text>
                 ) : null}
                 {userNameNull ? (
                   <Text style={styles.error}>* Tên đăng nhập không được để trống</Text>
@@ -338,7 +338,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     justifyContent: 'space-between',
     borderWidth: 1,
-    // borderColor:  Colors.gray,
     alignItems: 'center'
   },
   txtBtnRegister: {

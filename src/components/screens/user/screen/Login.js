@@ -6,8 +6,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
+  View,
+  TouchableWithoutFeedback
 } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
@@ -19,7 +19,7 @@ const Login = props => {
   const { navigation } = props
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const { setUser, user } = useContext(UserContext)
+  const { user, setUser } = useContext(UserContext)
   const [emailVerify, setEmailVerify] = useState(false)
   const [passwordVerify, setPasswordVerify] = useState(false)
   const [showPassWord, setShowPassWord] = useState(true)
@@ -262,9 +262,8 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     paddingVertical: 8,
     backgroundColor: Colors.white,
-    justifyContent: 'space-between',
     borderWidth: 1,
-
+    justifyContent: 'space-between',
     alignItems: 'center'
   },
   error: {

@@ -1,14 +1,14 @@
 import { useIsFocused } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
+  View,
   Dimensions,
   FlatList,
   KeyboardAvoidingView,
   Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View
+  TouchableOpacity
 } from 'react-native'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
@@ -65,7 +65,6 @@ const Filter = props => {
         bottom: 0,
         paddingVertical: 16,
         height: 68
-        // position: 'absolute'
       }
     })
   }
