@@ -1,15 +1,15 @@
 import React from 'react'
 import { SafeAreaView, Text, View } from 'react-native'
+import 'react-native-url-polyfill/auto'
 import { WebView } from 'react-native-webview'
 
-const WebViewPayment = ({ route }) => {
-  const { url } = route.params
-  // console.log(url)
-
+const WebViewPayment = ({ route, navigation }) => {
+  const { res } = route.params
   return (
     <SafeAreaView style={{ flex: 1 }}>
+   
       <WebView
-        source={{ uri: url.url }}
+        source={{ uri: res.url }}
         onError={syntheticEvent => {
           const { nativeEvent } = syntheticEvent
           console.warn('WebView error: ', nativeEvent)

@@ -24,15 +24,14 @@ const MyChecks = props => {
         bankCode: '',
         language: 'vn'
       }
-      console.log(body)
+
       const res = await PaymentHTTP.create_url(body)
-      console.log('res: >>>>', res)
-      navigation.navigate('WebViewPayment', { url: res })
+
+      navigation.navigate('WebViewPayment', { res: res })
     } catch (error) {
       console.log('Error response:', error)
     }
   }
-  console.log('Amount:', order.amount)
 
   return (
     <View style={styles.container}>
