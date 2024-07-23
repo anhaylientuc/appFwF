@@ -1,3 +1,4 @@
+import { ToastAndroid } from 'react-native'
 import AxiosInstance from '../AxiosInstance'
 const create_url = async body => {
   try {
@@ -8,7 +9,7 @@ const create_url = async body => {
     return response
   } catch (error) {
     console.log(error)
-    throw error
+    throw ToastAndroid.show('Có lỗi xảy ra xin vui lòng thử lại sau', ToastAndroid.SHORT)
   }
 }
 export default { create_url }

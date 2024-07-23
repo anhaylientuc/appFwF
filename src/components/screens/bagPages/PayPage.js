@@ -32,7 +32,6 @@ const PayPage = props => {
   const [showOrderDetails, setShowOrderDetails] = useState(false)
   const goBack = () => {
     navigation.goBack()
-    setBottomBar()
   }
   const { user } = useContext(UserContext)
 
@@ -74,7 +73,11 @@ const PayPage = props => {
     })
   }
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    if (storageData.length === 0) {
+      goBack()
+    } else {
+      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    }
 
     setShippingAddress('143 Đào Duy Anh, Phường 9 Phú Phuận')
     setOrder({
@@ -84,7 +87,7 @@ const PayPage = props => {
       user: user
       // shipping: { shippingAddress }
     })
-  }, [props])
+  }, [storageData])
 
   const showToastDeleted = title => {
     Toast.show({
@@ -413,7 +416,7 @@ const PayPage = props => {
   // không có user bắt đăng nhập
   const noUser = () => {
     return (
-      <View style={{ flex: 1, padding: 16, backgroundColor: Colors.white }}>
+      <View style={{ padding: 16, backgroundColor: Colors.white, flex: 1 }}>
         <Text style={[styles.txt_title, { fontSize: 18 }]}>
           Bạn cần đăng nhập để tiếp tục thanh toán
         </Text>

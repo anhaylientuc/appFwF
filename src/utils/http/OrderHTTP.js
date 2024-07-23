@@ -1,3 +1,4 @@
+import { ToastAndroid } from 'react-native'
 import AxiosInstance from '../AxiosInstance'
 const insert = async body => {
   try {
@@ -8,7 +9,7 @@ const insert = async body => {
     return response
   } catch (error) {
     console.log(error)
-    throw error
+    throw ToastAndroid.show('Có lỗi xảy ra xin vui lòng thử lại sau', ToastAndroid.SHORT)
   }
 }
 export default { insert }

@@ -63,24 +63,18 @@ const Filter = props => {
       tabBarStyle: {
         backgroundColor: Colors.white,
         bottom: 0,
-        paddingVertical: 16,
-        height: 68
+        paddingVertical: 8,
+        height: 54
         // position: 'absolute'
       }
     })
   }
 
-  // const handlePressFilter = async () => {
-  //   console.log('ccccccc', _category_id)
-  //   const query = { category_id: _category_id, version: 2 }
-  //   const response = await NewHTTP.getProducts(query)
-  //   console.log('res', JSON.stringify(response))
-  //   navigation.navigate('ItemCategories', { params: category_id, _products: response })
-  //   setBottomBar()
-  // }
-
   const handlePressFilter = () => {
-    navigation.navigate('ItemCategories', { params: category_id, _products: _products })
+    {
+      setBottomBar()
+      navigation.navigate('ItemCategories', { params: category_id, _products: _products })
+    }
   }
 
   const renderItem = ({ item, index }) => {
@@ -124,7 +118,7 @@ const Filter = props => {
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
         >
-          <TouchableOpacity onPress={() => handlePressFilter()}>
+          <TouchableOpacity onPress={() => props.navigation.goBack() & setBottomBar()}>
             <Icons.Feather name="x" size={30} />
           </TouchableOpacity>
           <MyText

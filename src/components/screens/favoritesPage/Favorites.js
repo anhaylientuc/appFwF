@@ -1,6 +1,8 @@
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import React, { useRef, useState } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import React, { useEffect, useRef, useState } from 'react'
 import {
+  Dimensions,
   FlatList,
   Image,
   KeyboardAvoidingView,
@@ -10,16 +12,37 @@ import {
   View
 } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-
+import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
+import { useStorage } from 'src/contexts/StorageProvider'
+const windowWith = Dimensions.get('window').width
+const windowHeight = Dimensions.get('window').height
 
 const Favorites = props => {
+  const { storageFavorites, setStorageFavorites } = useStorage()
   const { navigation } = props
   const BottomSheetRef = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
   const snapPoints = ['60%', '50%']
+
+  useEffect(() => {
+    const ok = storageFavorites.map(i => i._id)
+    // console.log(...ok)
+  }, [storageFavorites])
+
+  const showToastDeleted = title => {
+    Toast.show({
+      type: 'info', // 'info' | 'error' | 'success'
+      text1: 'Xóa sản phẩm thành công ✔',
+      // text2: title + ' đã được xóa khỏi giỏ hàng',
+      text1Style: { fontSize: 12, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
+      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
+      //  text2: 'Đây là một cái gì đó '
+    })
+  }
+
   const handlePresentModal = () => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     BottomSheetRef.current?.present()
@@ -98,24 +121,41 @@ const Favorites = props => {
     )
   }
 
+  const handleDeleteFavorite = async item => {
+    const { name, _id } = item
+
+    const result = await AsyncStorage.getItem('my-favorites')
+    let storage = []
+    if (result !== null) {
+      storage = JSON.parse(result)
+    }
+    const newStorage = storage.filter(s => s._id !== _id)
+    console.log(_id)
+    setStorageFavorites(newStorage)
+    await AsyncStorage.setItem('my-favorites', JSON.stringify(newStorage))
+    let title = name
+    showToastDeleted(title)
+  }
+
   const renderItemFavorite = ({ item }) => {
-    const { id, image, name_product, category, price, color } = item
+    const { images, name, base_price, color, size, _id } = item
     return (
       <KeyboardAvoidingView style={{ flex: 1 }}>
-        <View style={{ width: '100%' }}>
+        <View style={{ width: windowWith / 2 }}>
           <View
             style={{
               backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.grayBg
             }}
           >
             <Image
-              style={{ width: '100%', height: 284, padding: 8 }}
+              style={{ width: '100%', height: windowHeight / 3, padding: 8, resizeMode: 'cover' }}
               source={{
-                uri: image
+                uri: images.url
               }}
             />
             <View style={{ position: 'absolute', right: 12, top: '62%' }}>
               <TouchableOpacity
+                onPress={() => handleDeleteFavorite(item)}
                 style={{
                   padding: 8,
                   backgroundColor: Colors.white,
@@ -127,17 +167,17 @@ const Favorites = props => {
             </View>
             <View style={{ width: 190, padding: 16 }}>
               <MyText numberOfLines={1} fontFamily={'Montserrat-SemiBold'}>
-                {name_product}
+                {name}
               </MyText>
               <MyText
                 numberOfLines={1}
                 style={{ marginVertical: 4 }}
                 fontFamily={'Montserrat-Medium'}
               >
-                đ{price}.000
+                đ{base_price}
               </MyText>
               <MyText numberOfLines={1} style={styles.txt_title_product}>
-                {category}
+                {/* {category} */}
               </MyText>
               <View
                 style={{
@@ -176,7 +216,7 @@ const Favorites = props => {
 
             <TouchableOpacity
               style={{
-                backgroundColor: Colors.red,
+                backgroundColor: Colors.black,
                 flexDirection: 'row',
                 justifyContent: 'center',
                 padding: 16,
@@ -209,9 +249,9 @@ const Favorites = props => {
           showsVerticalScrollIndicator={false}
           style={{
             paddingHorizontal: 16,
-            backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.grayBg,
-            width: '100%',
-            height: '100%'
+            backgroundColor: Colors.grayBg,
+            width: windowWith,
+            height: windowHeight
           }}
         >
           <MyText
@@ -223,11 +263,13 @@ const Favorites = props => {
               paddingVertical: 16
             }}
           >
-            Yêu thích
+            Sản Phẩm yêu thích
           </MyText>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View />
-            <MyText style={{ fontSize: 12, color: Colors.gray }}>1 sản phẩm</MyText>
+            <MyText style={{ fontSize: 12, color: Colors.gray }}>
+              {storageFavorites.length} sản phẩm
+            </MyText>
           </View>
           <MyText
             style={{
@@ -244,7 +286,7 @@ const Favorites = props => {
             numColumns={numColum}
             key={numColum}
             renderItem={renderItemFavorite}
-            data={DataFavorite}
+            data={storageFavorites}
             keyExtractor={item => item.id}
           />
           <View style={{ height: 100 }} />
@@ -338,54 +380,6 @@ const styles = StyleSheet.create({
     fontSize: 11
   }
 })
-
-const DataFavorite = [
-  {
-    id: 1,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F44%2F42%2F4442fbac4e3080ec20b2f14e353fea267249b0dd.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5Bmen_tshirtstanks_shortsleeve%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/mobilefullscreen]',
-    name_product: 'Áo thun in hình',
-    price: 249,
-    category: 'hàng mới về',
-    color: 'Màu đen/LA'
-  },
-  {
-    id: 2,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Fd4%2Fcf%2Fd4cf10035a11c97ac60aa1d32476b6ca84ade92c.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/mobilefullscreen]',
-    name_product: 'Áo thun in hình Fit',
-    price: 249,
-    category: 'hàng mới về',
-    color: 'Màu đen/LA'
-  },
-  {
-    id: 3,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F1c%2F9f%2F1c9fe0d0d6161e795a4b9385e1ec50f591cac1a1.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/mobilefullscreen]',
-    name_product: 'Áo thun in hình Fit',
-    price: 249,
-    category: 'hàng mới về',
-    color: 'Màu đen/LA'
-  },
-  {
-    id: 4,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F44%2F42%2F4442fbac4e3080ec20b2f14e353fea267249b0dd.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5Bmen_tshirtstanks_shortsleeve%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/mobilefullscreen]',
-    name_product: 'Áo thun in hình Fit',
-    price: 249,
-    category: 'hàng mới về',
-    color: 'Màu đen/LA'
-  },
-  {
-    id: 5,
-    image:
-      'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F44%2F42%2F4442fbac4e3080ec20b2f14e353fea267249b0dd.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5Bmen_tshirtstanks_shortsleeve%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url[file:/product/mobilefullscreen]',
-    name_product: 'Áo thun in hình Fit',
-    price: 249,
-    category: 'hàng mới về',
-    color: 'Màu đen/LA'
-  }
-]
 
 const DataSize = [
   {

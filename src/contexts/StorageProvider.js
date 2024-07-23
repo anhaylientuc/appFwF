@@ -6,6 +6,7 @@ const StorageContext = createContext()
 const StorageProvider = ({ children }) => {
   const [storageData, setStorageData] = useState([])
   const [userData, setuserData] = useState({})
+  const [storageFavorites, setStorageFavorites] = useState([])
   const getDataProducts = async () => {
     const result = await AsyncStorage.getItem('my-cart')
     if (result !== null) {
@@ -18,13 +19,29 @@ const StorageProvider = ({ children }) => {
       setuserData(JSON.parse(result))
     }
   }
+  const getDataFavorites = async () => {
+    const result = await AsyncStorage.getItem('my-favorites')
+    if (result !== null) {
+      setStorageFavorites(JSON.parse(result))
+    }
+  }
   useEffect(() => {
     getDataProducts()
     getDataUser()
+    getDataFavorites()
   }, [])
 
   return (
-    <StorageContext.Provider value={{ storageData, setStorageData, getDataProducts }}>
+    <StorageContext.Provider
+      value={{
+        storageData,
+        setStorageData,
+        getDataProducts,
+        storageFavorites,
+        setStorageFavorites,
+        getDataFavorites
+      }}
+    >
       {children}
     </StorageContext.Provider>
   )

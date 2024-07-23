@@ -1,4 +1,5 @@
 import BottomSheet from '@devvie/bottom-sheet'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from '@react-navigation/native'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
@@ -14,11 +15,10 @@ import {
 } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import { FilterContext } from 'src/contexts/FilterProvider'
-
 import MyText from 'src/constants/FontFamily'
+import { FilterContext } from 'src/contexts/FilterProvider'
+import { useStorage } from 'src/contexts/StorageProvider'
 import { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
-
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 const ItemCategories = props => {
@@ -30,6 +30,7 @@ const ItemCategories = props => {
     }
   } = props
 
+  const { storageFavorites, setStorageFavorites } = useStorage()
   const [windowWith, setwindowWith] = useState(width)
   const [windowHeight, setwindowHeight] = useState(height)
   const [categoriesById, setCategoriesById] = useState([])
@@ -41,8 +42,9 @@ const ItemCategories = props => {
   const [selectedProductId, setselectedProductId] = useState(null)
   const { filterState, setFilterState } = useContext(FilterContext)
   const isFocusScreen = useIsFocused()
-  // const dataLength = stor
-  // set Bottom navigation on
+  const [isShowProducts, setIsShowProducts] = useState(false)
+  const [productsParent, setproductsParent] = useState([])
+  const [favoritesIds, setFavoritesIds] = useState([])
 
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -56,15 +58,24 @@ const ItemCategories = props => {
     })
   }
   useEffect(() => {
+    const loadFavorites = async () => {
+      const storedFavorites = await AsyncStorage.getItem('my-favorites')
+      if (storedFavorites) {
+        const favorites = JSON.parse(storedFavorites)
+        setFavoritesIds(favorites.map(favorite => favorite._id))
+      }
+    }
+    loadFavorites()
+  }, [favoritesIds])
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         if (isFocusScreen) {
           if (_products) {
             setproducts(_products)
-            console.log(_products)
           } else {
             setproducts(products)
-            console.log(products)
             const response = await getCategoryById(categoryById)
             setnameCategoryById(response.name)
             const { _id, name, parentID, image } = response
@@ -76,16 +87,11 @@ const ItemCategories = props => {
         }
       } catch (error) {
         console.log(error)
-        throw error
       }
     }
     fetchData()
   }, [isFocusScreen])
 
-  // set useRef
-  const imagesModel = products.map(item => item.images)
-
-  const [isShowProducts, setIsShowProducts] = useState(false)
   const handlePressModel = () => {
     if (isShowProducts == false) {
       // console.log(JSON.stringify(imagesModel, null, 2))
@@ -109,9 +115,53 @@ const ItemCategories = props => {
     }
   }
 
-  const handleAddFavorite = () => {
-    setAddFavorite(!addFavorite)
+  const handleAddFavorite = async item => {
+    const {
+      _id,
+      name,
+      images,
+      base_price,
+      discount_price,
+      category_id,
+      attributes,
+      description,
+      product_id,
+      product_Name,
+      code
+    } = item
+
+    const name_filter = attributes.filter(params => params.key === 'Color')
+    const size = attributes.filter(params => params.key === 'Size')
+
+    const newFavoritesProduct = {
+      _id: _id,
+      images: images[0],
+      name: name,
+      base_price: base_price,
+      color: name_filter[0]?.value,
+      size: size[0]?.value
+    }
+
+    // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích chưa
+    const isDuplicate = storageFavorites.some(favorite => favorite._id === _id)
+    if (!isDuplicate) {
+      const updateFavorites = [...storageFavorites, newFavoritesProduct]
+      setStorageFavorites(updateFavorites)
+      await AsyncStorage.setItem('my-favorites', JSON.stringify(updateFavorites))
+    } else {
+      // check nếu _id đã tồn tại trong giỏ hàng thì xóa khỏi storageFavorites
+      const result = await AsyncStorage.getItem('my-favorites')
+      let storage = []
+      if (result !== null) {
+        storage = JSON.parse(result)
+      }
+      const newStorage = storage.filter(s => s._id !== _id)
+      console.log(_id)
+      setStorageFavorites(newStorage)
+      await AsyncStorage.setItem('my-favorites', JSON.stringify(newStorage))
+    }
   }
+
   const handlePresentModal = () => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     sheetRef.current?.open()
@@ -144,8 +194,6 @@ const ItemCategories = props => {
     sheetRef.current.close()
     setBottomBar()
   }
-
-  const [productsParent, setproductsParent] = useState([])
 
   // Logic: onclick set product by category Id
   const handlePressedCategoryId = async _id => {
@@ -208,9 +256,6 @@ const ItemCategories = props => {
     )
   }
 
-  // const product_id = products.map(item => item._id)
-  // console.log(product_id)
-  // if numColumns = null  => render
   const renderItems = ({ item }) => {
     const {
       _id,
@@ -272,6 +317,7 @@ const ItemCategories = props => {
           </ScrollView>
 
           <TouchableOpacity
+            onPress={() => handleAddFavorite(item)}
             style={[
               styles.StyleFavorites,
               { right: numColumns ? 12 : 32 },
@@ -284,15 +330,14 @@ const ItemCategories = props => {
               style={{
                 textAlign: 'center'
               }}
-              name={'favorite-outline'}
+              name={favoritesIds.includes(item._id) ? 'favorite' : 'favorite-outline'}
               size={numColumns ? 20 : 28}
-              color={Colors.gray}
+              color={favoritesIds.includes(item._id) ? Colors.red : Colors.gray}
             />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
-              props.navigation.navigate('ProductDetail', {
-                _id: _id,
+              navigation.navigate('ProductDetail', {
                 product_id: product_id,
                 product_Name: name,
                 images: images,
@@ -300,7 +345,8 @@ const ItemCategories = props => {
                 category_id: category_id,
                 attributes: attributes,
                 description: description,
-                code: code
+                code: code,
+                discount_price: discount_price
               })
             }
             style={{

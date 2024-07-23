@@ -84,6 +84,29 @@ const ProductDetail = props => {
     }
   }, [scrollY])
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const version = 2
+      const product_id = props.route.params.product_id
+      const name_filter = props.route.params.attributes.filter(params => params.key === 'Color')
+      const size = props.route.params.attributes.filter(params => params.key === 'Size')
+      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+      try {
+        const thumb = await getProducts({ version, product_id })
+        setthumbs(thumb)
+        setwallPaper(props.route.params.images)
+        setselectedId(props.route.params._id)
+        setSelected(size)
+        setselectedName(name_filter[0].value)
+      } catch (error) {
+        console.error('Error:', error)
+        // Handle errors appropriately in your application
+      }
+    }
+
+    fetchData()
+  }, [])
+
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -117,35 +140,11 @@ const ProductDetail = props => {
         //  text2: 'Đây là một cái gì đó '
         onPress: () => {
           navigation.navigate('BagPage')
-          setBottomBar()
         }
       })
     }, 3000)
   }
   // quantity khởi tạo mặc định
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const version = 2
-      const product_id = props.route.params.product_id
-      const name_filter = props.route.params.attributes.filter(params => params.key === 'Color')
-      const size = props.route.params.attributes.filter(params => params.key === 'Size')
-      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-      try {
-        const thumb = await getProducts({ version, product_id })
-        setthumbs(thumb)
-        setwallPaper(props.route.params.images)
-        setselectedId(props.route.params._id)
-        setSelected(size)
-        setselectedName(name_filter[0].value)
-      } catch (error) {
-        console.error('Error:', error)
-        // Handle errors appropriately in your application
-      }
-    }
-
-    fetchData()
-  }, [])
 
   const handleAddToCart = async () => {
     // Check if product already exists in storage
@@ -290,7 +289,6 @@ const ProductDetail = props => {
 
   const handleGoBag = () => {
     navigation.navigate('BagPage')
-    setBottomBar()
   }
 
   // xử lí logic selected attributes
@@ -375,8 +373,8 @@ const ProductDetail = props => {
         tabBarStyle: {
           backgroundColor: Colors.white,
           bottom: 0,
-          paddingVertical: 16,
-          height: 68
+          paddingVertical: 8,
+          height: 54
           // position: 'absolute'
         }
       })

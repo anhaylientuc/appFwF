@@ -15,8 +15,8 @@ const Profile = props => {
   const [isLoading, setIsLoading] = useState(false) // Initially not loading
 
   useEffect(() => {
-    setBottomBar()
-  }, [])
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+  }, [props])
 
   const handleLogout = async () => {
     try {

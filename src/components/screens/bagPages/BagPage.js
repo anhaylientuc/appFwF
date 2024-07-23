@@ -1,6 +1,6 @@
 import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useNavigation } from '@react-navigation/native'
+
 import { useContext, useEffect, useRef, useState } from 'react'
 import {
   Dimensions,
@@ -26,7 +26,7 @@ const windowHeight = Dimensions.get('window').height
 const BagPage = props => {
   const { user } = useContext(UserContext)
   const sheetRef = useRef(null)
-  const navigation = useNavigation()
+  const { navigation } = props
   // sate selected code sale off
   const [selected, setSelected] = useState(DataCodeSale)
   const [selectedCodeSale, setSelectedCodeSale] = useState()
@@ -73,26 +73,25 @@ const BagPage = props => {
     for (const price of allBasePrices) {
       total += price
     }
-    // const newStorage = { ...storageData, total: total, intoMoney: total + transportFee }
-    // console.log(JSON.stringify(newStorage, null, 2))
+
     return total
   }
 
-  // Logic: onclick show Bottom bar
-  const setBottomBar = () => {
-    navigation.getParent().setOptions({
-      tabBarStyle: {
-        backgroundColor: Colors.white,
-        bottom: 0,
-        paddingVertical: 8,
-        height: 54
-        // position: 'absolute'
-      }
-    })
-  }
+  // // Logic: onclick show Bottom bar
+  // const setBottomBar = () => {
+  //   navigation.getParent().setOptions({
+  //     tabBarStyle: {
+  //       backgroundColor: Colors.white,
+  //       bottom: 0,
+  //       paddingVertical: 8,
+  //       height: 54
+  //       // position: 'absolute'
+  //     }
+  //   })
+  // }
 
   useEffect(() => {
-    setBottomBar()
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     setCart(...storageData)
     setPrice(totalBasePrice)
     setTransportFee(49000)
@@ -101,7 +100,6 @@ const BagPage = props => {
 
   // Logic: onclick Open Bottom Sheet Modal
   const handlePresentModal = () => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     sheetRef.current?.open()
     setTimeout(() => {}, 300)
   }
@@ -348,11 +346,29 @@ const BagPage = props => {
   }
 
   const handlePressProductItem = item => {
-    const { product_id, _id } = item
-    navigation.navigate('ProductDetail', {
-      product_id: product_id,
-      _id: _id
-    })
+    const {
+      base_price,
+      product_id,
+      product_Name,
+      images,
+      description,
+      code,
+      discount_price,
+      category_id,
+      attributes
+    } = item
+    console.log(JSON.stringify(item, null, 2))
+    // navigation.navigate('ProductDetail', {
+    //   product_id: product_id,
+    //   product_Name: product_Name,
+    //   images: images,
+    //   base_price: base_price,
+    //   category_id: category_id,
+    //   attributes: attributes,
+    //   description: description,
+    //   code: code,
+    //   discount_price: discount_price
+    // })
   }
 
   const ItemCart = ({ item, index }) => {
