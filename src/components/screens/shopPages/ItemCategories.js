@@ -53,7 +53,6 @@ const ItemCategories = props => {
         bottom: 0,
         paddingVertical: 8,
         height: 54
-        // position: 'absolute'
       }
     })
   }
@@ -66,7 +65,7 @@ const ItemCategories = props => {
       }
     }
     loadFavorites()
-  }, [favoritesIds])
+  }, [storageFavorites])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,7 +93,6 @@ const ItemCategories = props => {
 
   const handlePressModel = () => {
     if (isShowProducts == false) {
-      // console.log(JSON.stringify(imagesModel, null, 2))
       const newData = products.map((item, index) => {
         ;[item.images[1], item.images[0]] = [item.images[0], item.images[1]]
         return item
@@ -135,11 +133,16 @@ const ItemCategories = props => {
 
     const newFavoritesProduct = {
       _id: _id,
-      images: images[0],
-      name: name,
+      image: images[0].url,
+      product_Name: name,
       base_price: base_price,
       color: name_filter[0]?.value,
-      size: size[0]?.value
+      product_id: product_id,
+      category_id: category_id,
+      code: code,
+      discount_price: discount_price,
+      attributes: attributes,
+      nameCategoryById: nameCategoryById
     }
 
     // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích chưa
@@ -156,7 +159,6 @@ const ItemCategories = props => {
         storage = JSON.parse(result)
       }
       const newStorage = storage.filter(s => s._id !== _id)
-      console.log(_id)
       setStorageFavorites(newStorage)
       await AsyncStorage.setItem('my-favorites', JSON.stringify(newStorage))
     }
@@ -330,9 +332,9 @@ const ItemCategories = props => {
               style={{
                 textAlign: 'center'
               }}
-              name={favoritesIds.includes(item._id) ? 'favorite' : 'favorite-outline'}
+              name={favoritesIds.includes(_id) ? 'favorite' : 'favorite-outline'}
               size={numColumns ? 20 : 28}
-              color={favoritesIds.includes(item._id) ? Colors.red : Colors.gray}
+              color={favoritesIds.includes(_id) ? Colors.red : Colors.gray}
             />
           </TouchableOpacity>
           <TouchableOpacity

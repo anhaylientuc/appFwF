@@ -1,55 +1,49 @@
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import {
+  Animated,
   Dimensions,
   FlatList,
   Image,
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View
 } from 'react-native'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
-import { useStorage } from 'src/contexts/StorageProvider'
+import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
+import UserContext from 'src/contexts/UserContext'
+
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
 const Favorites = props => {
-  const { storageFavorites, setStorageFavorites } = useStorage()
   const { navigation } = props
-  const BottomSheetRef = useRef(null)
-  const [isOpen, setIsOpen] = useState(false)
+  const { storageFavorites, setStorageFavorites } = useStorage()
+  const { storageData, setStorageData } = useStorage()
   const snapPoints = ['60%', '50%']
+  const { user } = useContext(UserContext)
+  const sheetRef = useRef(null)
+  const [isOpenSheetRef, setIsOpenSheetRef] = useState(false)
+  const [vaLueSelectSize, setVaLueSelectSize] = useState(null)
+  const [cnt, setcnt] = useState()
+  const [attributes_id, setattributes_id] = useState(null)
+  const [quantity, setQuantity] = useState(1)
+  const [modalAddToCart, setModalAddToCart] = useState(false)
+  const [selected, setSelected] = useState()
+  const [itemStates, setItemStates] = useState()
+  const numColum = 2
+  const [length, setlength] = useState(null)
+  const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current
+  const scale = new Animated.Value(1)
+  const scrollY = useRef(new Animated.Value(0)).current
 
-  useEffect(() => {
-    const ok = storageFavorites.map(i => i._id)
-    // console.log(...ok)
-  }, [storageFavorites])
-
-  const showToastDeleted = title => {
-    Toast.show({
-      type: 'info', // 'info' | 'error' | 'success'
-      text1: 'Xóa sản phẩm thành công ✔',
-      // text2: title + ' đã được xóa khỏi giỏ hàng',
-      text1Style: { fontSize: 12, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
-      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
-      //  text2: 'Đây là một cái gì đó '
-    })
-  }
-
-  const handlePresentModal = () => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-    BottomSheetRef.current?.present()
-    setTimeout(() => {
-      setIsOpen(true)
-    }, 300)
-  }
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -57,100 +51,322 @@ const Favorites = props => {
         bottom: 0,
         paddingVertical: 8,
         height: 54
-        // position: 'absolute'
       }
     })
   }
 
-  const [selected, setSelected] = useState(DataSize)
+  const showToastDeleted = title => {
+    Toast.show({
+      type: 'info', // 'info' | 'error' | 'success'
+      text1: 'Xóa sản phẩm khỏi yêu thích thành công ✔',
+      text1Style: { fontSize: 12, fontFamily: 'Montserrat-SemiBold', color: Colors.green }
+    })
+  }
+  const showToastError = title => {
+    Toast.show({
+      type: 'error', // 'info' | 'error' | 'success'
+      text1: 'Thông báo ♲',
+      text2: title,
+      text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.red },
+      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
+      //  text2: 'Đây là một cái gì đó '
+    })
+  }
 
-  const handleSelect = (item, index) => {
-    const newItem = selected.map((e, index) => {
-      if (e.id == item.id) {
-        console.log('selectItem: ', item.subject)
-        return { ...e, selected: true }
+  const showToastSuccess = title => {
+    setTimeout(() => {
+      Toast.show({
+        type: 'success', // 'info' | 'error' | 'success'
+        text1: 'Đã thêm vào giỏ hàng ✔',
+        text2: '' + title.product_Name,
+        text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
+        text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' },
+        //  text2: 'Đây là một cái gì đó '
+        onPress: () => {
+          navigation.navigate('BagPage')
+        }
+      })
+    }, 1250)
+  }
+
+  // useEffect(() => {
+  //   if (modalAddToCart == true) {
+  //     position.setValue({ x: 0, y: 0 })
+  //     setTimeout(() => {
+  //       Animated.parallel([
+  //         Animated.timing(scale, {
+  //           toValue: 0, // Thu nhỏ modal
+  //           duration: 400, // Thời gian thu nhỏ (500ms)
+  //           useNativeDriver: true
+  //         }),
+  //         Animated.timing(position, {
+  //           toValue: { x: windowWith, y: -windowHeight }, // Di chuyển modal về góc trên cùng tay phải (giá trị điều chỉnh theo yêu cầu)
+  //           duration: 800, // Thời gian di chuyển (500ms)
+  //           useNativeDriver: true
+  //         })
+  //       ]).start(() => handleOffModalCart())
+  //     }, 400)
+  //   }
+  // }, [modalAddToCart])
+  // const handleOffModalCart = () => {
+  //   setModalAddToCart(false)
+  //   setlength(storageData.length)
+  // }
+  // const showModalAddToCart = () => {
+  //   return (
+  //     <Modal isVisible={modalAddToCart}>
+  //       <Animated.View
+  //         style={{
+  //           backgroundColor: Colors.white,
+  //           paddingVertical: 16,
+  //           height: '16%',
+  //           width: '100%',
+  //           transform: [{ translateX: position.x }, { translateY: position.y }, { scale: scale }]
+  //         }}
+  //       >
+  //         <View style={{ flexDirection: 'row' }}>
+  //           <View style={{ flex: 1, paddingHorizontal: 16 }}>
+  //             {wallPaper[0] && (
+  //               <Image
+  //                 source={{ uri: wallPaper[0].url }}
+  //                 style={{ width: '100%', height: '100%', resizeMode: 'cover' }}
+  //               />
+  //             )}
+  //           </View>
+  //           <View style={{ flex: 3 }}>
+  //             <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>
+  //               {product_Name}
+  //             </Text>
+  //             <Text style={{ fontFamily: 'Montserrat-Medium', fontSize: 14, marginTop: 8 }}>
+  //               {formattedCurrency}
+  //             </Text>
+  //           </View>
+  //         </View>
+  //       </Animated.View>
+  //     </Modal>
+  //   )
+  // }
+
+  const handleSelectAndPresentModal = (item, index = null) => {
+    // Đóng tab bar
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    // Xử lý khi mở BottomSheet
+    if (index === null) {
+      // Xử lý khi mở BottomSheet lần đầu
+      const filteredDataSize = item.attributes.filter(attr => attr.key === 'Size')
+      setTimeout(() => {
+        sheetRef.current?.open()
+      }, 50) // Adjust the delay as needed
+      setSelected(filteredDataSize)
+      setItemStates(item)
+    } else {
+      // Xử lý khi chọn thuộc tính
+      setQuantity(1)
+      setVaLueSelectSize(item.value)
+      setcnt(item.cnt)
+      setattributes_id(item._id)
+    }
+  }
+
+  const handleAddToCart = async () => {
+    const { _id, product_Name, product_id, color, base_price, image, code, discount_price } =
+      itemStates
+    // Check if product already exists in storage
+    const existingProductIndex = storageData.findIndex(obj => obj.attributes === attributes_id)
+    if (existingProductIndex !== -1) {
+      // Update quantity if product exists
+      const updatedStorage = storageData.map((obj, index) => {
+        if (index === existingProductIndex) {
+          // Check stock before updating
+          if (obj.quantity + quantity <= cnt) {
+            const newQuantity = obj.quantity + quantity
+            const newPrice = base_price * newQuantity
+            const title = { product_Name, newPrice }
+            setModalAddToCart(!modalAddToCart)
+            showToastSuccess(title)
+            handleDeleteFavorite(itemStates)
+            setTimeout(() => {
+              sheetRef.current?.close()
+              setBottomBar()
+            }, 250)
+            return {
+              ...obj,
+              quantity: newQuantity,
+              newPrice: newPrice
+            }
+          } else {
+            let title = 'Số lượng tồn kho không đủ'
+            showToastError(title)
+            return obj // Return unchanged if stock limit reached
+          }
+        } else {
+          return obj // Return other items unchanged
+        }
+      })
+      await setStorageData(updatedStorage)
+    } else {
+      const newProduct = {
+        _id: _id,
+        product_Name: product_Name,
+        product_id: product_id,
+        base_price: base_price,
+        color: color,
+        size: vaLueSelectSize,
+        image: image,
+        code: code,
+        discount_price: discount_price,
+        attributes: attributes_id,
+        newPrice: base_price * quantity,
+        quantity: quantity,
+        cnt: cnt
+      }
+      const updatedStorage = [...storageData, newProduct]
+      setStorageData(updatedStorage)
+      await AsyncStorage.setItem('my-cart', JSON.stringify(updatedStorage))
+      sheetRef.current?.close()
+      setModalAddToCart(!modalAddToCart)
+      const title = { product_Name: product_Name }
+      showToastSuccess(title)
+      const item = itemStates
+      handleDeleteFavorite(item)
+      setBottomBar()
+    }
+  }
+
+  const handleCloseBottomSheet = () => {
+    setVaLueSelectSize(null)
+    setattributes_id(null)
+    setQuantity(1)
+    setTimeout(() => {
+      setBottomBar()
+    }, 450)
+  }
+
+  // xử lí logic + quantity
+  const handlePlus = () => {
+    if (quantity < 20 && quantity < cnt) {
+      if (attributes_id == null) {
+        let title = 'Vui lòng chọn kích cỡ'
+        showToastError(title)
       } else {
-        return { ...e, selected: false }
+        setQuantity(quantity + 1)
       }
-    })
-
-    setSelected(newItem)
-    BottomSheetRef.current.close()
-    setBottomBar()
+    } else if (quantity == cnt) {
+      let title = 'Chọn tối đa ' + cnt + ' sản phẩm'
+      showToastError(title)
+    } else {
+      let title = 'Số lượng sản phẩm trong kho đạt tối đa'
+      showToastError(title)
+    }
   }
 
-  const numColum = 2
+  // xử lý logic - quantity
+  const handleMinus = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1)
+    } else if (attributes_id == null) {
+      let title = 'Vui lòng chọn kích cỡ'
+      showToastError(title)
+    } else {
+      let title = 'Chọn tối thiểu 1 sản phẩm'
+      showToastError(title)
+    }
+  }
+
   const noFavorite = () => {
     return (
-      <View
-        style={{
-          width: '100%',
-          height: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
-          paddingHorizontal: 16,
-          backgroundColor: Colors.grayBg
-        }}
-      >
-        <MyText style={{ fontSize: 12, fontWeight: '500' }}>
-          Bạn chưa có sản phẩm yêu thích nào...
-        </MyText>
+      <View style={styles.container_noFavorites}>
         <MyText
+          fontFamily={'Montserrat-SemiBold'}
           style={{
-            marginTop: 24,
-            fontSize: 12,
-            maxWidth: '80%',
-            textAlign: 'center'
+            textAlign: 'center',
+            fontSize: 24,
+            fontWeight: '600',
+            paddingVertical: 16
           }}
         >
-          Bạn chưa lưu sản phẩm nào. Đừng lo, rất đơn giản! Chỉ cần chọn biểu tượng trái tim trên
-          cùng để lưu, các sản phẩm bạn yêu thích sẽ hiện ở đây.
+          Sản Phẩm yêu thích
         </MyText>
-        <TouchableOpacity
-          style={{
-            marginTop: 32,
-            backgroundColor: Colors.red,
-            padding: 16,
-            borderRadius: 4
-          }}
-          onPress={() => props.navigation.navigate('HomeStack')}
+        <MyText style={{ fontSize: 12, fontWeight: '500', textAlign: 'center' }}>
+          Miễn phí giao hàng cho Member với đơn từ 499k
+        </MyText>
+        <View
+          style={{ alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
         >
-          <MyText style={{ fontSize: 12, color: Colors.white, fontWeight: '700' }}>Xem ngay</MyText>
-        </TouchableOpacity>
+          <Text style={{ fontSize: 12, fontFamily: 'Montserrat-SemiBold', textAlign: 'center' }}>
+            Bạn chưa có sản phẩm yêu thích nào...
+          </Text>
+          <MyText
+            style={{
+              marginTop: 16,
+              fontSize: 12,
+              maxWidth: '90%',
+              textAlign: 'center'
+            }}
+          >
+            Bạn chưa lưu sản phẩm nào. Đừng lo, rất đơn giản! Chỉ cần chọn biểu tượng trái tim trên
+            cùng để lưu, các sản phẩm bạn yêu thích sẽ hiện ở đây.
+          </MyText>
+          <TouchableOpacity
+            style={{
+              marginTop: 32,
+              backgroundColor: Colors.red,
+              padding: 16,
+              borderRadius: 4
+            }}
+            onPress={() => props.navigation.navigate('HomeStack')}
+          >
+            <Text
+              style={[
+                styles.txt_title,
+                {
+                  textAlign: 'center',
+                  borderBottomWidth: 1,
+                  color: Colors.white,
+                  borderColor: Colors.white
+                }
+              ]}
+            >
+              Xem ngay
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     )
   }
 
+  // xử lí xóa Item Favorites
   const handleDeleteFavorite = async item => {
-    const { name, _id } = item
-
+    const { product_Name, _id } = item
     const result = await AsyncStorage.getItem('my-favorites')
     let storage = []
     if (result !== null) {
       storage = JSON.parse(result)
     }
     const newStorage = storage.filter(s => s._id !== _id)
-    console.log(_id)
     setStorageFavorites(newStorage)
     await AsyncStorage.setItem('my-favorites', JSON.stringify(newStorage))
-    let title = name
-    showToastDeleted(title)
+    let title = product_Name
+    if (attributes_id === null) {
+      showToastDeleted(title)
+    }
   }
 
   const renderItemFavorite = ({ item }) => {
-    const { images, name, base_price, color, size, _id } = item
+    const { image, product_Name, base_price, color, nameCategoryById } = item
+    const formattedBasePrice = formatCurrency(base_price)
     return (
-      <KeyboardAvoidingView style={{ flex: 1 }}>
+      <KeyboardAvoidingView style={{ flex: 1, marginBottom: 32 }}>
         <View style={{ width: windowWith / 2 }}>
           <View
             style={{
-              backgroundColor: isOpen ? Colors.bgBottomSheet : Colors.grayBg
+              backgroundColor: Colors.grayBg
             }}
           >
             <Image
-              style={{ width: '100%', height: windowHeight / 3, padding: 8, resizeMode: 'cover' }}
+              style={{ width: '100%', height: windowHeight / 3, resizeMode: 'cover' }}
               source={{
-                uri: images.url
+                uri: image
               }}
             />
             <View style={{ position: 'absolute', right: 12, top: '62%' }}>
@@ -166,19 +382,27 @@ const Favorites = props => {
               </TouchableOpacity>
             </View>
             <View style={{ width: 190, padding: 16 }}>
-              <MyText numberOfLines={1} fontFamily={'Montserrat-SemiBold'}>
-                {name}
-              </MyText>
-              <MyText
-                numberOfLines={1}
-                style={{ marginVertical: 4 }}
-                fontFamily={'Montserrat-Medium'}
+              <Text numberOfLines={1} style={[styles.txt_title, { fontSize: 14, marginBottom: 4 }]}>
+                {product_Name}
+              </Text>
+              <Text numberOfLines={1} style={[styles.txt_title, { fontSize: 14, marginBottom: 4 }]}>
+                {formattedBasePrice}
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 4
+                }}
               >
-                đ{base_price}
-              </MyText>
-              <MyText numberOfLines={1} style={styles.txt_title_product}>
-                {/* {category} */}
-              </MyText>
+                <MyText numberOfLines={1} style={styles.txt_description}>
+                  Loại trang phục:
+                </MyText>
+                <Text numberOfLines={1} style={[styles.txt_title, { fontSize: 10 }]}>
+                  {nameCategoryById}
+                </Text>
+              </View>
               <View
                 style={{
                   flexDirection: 'row',
@@ -186,41 +410,24 @@ const Favorites = props => {
                   alignItems: 'center'
                 }}
               >
-                <MyText numberOfLines={1} style={styles.txt_title_product}>
+                <MyText numberOfLines={1} style={styles.txt_description}>
                   Màu sắc:
                 </MyText>
-                <MyText numberOfLines={1} style={styles.txt_title_product}>
+                <Text numberOfLines={1} style={[styles.txt_title, { fontSize: 10 }]}>
                   {color}
-                </MyText>
+                </Text>
               </View>
             </View>
           </View>
 
           <View style={{ width: 190, padding: 8 }}>
             <TouchableOpacity
-              onPress={() => handlePresentModal()}
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: 16,
-                borderWidth: 0.5,
-                marginVertical: 8,
-                backgroundColor: Colors.white,
-                borderColor: Colors.gray
-              }}
-            >
-              <MyText fontFamily={'Montserrat-SemiBold'}>Kích cỡ</MyText>
-              <Icons.Entypo name={'chevron-down'} size={16} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
+              onPress={() => handleSelectAndPresentModal(item)}
               style={{
                 backgroundColor: Colors.black,
                 flexDirection: 'row',
                 justifyContent: 'center',
                 padding: 16,
-
                 alignItems: 'center'
               }}
             >
@@ -242,63 +449,78 @@ const Favorites = props => {
       </KeyboardAvoidingView>
     )
   }
+
   return (
-    <GestureHandlerRootView>
-      <BottomSheetModalProvider>
+    <KeyboardAvoidingView>
+      {!storageFavorites.length == [] ? (
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={{
             paddingHorizontal: 16,
             backgroundColor: Colors.grayBg,
-            width: windowWith,
-            height: windowHeight
+            width: '100%',
+            height: '100%'
           }}
         >
-          <MyText
-            fontFamily={'Montserrat-SemiBold'}
-            style={{
-              textAlign: 'center',
-              fontSize: 24,
-              fontWeight: '600',
-              paddingVertical: 16
-            }}
-          >
-            Sản Phẩm yêu thích
-          </MyText>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <View />
-            <MyText style={{ fontSize: 12, color: Colors.gray }}>
-              {storageFavorites.length} sản phẩm
+          <View>
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
+              style={{
+                textAlign: 'center',
+                fontSize: 24,
+                fontWeight: '600',
+                paddingVertical: 16
+              }}
+            >
+              Sản Phẩm yêu thích
             </MyText>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View />
+              <MyText style={{ fontSize: 12, color: Colors.gray }}>
+                {storageFavorites.length} sản phẩm
+              </MyText>
+            </View>
+            {!user ? (
+              <MyText
+                style={{
+                  padding: 16,
+                  textAlign: 'center'
+                }}
+              >
+                Lưu và xem lại các sản phẩm này bất cứ lúc nào trên mọi thiết bị bằng cách đăng nhập
+                hoặc tạo tài khoản
+              </MyText>
+            ) : null}
+            <View style={{ height: 16 }} />
+
+            <FlatList
+              scrollEnabled={false}
+              showsVerticalScrollIndicator={false}
+              numColumns={numColum}
+              key={numColum}
+              renderItem={renderItemFavorite}
+              data={storageFavorites}
+            />
           </View>
-          <MyText
-            style={{
-              padding: 16,
-              textAlign: 'center'
-            }}
-          >
-            Lưu và xem lại các sản phẩm này bất cứ lúc nào trên mọi thiết bị bằng cách đăng nhập
-            hoặc tạo tài khoản
-          </MyText>
-          <FlatList
-            scrollEnabled={false}
-            showsVerticalScrollIndicator={false}
-            numColumns={numColum}
-            key={numColum}
-            renderItem={renderItemFavorite}
-            data={storageFavorites}
-            keyExtractor={item => item.id}
-          />
-          <View style={{ height: 100 }} />
         </ScrollView>
-        <BottomSheetModal
-          ref={BottomSheetRef}
-          snapPoints={snapPoints}
-          index={1}
-          onDismiss={() => {
-            setIsOpen(false) & setBottomBar()
+      ) : (
+        noFavorite()
+      )}
+      <BottomSheet
+        height={450}
+        style={{ backgroundColor: Colors.white }}
+        ref={sheetRef}
+        onClose={() => handleCloseBottomSheet()}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 16
           }}
         >
+          <View />
           <MyText
             fontFamily={'Montserrat-SemiBold'}
             style={{
@@ -310,13 +532,23 @@ const Favorites = props => {
           >
             Chọn kích cỡ
           </MyText>
-          <View style={{ marginHorizontal: 16 }}>
+          <TouchableOpacity onPress={() => handleCloseBottomSheet()}></TouchableOpacity>
+        </View>
+        <View
+          showsVerticalScrollIndicator={false}
+          style={{ width: '100%', height: 360, justifyContent: 'space-between' }}
+        >
+          <View
+            style={{
+              marginTop: 8,
+              marginHorizontal: 16
+            }}
+          >
             <FlatList
-              // render Item Data Sort by
-              style={{ marginVertical: 22 }}
+              scrollEnabled={false}
+              style={{ marginTop: 16 }}
               data={selected}
               numColumns={3}
-              keyExtractor={item => item.id}
               renderItem={({ item, index }) => {
                 return (
                   <TouchableOpacity
@@ -325,86 +557,144 @@ const Favorites = props => {
                       justifyContent: 'center',
                       alignItems: 'center',
                       borderRadius: 8,
-                      borderColor: Colors.gray,
                       width: 100,
-                      height: 40,
-                      padding: 10,
-                      marginEnd: 22,
-                      marginBottom: 22
+                      padding: 12,
+                      marginEnd: 16,
+                      borderColor: item._id === attributes_id ? Colors.red : Colors.gray,
+                      marginBottom: 22,
+                      backgroundColor: item._id === attributes_id ? Colors.red : Colors.white
                     }}
                     onPress={() => {
-                      handleSelect(item, index)
+                      handleSelectAndPresentModal(item, index)
                     }}
                   >
-                    <View
-                      style={{
-                        backgroundColor: Colors.white
-                      }}
-                    >
-                      <MyText
-                        fontFamily={'Montserrat-SemiBold'}
+                    <View>
+                      <Text
                         style={{
-                          fontSize: 12,
-                          fontWeight: '400',
-                          color: Colors.black
+                          fontSize: 16,
+                          fontFamily: 'Montserrat-SemiBold',
+                          color: item._id === attributes_id ? Colors.white : Colors.black2
                         }}
                       >
-                        {item.subject}
-                      </MyText>
+                        {item.value}
+                      </Text>
                     </View>
                   </TouchableOpacity>
                 )
               }}
             />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 16
+              }}
+            >
+              <MyText style={{ textAlign: 'center', fontSize: 12 }}>Số lượng</MyText>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center'
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => handleMinus(quantity)}
+                  style={{
+                    padding: 6,
+                    backgroundColor: Colors.white,
+                    borderRadius: 50,
+                    elevation: 8,
+                    shadowColor: Colors.gray,
+                    borderWidth: 0.5,
+                    borderColor: Colors.gray
+                  }}
+                >
+                  <Icons.AntDesign name={'minus'} size={18} />
+                </TouchableOpacity>
+                <MyText
+                  fontFamily={'Montserrat-SemiBold'}
+                  style={{ textAlign: 'center', marginHorizontal: 16, fontSize: 12 }}
+                >
+                  {quantity}
+                </MyText>
+                <TouchableOpacity
+                  onPress={() => handlePlus(quantity)}
+                  style={{
+                    padding: 6,
+                    backgroundColor: Colors.white,
+                    borderRadius: 50,
+                    elevation: 8,
+                    shadowColor: Colors.gray,
+                    borderWidth: 0.5,
+                    borderColor: Colors.gray
+                  }}
+                >
+                  <Icons.AntDesign name={'plus'} size={18} />
+                </TouchableOpacity>
+              </View>
+            </View>
             <TouchableOpacity
               onPress={() => props.navigation.navigate('SizeInfo')}
               style={{
                 justifyContent: 'space-between',
-                flexDirection: 'row'
+                flexDirection: 'row',
+                paddingVertical: 16
               }}
             >
-              <MyText>Hướng dẫn chọn kích cỡ</MyText>
-              <Icons.MaterialIcons name={'navigate-next'} size={20} />
+              <MyText style={{ fontSize: 12 }}>Hướng dẫn chọn kích cỡ</MyText>
+              <Icons.MaterialIcons name={'navigate-next'} size={24} />
             </TouchableOpacity>
           </View>
-        </BottomSheetModal>
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
+
+          {vaLueSelectSize ? (
+            <View style={{ marginHorizontal: 16 }}>
+              <TouchableOpacity
+                onPress={() => handleAddToCart(itemStates)}
+                style={{
+                  backgroundColor: Colors.red,
+                  paddingVertical: 16,
+                  borderRadius: 8,
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 0,
+                  left: 0
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    color: Colors.white,
+                    fontFamily: 'Montserrat-SemiBold',
+                    fontSize: 16
+                  }}
+                >
+                  Xác nhận
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
+        </View>
+      </BottomSheet>
+    </KeyboardAvoidingView>
   )
 }
 
 export default Favorites
 
 const styles = StyleSheet.create({
-  txt_title_product: {
-    fontSize: 11
+  txt_description: {
+    fontSize: 10,
+    fontFamily: 'Montserrat-Medium'
+  },
+  container_noFavorites: {
+    width: '100%',
+    height: '100%',
+    paddingHorizontal: 16,
+    backgroundColor: Colors.grayBg
+  },
+  txt_title: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 12
   }
 })
-
-const DataSize = [
-  {
-    id: 1,
-    subject: 'XS',
-    selected: false
-  },
-  {
-    id: 2,
-    subject: 'S',
-    selected: false
-  },
-  {
-    id: 3,
-    subject: 'M',
-    selected: false
-  },
-  {
-    id: 4,
-    subject: 'L',
-    selected: false
-  },
-  {
-    id: 5,
-    subject: 'XL',
-    selected: false
-  }
-]

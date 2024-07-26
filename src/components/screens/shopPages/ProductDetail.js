@@ -61,9 +61,9 @@ const ProductDetail = props => {
   const [activated, setActivated] = useState(0)
   const [modalAddToCart, setModalAddToCart] = useState(false)
   const [modalMessage, setModalMessage] = useState(false)
+
   const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current
   const scale = new Animated.Value(1)
-
   const scrollY = useRef(new Animated.Value(0)).current
   const [headerBg, setHeaderBg] = useState('transparent')
   const [elevationBg, setElevationBg] = useState(0)
@@ -97,6 +97,7 @@ const ProductDetail = props => {
         setwallPaper(props.route.params.images)
         setselectedId(props.route.params._id)
         setSelected(size)
+
         setselectedName(name_filter[0].value)
       } catch (error) {
         console.error('Error:', error)
@@ -142,7 +143,7 @@ const ProductDetail = props => {
           navigation.navigate('BagPage')
         }
       })
-    }, 3000)
+    }, 1500)
   }
   // quantity khởi tạo mặc định
 
@@ -208,6 +209,25 @@ const ProductDetail = props => {
       showToastSuccess(title)
     }
   }
+  // const handleAddToCart = async () => {
+  //   // Check if product already exists in storage
+  //   const newProduct = {
+  //     _id: selectedId,
+  //     product_Name: product_Name,
+  //     product_id: product_id,
+  //     base_price: base_price,
+  //     color: selectedName,
+  //     size: vaLueSelectSize,
+  //     image: wallPaper[0].url,
+  //     code: code,
+  //     newPrice: base_price * quantity,
+  //     quantity: quantity,
+  //     cnt: cnt,
+  //     discount_price: discount_price,
+  //     attributes: attributes_id
+  //   }
+  //   console.log(JSON.stringify(newProduct, null, 2))
+  // }
 
   useEffect(() => {
     if (modalAddToCart == true) {
@@ -909,7 +929,7 @@ const ProductDetail = props => {
         style={{
           backgroundColor: Colors.white
         }}
-        height={windowHeight / 1.8}
+        height={450}
         onDismiss={() => {
           setIsOpen(false)
         }}
@@ -928,7 +948,7 @@ const ProductDetail = props => {
             style={{
               color: Colors.black,
               textAlign: 'center',
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: '500'
             }}
           >
@@ -938,12 +958,14 @@ const ProductDetail = props => {
             <Icons.Feather name="x" size={20} />
           </TouchableOpacity>
         </View>
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <View
+          showsVerticalScrollIndicator={false}
+          style={{ width: '100%', height: 360, justifyContent: 'space-between' }}
+        >
           <View
             style={{
               marginTop: 8,
-              marginHorizontal: 16,
-              height: windowHeight / 2.8
+              marginHorizontal: 16
             }}
           >
             <FlatList
@@ -977,8 +999,7 @@ const ProductDetail = props => {
                         style={{
                           fontSize: 16,
                           fontWeight: '500',
-                          color: item._id === attributes_id ? Colors.white : Colors.black,
-                          lineHeight: 20
+                          color: item._id === attributes_id ? Colors.white : Colors.black2
                         }}
                       >
                         {item.value}
@@ -1076,7 +1097,7 @@ const ProductDetail = props => {
               </TouchableOpacity>
             </View>
           ) : null}
-        </ScrollView>
+        </View>
       </BottomSheet>
     </View>
   )

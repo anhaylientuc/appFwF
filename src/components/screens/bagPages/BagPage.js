@@ -48,6 +48,17 @@ const BagPage = props => {
     })
   }
 
+  const showToastError = title => {
+    Toast.show({
+      type: 'error', // 'info' | 'error' | 'success'
+      text1: 'Thông báo ♲',
+      text2: title,
+      text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.red },
+      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
+      //  text2: 'Đây là một cái gì đó '
+    })
+  }
+
   // onClick title itemProduct set attributes_id
   const handleStatusProduct = attributes => {
     // set attributes_id to PopupMenu
@@ -76,19 +87,6 @@ const BagPage = props => {
 
     return total
   }
-
-  // // Logic: onclick show Bottom bar
-  // const setBottomBar = () => {
-  //   navigation.getParent().setOptions({
-  //     tabBarStyle: {
-  //       backgroundColor: Colors.white,
-  //       bottom: 0,
-  //       paddingVertical: 8,
-  //       height: 54
-  //       // position: 'absolute'
-  //     }
-  //   })
-  // }
 
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
@@ -224,24 +222,23 @@ const BagPage = props => {
 
           {!user ? (
             <TouchableOpacity
-              style={{ backgroundColor: Colors.red, paddingVertical: 16 }}
+              style={{ backgroundColor: Colors.black2, paddingVertical: 16 }}
               onPress={() =>
                 navigation.navigate('ProfileStack', {
                   screen: 'Login'
                 })
               }
             >
-              <MyText
-                fontFamily={'Montserrat-SemiBold'}
+              <Text
                 style={{
                   color: Colors.white,
                   textAlign: 'center',
-                  fontWeight: '700',
-                  fontSize: 12
+                  fontSize: 14,
+                  fontFamily: 'Montserrat-SemiBold'
                 }}
               >
                 Đăng Nhập
-              </MyText>
+              </Text>
             </TouchableOpacity>
           ) : null}
         </View>
@@ -290,17 +287,16 @@ const BagPage = props => {
                 borderWidth: 1
               }}
             >
-              <MyText
-                fontFamily={'Montserrat-SemiBold'}
+              <Text
                 style={{
                   color: Colors.black,
                   textAlign: 'center',
-                  fontWeight: '700',
-                  fontSize: 12
+                  fontSize: 14,
+                  fontFamily: 'Montserrat-SemiBold'
                 }}
               >
                 Tạo tài khoản mới
-              </MyText>
+              </Text>
             </TouchableOpacity>
           </View>
         ) : null}
@@ -321,7 +317,10 @@ const BagPage = props => {
           newPrice: newPrice
         }
       } else {
-        console.log('Chọn tối đa ' + (newQuantity - 1))
+        if (newQuantity == cnt) {
+          let title = 'Chọn tối đa ' + cnt
+          showToastError(title)
+        }
         return val
       }
     })
@@ -338,7 +337,10 @@ const BagPage = props => {
         console.log(val.quantity)
         return { ...val, quantity: newQuantity, base_price: base_price, newPrice: newPrice }
       } else {
-        console.log('Chọn tối thiểu 1')
+        if (newQuantity <= 1) {
+          let title = 'Chọn tối thiểu 1'
+          showToastError(title)
+        }
         return val
       }
     })

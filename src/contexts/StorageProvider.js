@@ -35,10 +35,10 @@ const StorageProvider = ({ children }) => {
     <StorageContext.Provider
       value={{
         storageData,
-        setStorageData,
-        getDataProducts,
         storageFavorites,
+        setStorageData,
         setStorageFavorites,
+        getDataProducts,
         getDataFavorites
       }}
     >

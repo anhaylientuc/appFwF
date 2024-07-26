@@ -183,6 +183,11 @@ function MainNavigator() {
           component={SizeInfo}
           options={{ title: 'SizeInfo' }}
         ></Stack.Screen>
+        <Stack.Screen
+          name="BagPage"
+          component={BagPage}
+          options={{ title: 'BagPage' }}
+        ></Stack.Screen>
       </Stack.Navigator>
     )
   }
@@ -240,6 +245,11 @@ function MainNavigator() {
           name="WebViewPayment"
           component={WebViewPayment}
           options={{ title: 'WebViewPayment' }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="Favorites"
+          component={Favorites}
+          options={{ title: 'Favorites' }}
         ></Stack.Screen>
       </Stack.Navigator>
     )
