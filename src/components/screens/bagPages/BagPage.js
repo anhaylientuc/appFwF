@@ -213,7 +213,7 @@ const BagPage = props => {
             style={{
               textAlign: 'center',
               padding: 24,
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: '600'
             }}
           >
@@ -836,10 +836,10 @@ const BagPage = props => {
             }}
           >
             <View>
-              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 12 }}>
+              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 10 }}>
                 Thanh toán khi
               </MyText>
-              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 12 }}>
+              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 10 }}>
                 nhận hàng
               </MyText>
             </View>
@@ -865,7 +865,7 @@ const BagPage = props => {
               width: windowWith
             }}
           >
-            <MyText style={{ fontSize: 12 }}>
+            <MyText style={{ fontSize: 10 }}>
               Giá cả và chi phí giao hàng này chưa phải là cuối cùng cho đến khi bạn tới phần thanh
               toán.
             </MyText>
@@ -876,8 +876,8 @@ const BagPage = props => {
                 width: windowWith - 16
               }}
             >
-              <MyText style={{ fontSize: 12 }}>Miễn phí trả hàng trong 30 ngày.</MyText>
-              <MyText style={{ borderBottomWidth: 0.5, marginStart: 4, fontSize: 12 }}>
+              <MyText style={{ fontSize: 10 }}>Miễn phí trả hàng trong 30 ngày.</MyText>
+              <MyText style={{ borderBottomWidth: 0.5, marginStart: 4, fontSize: 10 }}>
                 trả hàng và hoàn tiền
               </MyText>
             </View>
@@ -896,7 +896,7 @@ const BagPage = props => {
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Icons.Feather name={'box'} size={32} />
-              <MyText style={{ marginStart: 16, fontWeight: '500', fontSize: 12 }}>
+              <MyText style={{ marginStart: 16, fontWeight: '500', fontSize: 10 }}>
                 Giao hàng và chọn phương thức đổi trả
               </MyText>
             </View>

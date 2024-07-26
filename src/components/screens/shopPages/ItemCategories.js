@@ -1,7 +1,6 @@
-import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useIsFocused } from '@react-navigation/native'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import { useFocusEffect, useIsFocused } from '@react-navigation/native'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -17,19 +16,18 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import { FilterContext } from 'src/contexts/FilterProvider'
-import { useStorage } from 'src/contexts/StorageProvider'
+import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 const ItemCategories = props => {
-  const sheetRef = useRef(null)
   const {
     navigation,
     route: {
       params: { categoryById, _products }
     }
   } = props
-
+  const sheetRef = useRef(null)
   const { storageFavorites, setStorageFavorites } = useStorage()
   const [windowWith, setwindowWith] = useState(width)
   const [windowHeight, setwindowHeight] = useState(height)
@@ -37,7 +35,7 @@ const ItemCategories = props => {
   const [products, setproducts] = useState([])
   const [addFavorite, setAddFavorite] = useState(false)
   const [numColumns, setNumColumns] = useState(2)
-  const [selected, setSelected] = useState(DataSortBy)
+  const [selected, setSelected] = useState()
   const [nameCategoryById, setnameCategoryById] = useState('')
   const [selectedProductId, setselectedProductId] = useState(null)
   const { filterState, setFilterState } = useContext(FilterContext)
@@ -56,6 +54,15 @@ const ItemCategories = props => {
       }
     })
   }
+
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        setBottomBar()
+      }
+    }, [navigation])
+  )
+
   useEffect(() => {
     const loadFavorites = async () => {
       const storedFavorites = await AsyncStorage.getItem('my-favorites')
@@ -113,6 +120,7 @@ const ItemCategories = props => {
     }
   }
 
+  // logic AddFavorites
   const handleAddFavorite = async item => {
     const {
       _id,
@@ -122,15 +130,11 @@ const ItemCategories = props => {
       discount_price,
       category_id,
       attributes,
-      description,
       product_id,
-      product_Name,
       code
     } = item
 
     const name_filter = attributes.filter(params => params.key === 'Color')
-    const size = attributes.filter(params => params.key === 'Size')
-
     const newFavoritesProduct = {
       _id: _id,
       image: images[0].url,
@@ -163,13 +167,6 @@ const ItemCategories = props => {
       await AsyncStorage.setItem('my-favorites', JSON.stringify(newStorage))
     }
   }
-
-  const handlePresentModal = () => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-    sheetRef.current?.open()
-  }
-  // const numColumns = 2
-  // logic onClick set View Flatlist
   const handleColum = () => {
     if (numColumns) {
       setNumColumns(null)
@@ -180,21 +177,6 @@ const ItemCategories = props => {
       setwindowWith(width / 2)
       setwindowHeight(height / 2.4)
     }
-  }
-
-  // logic handle select Items bottom sheet
-  const handleSelect = (item, index) => {
-    const newItem = selected.map((e, index) => {
-      if (e.id == item.id) {
-        return { ...e, selected: true }
-      } else {
-        return { ...e, selected: false }
-      }
-    })
-
-    setSelected(newItem)
-    sheetRef.current.close()
-    setBottomBar()
   }
 
   // Logic: onclick set product by category Id
@@ -219,14 +201,7 @@ const ItemCategories = props => {
     })()
   }
 
-  // Slide show image
-  const [activated, setActivated] = useState(0)
-  change = ({ nativeEvent }) => {
-    const slide = Math.ceil(nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width)
-    if (slide != activated) {
-      setActivated(slide)
-    }
-  }
+  // danh sách loại sản phẩm
   const renderListCategoryById = ({ item }) => {
     const { _id, name } = item
     return (
@@ -269,25 +244,10 @@ const ItemCategories = props => {
       attributes,
       description,
       product_id,
-      product_Name,
       code
     } = item
+    const formattedCurrency = formatCurrency(base_price)
 
-    // format base_price
-    function formatCurrency(amount, options = {}) {
-      const { currency = 'VND', locale = 'vi-VN' } = options
-
-      const formatter = new Intl.NumberFormat(locale, {
-        style: 'currency',
-        currency: currency
-      })
-      return formatter.format(amount)
-    }
-
-    // Example usage
-    const amount = base_price
-    const formattedCurrency = formatCurrency(amount)
-    // Output: 499.000,00 VND
     return (
       <KeyboardAvoidingView style={{ flexDirection: 'row' }}>
         <View
@@ -357,7 +317,6 @@ const ItemCategories = props => {
               paddingBottom: 16
             }}
           >
-            <MyText style={styles.renderItems.txt_category_name}>{/* {category_name} */}</MyText>
             <Text numColumns={1} style={styles.renderItems.txt_product_name}>
               {name}
             </Text>
@@ -386,25 +345,19 @@ const ItemCategories = props => {
       >
         <View style={styles.view_search}>
           <TouchableOpacity
-            // Logic: onClick -> back về Screen trước và set on BottomNavigation Bar
             onPress={() => {
-              setBottomBar()
-              props.navigation.goBack()
+              navigation.goBack()
             }}
           >
             <Icons.Ionicons name={'chevron-back'} size={24} />
           </TouchableOpacity>
-          <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_title}>
-            {nameCategoryById}
-          </MyText>
-
+          <Text style={styles.txt_title}>{nameCategoryById}</Text>
           <TouchableOpacity onPress={() => props.navigation.navigate('SearchPage')}>
             <Icons.Ionicons name={'search'} size={24} />
           </TouchableOpacity>
         </View>
 
         <View style={{ paddingTop: 8, paddingBottom: 16 }}>
-          {/* <Text>{categoryNameById}</Text> */}
           <FlatList
             showsHorizontalScrollIndicator={false}
             horizontal
@@ -464,17 +417,7 @@ const ItemCategories = props => {
               <MyText style={{ fontSize: 12 }}>Sản phẩm</MyText>
             </TouchableOpacity>
           </View>
-          {/* <TouchableOpacity
-              // Logic: Open Bottom Sheet and set BottomNavigation -> off
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center'
-              }}
-              onPress={() => handlePresentModal()}
-            >
-              <Icons.MaterialCommunityIcons name={'sort'} size={28} />
-              <MyText style={styles.txt_filters}>Sort by to</MyText>
-            </TouchableOpacity> */}
+
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <MyText style={{ fontSize: 12 }}>{products.length} Sản phẩm</MyText>
             <TouchableOpacity onPress={() => handleColum()} style={{ marginStart: 16 }}>
@@ -497,69 +440,6 @@ const ItemCategories = props => {
           renderItem={renderItems}
         />
       </ScrollView>
-      <View>
-        <BottomSheet
-          // bottom sheet
-          ref={sheetRef}
-          style={{
-            backgroundColor: Colors.white
-          }}
-          height={'55%'}
-          onClose={() => {
-            setTimeout(() => {
-              setBottomBar()
-            }, 500)
-          }}
-        >
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
-              style={{
-                color: Colors.black,
-                textAlign: 'center',
-                fontSize: 16,
-                fontWeight: '500',
-                marginBottom: 32
-              }}
-            >
-              Sort by
-            </MyText>
-            <FlatList
-              // render Item Data Sort by
-              data={selected}
-              scrollEnabled={false}
-              keyExtractor={item => item.id}
-              renderItem={({ item, index }) => {
-                return (
-                  <TouchableOpacity
-                    onPress={() => {
-                      handleSelect(item, index)
-                    }}
-                  >
-                    <View
-                      style={{
-                        backgroundColor: item.selected ? Colors.red : Colors.white
-                      }}
-                    >
-                      <MyText
-                        style={{
-                          fontSize: 16,
-                          padding: 16,
-                          fontWeight: item.selected ? '500' : '400',
-                          color: item.selected ? Colors.white : Colors.black
-                        }}
-                      >
-                        {item.subject}
-                      </MyText>
-                    </View>
-                  </TouchableOpacity>
-                )
-              }}
-            />
-            <View style={{ height: 50 }} />
-          </ScrollView>
-        </BottomSheet>
-      </View>
     </View>
   )
 }
@@ -581,7 +461,6 @@ const styles = StyleSheet.create({
   },
   StyleFavorites: {
     backgroundColor: Colors.white,
-
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
@@ -599,33 +478,14 @@ const styles = StyleSheet.create({
       fontStyle: 'normal',
       fontFamily: 'Montserrat-SemiBold'
     },
-    txt_category_name: {
-      fontSize: 12,
-      fontWeight: '400',
-      color: Colors.gray,
-      fontStyle: 'normal'
-    },
-    img_activated: {
-      width: 14,
-      height: 14
-    },
+
     txt_price: {
       fontSize: 14,
-      color: Colors.black,
-      lineHeight: 20,
-      fontWeight: '400',
-      marginTop: 3
+      color: Colors.black2,
+      marginTop: 4
     }
   },
 
-  txt_bottom_sheet: {
-    fontSize: 16,
-    marginTop: 32,
-    justifyContent: 'center',
-    alignContent: 'center',
-    fontWeight: '400',
-    color: Colors.black
-  },
   txt_filters: {
     fontSize: 16,
     color: Colors.black
@@ -636,9 +496,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white
   },
   txt_title: {
-    fontSize: 18,
-    Colors: Colors.black,
-    fontWeight: '500'
+    fontSize: 16,
+    Colors: Colors.black2,
+    fontFamily: 'Montserrat-SemiBold'
   },
 
   view_search: {
@@ -648,31 +508,3 @@ const styles = StyleSheet.create({
     padding: 16
   }
 })
-
-const DataSortBy = [
-  {
-    id: 1,
-    subject: 'Popular',
-    selected: false
-  },
-  {
-    id: 2,
-    subject: 'Newest',
-    selected: false
-  },
-  {
-    id: 3,
-    subject: 'Customer review',
-    selected: false
-  },
-  {
-    id: 4,
-    subject: 'Price: lowest to high',
-    selected: true
-  },
-  {
-    id: 5,
-    subject: 'Price: lowest to low',
-    selected: false
-  }
-]

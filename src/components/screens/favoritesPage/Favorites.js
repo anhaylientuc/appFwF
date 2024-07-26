@@ -1,6 +1,7 @@
 import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import React, { useContext, useRef, useState } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import {
   Animated,
   Dimensions,
@@ -20,6 +21,7 @@ import MyText from 'src/constants/FontFamily'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 
+import Modal from 'react-native-modal'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
@@ -27,10 +29,8 @@ const Favorites = props => {
   const { navigation } = props
   const { storageFavorites, setStorageFavorites } = useStorage()
   const { storageData, setStorageData } = useStorage()
-  const snapPoints = ['60%', '50%']
   const { user } = useContext(UserContext)
   const sheetRef = useRef(null)
-  const [isOpenSheetRef, setIsOpenSheetRef] = useState(false)
   const [vaLueSelectSize, setVaLueSelectSize] = useState(null)
   const [cnt, setcnt] = useState()
   const [attributes_id, setattributes_id] = useState(null)
@@ -55,10 +55,18 @@ const Favorites = props => {
     })
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        setBottomBar()
+      }
+    }, [navigation])
+  )
+
   const showToastDeleted = title => {
     Toast.show({
       type: 'info', // 'info' | 'error' | 'success'
-      text1: 'Xóa sản phẩm khỏi yêu thích thành công ✔',
+      text1: 'Xóa sản phẩm khỏi yêu thích ✔',
       text1Style: { fontSize: 12, fontFamily: 'Montserrat-SemiBold', color: Colors.green }
     })
   }
@@ -86,66 +94,68 @@ const Favorites = props => {
           navigation.navigate('BagPage')
         }
       })
-    }, 1250)
+    }, 3000)
   }
 
-  // useEffect(() => {
-  //   if (modalAddToCart == true) {
-  //     position.setValue({ x: 0, y: 0 })
-  //     setTimeout(() => {
-  //       Animated.parallel([
-  //         Animated.timing(scale, {
-  //           toValue: 0, // Thu nhỏ modal
-  //           duration: 400, // Thời gian thu nhỏ (500ms)
-  //           useNativeDriver: true
-  //         }),
-  //         Animated.timing(position, {
-  //           toValue: { x: windowWith, y: -windowHeight }, // Di chuyển modal về góc trên cùng tay phải (giá trị điều chỉnh theo yêu cầu)
-  //           duration: 800, // Thời gian di chuyển (500ms)
-  //           useNativeDriver: true
-  //         })
-  //       ]).start(() => handleOffModalCart())
-  //     }, 400)
-  //   }
-  // }, [modalAddToCart])
-  // const handleOffModalCart = () => {
-  //   setModalAddToCart(false)
-  //   setlength(storageData.length)
-  // }
-  // const showModalAddToCart = () => {
-  //   return (
-  //     <Modal isVisible={modalAddToCart}>
-  //       <Animated.View
-  //         style={{
-  //           backgroundColor: Colors.white,
-  //           paddingVertical: 16,
-  //           height: '16%',
-  //           width: '100%',
-  //           transform: [{ translateX: position.x }, { translateY: position.y }, { scale: scale }]
-  //         }}
-  //       >
-  //         <View style={{ flexDirection: 'row' }}>
-  //           <View style={{ flex: 1, paddingHorizontal: 16 }}>
-  //             {wallPaper[0] && (
-  //               <Image
-  //                 source={{ uri: wallPaper[0].url }}
-  //                 style={{ width: '100%', height: '100%', resizeMode: 'cover' }}
-  //               />
-  //             )}
-  //           </View>
-  //           <View style={{ flex: 3 }}>
-  //             <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>
-  //               {product_Name}
-  //             </Text>
-  //             <Text style={{ fontFamily: 'Montserrat-Medium', fontSize: 14, marginTop: 8 }}>
-  //               {formattedCurrency}
-  //             </Text>
-  //           </View>
-  //         </View>
-  //       </Animated.View>
-  //     </Modal>
-  //   )
-  // }
+  useEffect(() => {
+    if (modalAddToCart == true) {
+      position.setValue({ x: 0, y: 0 })
+      setTimeout(() => {
+        Animated.parallel([
+          Animated.timing(scale, {
+            toValue: 0, // Thu nhỏ modal
+            duration: 300, // Thời gian thu nhỏ (500ms)
+            useNativeDriver: true
+          }),
+          Animated.timing(position, {
+            toValue: { x: windowWith, y: -windowHeight }, // Di chuyển modal về góc trên cùng tay phải (giá trị điều chỉnh theo yêu cầu)
+            duration: 800, // Thời gian di chuyển (500ms)
+            useNativeDriver: true
+          })
+        ]).start(() => handleOffModalCart())
+      }, 300)
+    }
+  }, [modalAddToCart])
+  const handleOffModalCart = () => {
+    setModalAddToCart(false)
+    setlength(storageData.length)
+  }
+  const showModalAddToCart = () => {
+    const { product_Name, image, base_price } = itemStates
+    const formattedBasePrice = formatCurrency(base_price)
+    return (
+      <Modal isVisible={modalAddToCart}>
+        <Animated.View
+          style={{
+            backgroundColor: Colors.white,
+            paddingVertical: 16,
+            height: '16%',
+            width: '100%',
+            transform: [{ translateX: position.x }, { translateY: position.y }, { scale: scale }]
+          }}
+        >
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ flex: 1, paddingHorizontal: 16 }}>
+              {image && (
+                <Image
+                  source={{ uri: image }}
+                  style={{ width: '100%', height: '100%', resizeMode: 'cover' }}
+                />
+              )}
+            </View>
+            <View style={{ flex: 3 }}>
+              <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>
+                {product_Name}
+              </Text>
+              <Text style={{ fontFamily: 'Montserrat-Medium', fontSize: 14, marginTop: 8 }}>
+                {formattedBasePrice}
+              </Text>
+            </View>
+          </View>
+        </Animated.View>
+      </Modal>
+    )
+  }
 
   const handleSelectAndPresentModal = (item, index = null) => {
     // Đóng tab bar
@@ -168,6 +178,7 @@ const Favorites = props => {
     }
   }
 
+  // Logic AddToCart
   const handleAddToCart = async () => {
     const { _id, product_Name, product_id, color, base_price, image, code, discount_price } =
       itemStates
@@ -182,13 +193,16 @@ const Favorites = props => {
             const newQuantity = obj.quantity + quantity
             const newPrice = base_price * newQuantity
             const title = { product_Name, newPrice }
-            setModalAddToCart(!modalAddToCart)
-            showToastSuccess(title)
-            handleDeleteFavorite(itemStates)
+
             setTimeout(() => {
-              sheetRef.current?.close()
-              setBottomBar()
-            }, 250)
+              setModalAddToCart(!modalAddToCart)
+            }, 500)
+            sheetRef.current?.close()
+            showToastSuccess(title)
+            setTimeout(() => {
+              handleDeleteFavorite(itemStates)
+            }, 2000)
+            setBottomBar()
             return {
               ...obj,
               quantity: newQuantity,
@@ -223,16 +237,20 @@ const Favorites = props => {
       const updatedStorage = [...storageData, newProduct]
       setStorageData(updatedStorage)
       await AsyncStorage.setItem('my-cart', JSON.stringify(updatedStorage))
+      setTimeout(() => {
+        setModalAddToCart(!modalAddToCart)
+      }, 500)
       sheetRef.current?.close()
-      setModalAddToCart(!modalAddToCart)
       const title = { product_Name: product_Name }
       showToastSuccess(title)
-      const item = itemStates
-      handleDeleteFavorite(item)
+      setTimeout(() => {
+        handleDeleteFavorite(itemStates)
+      }, 2000)
       setBottomBar()
     }
   }
 
+  // xử lý ẩn bottomSheet
   const handleCloseBottomSheet = () => {
     setVaLueSelectSize(null)
     setattributes_id(null)
@@ -273,40 +291,42 @@ const Favorites = props => {
     }
   }
 
+  // màn hình khi FavoritesStorage = []
   const noFavorite = () => {
     return (
       <View style={styles.container_noFavorites}>
-        <MyText
+        <Text
           fontFamily={'Montserrat-SemiBold'}
-          style={{
-            textAlign: 'center',
-            fontSize: 24,
-            fontWeight: '600',
-            paddingVertical: 16
-          }}
+          style={[
+            styles.txt_title,
+            { textAlign: 'center', fontSize: 20, fontWeight: '600', paddingVertical: 16 }
+          ]}
         >
-          Sản Phẩm yêu thích
-        </MyText>
-        <MyText style={{ fontSize: 12, fontWeight: '500', textAlign: 'center' }}>
+          Sản phẩm yêu thích
+        </Text>
+        <Text style={[styles.txt_description, { textAlign: 'center', fontSize: 12 }]}>
           Miễn phí giao hàng cho Member với đơn từ 499k
-        </MyText>
+        </Text>
         <View
           style={{ alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}
         >
-          <Text style={{ fontSize: 12, fontFamily: 'Montserrat-SemiBold', textAlign: 'center' }}>
+          <Text style={[styles.txt_title, { textAlign: 'center' }]}>
             Bạn chưa có sản phẩm yêu thích nào...
           </Text>
-          <MyText
-            style={{
-              marginTop: 16,
-              fontSize: 12,
-              maxWidth: '90%',
-              textAlign: 'center'
-            }}
+          <Text
+            style={[
+              styles.txt_description,
+              {
+                marginTop: 16,
+                fontSize: 12,
+                maxWidth: '90%',
+                textAlign: 'center'
+              }
+            ]}
           >
             Bạn chưa lưu sản phẩm nào. Đừng lo, rất đơn giản! Chỉ cần chọn biểu tượng trái tim trên
             cùng để lưu, các sản phẩm bạn yêu thích sẽ hiện ở đây.
-          </MyText>
+          </Text>
           <TouchableOpacity
             style={{
               marginTop: 32,
@@ -352,11 +372,12 @@ const Favorites = props => {
     }
   }
 
+  // renderItem
   const renderItemFavorite = ({ item }) => {
     const { image, product_Name, base_price, color, nameCategoryById } = item
     const formattedBasePrice = formatCurrency(base_price)
     return (
-      <KeyboardAvoidingView style={{ flex: 1, marginBottom: 32 }}>
+      <KeyboardAvoidingView style={{ flexDirection: 'row' }}>
         <View style={{ width: windowWith / 2 }}>
           <View
             style={{
@@ -364,16 +385,16 @@ const Favorites = props => {
             }}
           >
             <Image
-              style={{ width: '100%', height: windowHeight / 3, resizeMode: 'cover' }}
+              style={{ width: '100%', height: windowHeight / 3, resizeMode: 'contain' }}
               source={{
                 uri: image
               }}
             />
-            <View style={{ position: 'absolute', right: 12, top: '62%' }}>
+            <View style={{ position: 'absolute', right: 16, top: '62%' }}>
               <TouchableOpacity
                 onPress={() => handleDeleteFavorite(item)}
                 style={{
-                  padding: 8,
+                  padding: 4,
                   backgroundColor: Colors.white,
                   borderRadius: 100
                 }}
@@ -381,7 +402,7 @@ const Favorites = props => {
                 <Icons.Feather name={'trash-2'} size={20} color={Colors.black} />
               </TouchableOpacity>
             </View>
-            <View style={{ width: 190, padding: 16 }}>
+            <View style={{ padding: 16 }}>
               <Text numberOfLines={1} style={[styles.txt_title, { fontSize: 14, marginBottom: 4 }]}>
                 {product_Name}
               </Text>
@@ -420,7 +441,7 @@ const Favorites = props => {
             </View>
           </View>
 
-          <View style={{ width: 190, padding: 8 }}>
+          <View style={{ paddingHorizontal: 8 }}>
             <TouchableOpacity
               onPress={() => handleSelectAndPresentModal(item)}
               style={{
@@ -456,25 +477,32 @@ const Favorites = props => {
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={{
-            paddingHorizontal: 16,
             backgroundColor: Colors.grayBg,
-            width: '100%',
-            height: '100%'
+            width: windowWith,
+            height: windowHeight
           }}
         >
           <View>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
+            <Text
+              style={[
+                styles.txt_title,
+                {
+                  textAlign: 'center',
+                  fontSize: 20,
+                  fontWeight: '600',
+                  paddingVertical: 16
+                }
+              ]}
+            >
+              Sản phẩm yêu thích
+            </Text>
+            <View
               style={{
-                textAlign: 'center',
-                fontSize: 24,
-                fontWeight: '600',
-                paddingVertical: 16
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingHorizontal: 16
               }}
             >
-              Sản Phẩm yêu thích
-            </MyText>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <View />
               <MyText style={{ fontSize: 12, color: Colors.gray }}>
                 {storageFavorites.length} sản phẩm
@@ -492,12 +520,11 @@ const Favorites = props => {
               </MyText>
             ) : null}
             <View style={{ height: 16 }} />
-
+            {itemStates ? showModalAddToCart() : null}
             <FlatList
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
               numColumns={numColum}
-              key={numColum}
               renderItem={renderItemFavorite}
               data={storageFavorites}
             />
@@ -557,11 +584,11 @@ const Favorites = props => {
                       justifyContent: 'center',
                       alignItems: 'center',
                       borderRadius: 8,
-                      width: 100,
+                      width: 94,
                       padding: 12,
                       marginEnd: 16,
+                      marginBottom: 16,
                       borderColor: item._id === attributes_id ? Colors.red : Colors.gray,
-                      marginBottom: 22,
                       backgroundColor: item._id === attributes_id ? Colors.red : Colors.white
                     }}
                     onPress={() => {
@@ -604,7 +631,7 @@ const Favorites = props => {
                     padding: 6,
                     backgroundColor: Colors.white,
                     borderRadius: 50,
-                    elevation: 8,
+                    elevation: 4,
                     shadowColor: Colors.gray,
                     borderWidth: 0.5,
                     borderColor: Colors.gray
@@ -624,7 +651,7 @@ const Favorites = props => {
                     padding: 6,
                     backgroundColor: Colors.white,
                     borderRadius: 50,
-                    elevation: 8,
+                    elevation: 4,
                     shadowColor: Colors.gray,
                     borderWidth: 0.5,
                     borderColor: Colors.gray

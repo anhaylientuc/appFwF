@@ -1,5 +1,5 @@
-import { useIsFocused } from '@react-navigation/native'
-import React, { useContext, useEffect, useState } from 'react'
+import { useFocusEffect, useIsFocused } from '@react-navigation/native'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -31,8 +31,15 @@ const Filter = props => {
   const [_products, set_products] = useState(null)
   const isFocusScreen = useIsFocused()
 
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+      }
+    }, [navigation])
+  )
+
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const fetchData = async () => {
       try {
         if (category_id) {
@@ -72,7 +79,6 @@ const Filter = props => {
 
   const handlePressFilter = () => {
     {
-      setBottomBar()
       navigation.navigate('ItemCategories', { params: category_id, _products: _products })
     }
   }
@@ -118,7 +124,7 @@ const Filter = props => {
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
         >
-          <TouchableOpacity onPress={() => props.navigation.goBack() & setBottomBar()}>
+          <TouchableOpacity onPress={() => props.navigation.goBack()}>
             <Icons.Feather name="x" size={30} />
           </TouchableOpacity>
           <MyText

@@ -60,7 +60,6 @@ const ProductDetail = props => {
   const [length, setlength] = useState(null)
   const [activated, setActivated] = useState(0)
   const [modalAddToCart, setModalAddToCart] = useState(false)
-  const [modalMessage, setModalMessage] = useState(false)
 
   const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current
   const scale = new Animated.Value(1)
@@ -209,25 +208,6 @@ const ProductDetail = props => {
       showToastSuccess(title)
     }
   }
-  // const handleAddToCart = async () => {
-  //   // Check if product already exists in storage
-  //   const newProduct = {
-  //     _id: selectedId,
-  //     product_Name: product_Name,
-  //     product_id: product_id,
-  //     base_price: base_price,
-  //     color: selectedName,
-  //     size: vaLueSelectSize,
-  //     image: wallPaper[0].url,
-  //     code: code,
-  //     newPrice: base_price * quantity,
-  //     quantity: quantity,
-  //     cnt: cnt,
-  //     discount_price: discount_price,
-  //     attributes: attributes_id
-  //   }
-  //   console.log(JSON.stringify(newProduct, null, 2))
-  // }
 
   useEffect(() => {
     if (modalAddToCart == true) {
@@ -983,10 +963,10 @@ const ProductDetail = props => {
                       alignItems: 'center',
                       borderRadius: 8,
                       width: 100,
-                      padding: 10,
-                      marginEnd: 22,
+                      padding: 12,
+                      marginEnd: 16,
+                      marginBottom: 16,
                       borderColor: item._id === attributes_id ? Colors.red : Colors.gray,
-                      marginBottom: 22,
                       backgroundColor: item._id === attributes_id ? Colors.red : Colors.white
                     }}
                     onPress={() => {
