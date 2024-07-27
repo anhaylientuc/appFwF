@@ -1,10 +1,20 @@
 import { useNavigation } from '@react-navigation/native'
-import React from 'react'
+import React, { useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
+import UserHTTP from 'src/utils/http/UserHTTP'
 
 const ForgotPass = ({ navigation: { goBack } }) => {
+  function handleEmail(e) {
+    const emailVar = e.nativeEvent.text
+    setEmail(emailVar)
+  }
+
+  const [email, setEmail] = useState('')
   const navigation = useNavigation()
+  const handleSend = async () => {
+    await UserHTTP.forgotPass(email)
+  }
 
   return (
     <View
@@ -67,14 +77,11 @@ const ForgotPass = ({ navigation: { goBack } }) => {
             shadowOpacity: 1
           }}
         >
-          <TextInput placeholder="Email" />
+          <TextInput placeholder="Email" value={email} onChange={e => handleEmail(e)} />
         </View>
 
         <View style={styles.btnLogin}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Login')}
-            style={{ alignItems: 'center' }}
-          >
+          <TouchableOpacity onPress={() => handleSend(email)} style={{ alignItems: 'center' }}>
             <Text style={styles.txtbtn}>SEND</Text>
           </TouchableOpacity>
         </View>

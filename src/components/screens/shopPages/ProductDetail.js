@@ -1,5 +1,6 @@
 import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useNavigation } from '@react-navigation/native'
 import { useEffect, useRef, useState } from 'react'
 import {
   Animated,
@@ -19,7 +20,7 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import { DaTaSale } from 'src/constants/Databases'
 import MyText from 'src/constants/FontFamily'
-import { useStorage } from 'src/contexts/StorageProvider'
+import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import { getProducts } from 'src/utils/http/NewHTTP'
 import ItemListNew from '../homePages/ItemListNews'
 const windowWith = Dimensions.get('window').width
@@ -28,23 +29,13 @@ const windowHeight = Dimensions.get('window').height
 // const { height: screenHeight } = Dimensions.get('window')
 const ProductDetail = props => {
   const {
-    navigation,
     route: {
-      params: {
-        _id,
-        base_price,
-        product_id,
-        product_Name,
-        images,
-        category_id,
-        description,
-        code,
-        discount_price
-      }
+      params: { _id, product_id }
     }
   } = props
-
+  const navigation = useNavigation()
   const { storageData, setStorageData } = useStorage()
+  const { storageFavorites, setStorageFavorites } = useStorage()
   const sheetRef = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
   const [thumbs, setthumbs] = useState([])
@@ -60,12 +51,17 @@ const ProductDetail = props => {
   const [length, setlength] = useState(null)
   const [activated, setActivated] = useState(0)
   const [modalAddToCart, setModalAddToCart] = useState(false)
-
+  const [favoritesIds, setFavoritesIds] = useState([])
+  const [product_Name, setproduct_Name] = useState(null)
   const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current
   const scale = new Animated.Value(1)
   const scrollY = useRef(new Animated.Value(0)).current
   const [headerBg, setHeaderBg] = useState('transparent')
   const [elevationBg, setElevationBg] = useState(0)
+  const [base_price, setbase_price] = useState(null)
+  const [description, setdescription] = useState(null)
+  const [code, setcode] = useState(null)
+  const [discount_price, setdiscount_price] = useState(null)
 
   useEffect(() => {
     const listener = scrollY.addListener(({ value }) => {
@@ -82,42 +78,60 @@ const ProductDetail = props => {
       scrollY.removeListener(listener)
     }
   }, [scrollY])
+  useEffect(() => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+  }, [])
+
+  useEffect(() => {
+    const loadFavorites = async () => {
+      const storedFavorites = await AsyncStorage.getItem('my-favorites')
+      if (storedFavorites) {
+        const favorites = JSON.parse(storedFavorites)
+        setFavoritesIds(favorites.map(favorite => favorite._id))
+      }
+    }
+
+    loadFavorites()
+  }, [storageFavorites, navigation])
 
   useEffect(() => {
     const fetchData = async () => {
       const version = 2
       const product_id = props.route.params.product_id
-      const name_filter = props.route.params.attributes.filter(params => params.key === 'Color')
-      const size = props.route.params.attributes.filter(params => params.key === 'Size')
-      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+
       try {
         const thumb = await getProducts({ version, product_id })
         setthumbs(thumb)
-        setwallPaper(props.route.params.images)
-        setselectedId(props.route.params._id)
-        setSelected(size)
-
-        setselectedName(name_filter[0].value)
+        thumb.map(item => {
+          if (item._id == _id) {
+            var newAttrColor = item.attributes
+            newAttrColor = newAttrColor.filter(attr => attr.key === 'Color')
+            var newAttrSize = item.attributes
+            newAttrSize = newAttrSize.filter(attr => attr.key === 'Size')
+            setSelected(newAttrSize)
+            setselectedName(newAttrColor[0].value)
+            setbase_price(item.base_price)
+            setdescription(item.description)
+            setcode(item.code)
+            setdiscount_price(item.discount_price)
+          }
+        })
+        const product_Name = thumb.map(i => i.name)
+        thumb.map(item => {
+          if (item._id == _id) {
+            setwallPaper(item.images)
+          }
+        })
+        setproduct_Name(product_Name[0])
+        setselectedId(_id)
       } catch (error) {
         console.error('Error:', error)
-        // Handle errors appropriately in your application
       }
     }
 
     fetchData()
   }, [])
 
-  const setBottomBar = () => {
-    navigation.getParent().setOptions({
-      tabBarStyle: {
-        backgroundColor: Colors.white,
-        bottom: 0,
-        paddingVertical: 8,
-        height: 54
-        // position: 'absolute'
-      }
-    })
-  }
   const showToastError = title => {
     Toast.show({
       type: 'error', // 'info' | 'error' | 'success'
@@ -139,7 +153,7 @@ const ProductDetail = props => {
         text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' },
         //  text2: 'Đây là một cái gì đó '
         onPress: () => {
-          navigation.navigate('BagPage')
+          handleGoBag()
         }
       })
     }, 1500)
@@ -159,7 +173,6 @@ const ProductDetail = props => {
             const newQuantity = obj.quantity + quantity
             const newPrice = base_price * newQuantity
             const title = { product_Name, newPrice }
-
             setModalAddToCart(!modalAddToCart)
             showToastSuccess(title)
             return {
@@ -228,6 +241,7 @@ const ProductDetail = props => {
       }, 400)
     }
   }, [modalAddToCart])
+
   const handleOffModalCart = () => {
     setModalAddToCart(false)
     setlength(storageData.length)
@@ -288,7 +302,7 @@ const ProductDetail = props => {
   }
 
   const handleGoBag = () => {
-    navigation.navigate('BagPage')
+    navigation.navigate('BagStack', { screen: 'BagPage' })
   }
 
   // xử lí logic selected attributes
@@ -339,19 +353,8 @@ const ProductDetail = props => {
   }
 
   // format base_price
-  function formatCurrency(amount, options = {}) {
-    const { currency = 'VND', locale = 'vi-VN' } = options
 
-    const formatter = new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: currency
-    })
-    return formatter.format(amount)
-  }
-
-  // Example usage
-  const amount = base_price
-  const formattedCurrency = formatCurrency(amount)
+  const formattedCurrency = formatCurrency(base_price)
   // Output: 499.000,00 VND
 
   change = ({ nativeEvent }) => {
@@ -361,9 +364,51 @@ const ProductDetail = props => {
     }
   }
 
-  const [addFavorite, setAddFavorite] = useState(false)
-  const handleAddFavorite = () => {
-    setAddFavorite(!addFavorite)
+  const handleAddFavorite = async thumbs => {
+    const {
+      _id,
+      name,
+      images,
+      base_price,
+      discount_price,
+      category_id,
+      attributes,
+      product_id,
+      code
+    } = thumbs
+
+    const name_filter = attributes.filter(params => params.key === 'Color')
+    const newFavoritesProduct = {
+      _id: _id,
+      image: images[0].url,
+      product_Name: name,
+      base_price: base_price,
+      color: name_filter[0]?.value,
+      product_id: product_id,
+      category_id: category_id,
+      code: code,
+      discount_price: discount_price,
+      attributes: attributes,
+      nameCategoryById: nameCategoryById
+    }
+
+    // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích chưa
+    const isDuplicate = storageFavorites.some(favorite => favorite._id === _id)
+    if (!isDuplicate) {
+      const updateFavorites = [...storageFavorites, newFavoritesProduct]
+      setStorageFavorites(updateFavorites)
+      await AsyncStorage.setItem('my-favorites', JSON.stringify(updateFavorites))
+    } else {
+      // check nếu _id đã tồn tại trong giỏ hàng thì xóa khỏi storageFavorites
+      const result = await AsyncStorage.getItem('my-favorites')
+      let storage = []
+      if (result !== null) {
+        storage = JSON.parse(result)
+      }
+      const newStorage = storage.filter(s => s._id !== _id)
+      setStorageFavorites(newStorage)
+      await AsyncStorage.setItem('my-favorites', JSON.stringify(newStorage))
+    }
   }
 
   // Nút back
@@ -539,7 +584,7 @@ const ProductDetail = props => {
               </Pressable>
             )}
           />
-          {product_id ? showModalAddToCart() : null}
+          {thumbs ? showModalAddToCart() : null}
 
           <View
             style={{
@@ -551,7 +596,7 @@ const ProductDetail = props => {
               shadowColor: Colors.black
             }}
           >
-            {images.map((i, k) => (
+            {wallPaper.map((i, k) => (
               <Text
                 key={k}
                 style={
@@ -858,15 +903,15 @@ const ProductDetail = props => {
       </Animated.View>
       <TouchableOpacity
         style={styles.product.container_ic_add_favorite}
-        onPress={() => handleAddFavorite()}
+        onPress={() => handleAddFavorite(thumbs)}
       >
         <Icons.MaterialIcons
           style={{
             textAlign: 'center'
           }}
-          name={!addFavorite ? 'favorite-outline' : 'favorite'}
+          name={favoritesIds.includes(_id) ? 'favorite' : 'favorite-outline'}
           size={24}
-          color={!addFavorite ? Colors.gray : Colors.red}
+          color={favoritesIds.includes(_id) ? Colors.red : Colors.gray}
         />
       </TouchableOpacity>
 

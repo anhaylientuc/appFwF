@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
   Keyboard,
@@ -14,9 +15,8 @@ import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import { login } from 'src/utils/http/UserHTTP'
 import UserContext from '../../../../contexts/UserContext'
-
-const Login = props => {
-  const { navigation } = props
+const Login = () => {
+  const navigation = useNavigation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const { setUser, user } = useContext(UserContext)
@@ -31,7 +31,7 @@ const Login = props => {
 
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-  }, [props])
+  }, [navigation])
   const handleBack = () => {
     setisShowError(false)
     setisShowErrorPass(false)

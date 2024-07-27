@@ -1,4 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { TabActions, useNavigation } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { useContext } from 'react'
 import { View } from 'react-native'
@@ -39,286 +40,148 @@ const Button = createBottomTabNavigator()
 
 function MainNavigator() {
   const { user } = useContext(UserContext)
+  const navigation = useNavigation()
 
-  const ShopStack = () => {
+  const ShopStack = ({ navigation }) => {
+    const handleNavigate = screenName => {
+      const jumpToAction = TabActions.jumpTo('ShopStack')
+      navigation.dispatch(jumpToAction)
+      navigation.navigate(screenName)
+    }
+
     return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen
-          name="ShopPage"
-          component={ShopPage}
-          options={{ title: 'Trang chủ Shop' }}
-        ></Stack.Screen>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="ShopPage" component={ShopPage} options={{ title: 'Trang chủ Shop' }} />
         <Stack.Screen
           name="ItemCategories"
           component={ItemCategories}
           options={{ title: 'Items Category' }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="Categories"
           component={Categories}
           options={{ title: 'List Category' }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="ProductDetail"
           component={ProductDetail}
-          options={{
-            title: 'ProductDetail',
-            tabBarStyle: { display: 'none' }
-          }}
-        ></Stack.Screen>
+          options={{ title: 'ProductDetail', tabBarStyle: { display: 'none' } }}
+        />
         <Stack.Screen
           name="ReviewProduct"
           component={ReviewProduct}
-          options={{
-            title: 'ReviewProduct',
-            tabBarStyle: { display: 'none' }
-          }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="SizeInfo"
-          component={SizeInfo}
-          options={{
-            title: 'SizeInfo'
-          }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="BagPage"
-          component={BagPage}
-          options={{
-            title: 'BagPage'
-          }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="SearchPage"
-          component={SearchPage}
-          options={{
-            title: 'SearchPage',
-            tabBarStyle: { display: 'none' }
-          }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="Filter"
-          component={Filter}
-          options={{
-            title: 'Filter',
-            tabBarStyle: { display: 'none' }
-          }}
-        ></Stack.Screen>
+          options={{ title: 'ReviewProduct' }}
+        />
+        <Stack.Screen name="SizeInfo" component={SizeInfo} options={{ title: 'SizeInfo' }} />
+        <Stack.Screen name="SearchPage" component={SearchPage} options={{ title: 'SearchPage' }} />
+        <Stack.Screen name="Filter" component={Filter} options={{ title: 'Filter' }} />
         <Stack.Screen
           name="DetailFilter"
           component={DetailFilter}
-          options={{
-            title: 'DetailFilter',
-            tabBarStyle: { display: 'none' }
-          }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="MyChecks"
-          component={MyChecks}
-          options={{ title: 'MyChecks' }}
-        ></Stack.Screen>
-
-        <Stack.Screen
-          name="PayPage"
-          component={PayPage}
-          options={{ title: 'PayPage' }}
-        ></Stack.Screen>
-        <Stack.Screen name="Login" component={Login} options={{ title: 'Login' }}></Stack.Screen>
-        <Stack.Screen
-          name="Register"
-          component={Register}
-          options={{ title: 'Register' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="ForgotPassword"
-          component={ForgotPassword}
-          options={{ title: 'ForgotPassword' }}
-        ></Stack.Screen>
-      </Stack.Navigator>
-    )
-  }
-  const HomeStack = () => {
-    return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen
-          name="Home"
-          component={HomePage}
-          options={{ title: 'Trang chủ Shop' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="Favorites"
-          component={Favorites}
-          options={{ title: 'Favorite' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="UserNavigation"
-          component={UserNavigation}
-          options={{ title: 'UserNavigation', tabBarStyle: { display: 'none' } }}
-        ></Stack.Screen>
-      </Stack.Navigator>
-    )
-  }
-  const FavoriteStack = () => {
-    return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen
-          name="Favorites"
-          component={Favorites}
-          options={{ title: 'Favorite' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="SizeInfo"
-          component={SizeInfo}
-          options={{ title: 'SizeInfo' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="BagPage"
-          component={BagPage}
-          options={{ title: 'BagPage' }}
-        ></Stack.Screen>
+          options={{ title: 'DetailFilter' }}
+        />
+        <Stack.Screen name="BagStack" component={BagStack} options={{ title: 'BagStack' }} />
       </Stack.Navigator>
     )
   }
 
-  const BagStack = () => {
+  const HomeStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Home" component={HomePage} options={{ title: 'Trang chủ Shop' }} />
+    </Stack.Navigator>
+  )
+
+  const FavoriteStack = ({ navigation }) => {
+    const handleNavigate = screenName => {
+      const jumpToAction = TabActions.jumpTo('FavoriteStack')
+      navigation.dispatch(jumpToAction)
+      navigation.navigate(screenName)
+    }
+
     return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen
-          name="BagPage"
-          component={BagPage}
-          options={{ title: 'BagPage' }}
-        ></Stack.Screen>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Favorites" component={Favorites} options={{ title: 'Favorite' }} />
+        <Stack.Screen name="ShopStack" component={ShopStack} options={{ title: 'ShopStack' }} />
+      </Stack.Navigator>
+    )
+  }
+
+  const BagStack = ({ navigation }) => {
+    const handleNavigate = screenName => {
+      const jumpToAction = TabActions.jumpTo('BagStack')
+      navigation.dispatch(jumpToAction)
+      navigation.navigate(screenName)
+    }
+
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="BagPage" component={BagPage} options={{ title: 'BagPage' }} />
         <Stack.Screen
           name="ReturnMethod"
           component={ReturnMethod}
           options={{ title: 'ReturnMethod' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="UserNavigation"
-          component={ProfileStack}
-          options={{ title: 'UserNavigation' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="ProductDetail"
-          component={ProductDetail}
-          options={{ title: 'ProductDetail' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="MyChecks"
-          component={MyChecks}
-          options={{ title: 'MyChecks' }}
-        ></Stack.Screen>
-
-        <Stack.Screen
-          name="PayPage"
-          component={PayPage}
-          options={{ title: 'PayPage' }}
-        ></Stack.Screen>
-        <Stack.Screen name="Login" component={Login} options={{ title: 'Login' }}></Stack.Screen>
-        <Stack.Screen
-          name="Register"
-          component={Register}
-          options={{ title: 'Register' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="ForgotPassword"
-          component={ForgotPassword}
-          options={{ title: 'ForgotPassword' }}
-        ></Stack.Screen>
+        />
+        <Stack.Screen name="MyChecks" component={MyChecks} options={{ title: 'MyChecks' }} />
+        <Stack.Screen name="PayPage" component={PayPage} options={{ title: 'PayPage' }} />
+        <Stack.Screen name="ShopStack" component={ShopStack} options={{ title: 'ShopStack' }} />
         <Stack.Screen
           name="WebViewPayment"
           component={WebViewPayment}
           options={{ title: 'WebViewPayment' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="Favorites"
-          component={Favorites}
-          options={{ title: 'Favorites' }}
-        ></Stack.Screen>
+        />
+        <Stack.Screen name="UserNavigation" component={UserNavigation} />
       </Stack.Navigator>
     )
   }
 
-  const ProfileStack = () => {
+  const ProfileStack = ({ navigation }) => {
+    const handleNavigate = screenName => {
+      const jumpToAction = TabActions.jumpTo('ProfileStack')
+      navigation.dispatch(jumpToAction)
+      navigation.navigate(screenName)
+    }
+
     return user ? (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{ title: 'Profile' }}
-        ></Stack.Screen>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Profile" component={Profile} options={{ title: 'Profile' }} />
         <Stack.Screen
           name="ReturnMethod"
           component={ReturnMethod}
           options={{ title: 'ReturnMethod' }}
-        ></Stack.Screen>
-        <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }}></Stack.Screen>
-        <Stack.Screen
-          name="HomePage"
-          component={HomePage}
-          options={{ title: 'HomePage' }}
-        ></Stack.Screen>
+        />
+        <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }} />
         <Stack.Screen
           name="SettingProfile"
           component={SettingProfile}
           options={{ title: 'SettingProfile' }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="EditProfile"
           component={EditProfile}
           options={{ title: 'EditProfile' }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="EditAddress"
           component={EditAddress}
           options={{ title: 'EditAddress' }}
-        ></Stack.Screen>
-        <Stack.Screen name="Edit" component={Edit} options={{ title: 'Edit' }}></Stack.Screen>
-        <Stack.Screen
-          name="GoogleMaps"
-          component={GoogleMaps}
-          options={{ title: 'GoogleMaps' }}
-        ></Stack.Screen>
+        />
+        <Stack.Screen name="Edit" component={Edit} options={{ title: 'Edit' }} />
+        <Stack.Screen name="GoogleMaps" component={GoogleMaps} options={{ title: 'GoogleMaps' }} />
+        <Stack.Screen name="UserNavigation" component={UserNavigation} />
       </Stack.Navigator>
     ) : (
       UserNavigation()
     )
   }
 
-  const UserNavigation = props => {
-    return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: { display: 'none' }
-        }}
-      >
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-      </Stack.Navigator>
-    )
-  }
+  const UserNavigation = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' } }}>
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Register" component={Register} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="FavoriteStack" component={FavoriteStack} />
+    </Stack.Navigator>
+  )
 
   return (
     <StorageProvider>

@@ -1,6 +1,6 @@
 import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import {
   Animated,
@@ -14,19 +14,18 @@ import {
   TouchableOpacity,
   View
 } from 'react-native'
+import Modal from 'react-native-modal'
 import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
-
-import Modal from 'react-native-modal'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
-const Favorites = props => {
-  const { navigation } = props
+const Favorites = () => {
+  const navigation = useNavigation()
   const { storageFavorites, setStorageFavorites } = useStorage()
   const { storageData, setStorageData } = useStorage()
   const { user } = useContext(UserContext)
@@ -39,10 +38,8 @@ const Favorites = props => {
   const [selected, setSelected] = useState()
   const [itemStates, setItemStates] = useState()
   const numColum = 2
-  const [length, setlength] = useState(null)
   const position = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current
   const scale = new Animated.Value(1)
-  const scrollY = useRef(new Animated.Value(0)).current
 
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -80,7 +77,6 @@ const Favorites = props => {
       //  text2: 'Đây là một cái gì đó '
     })
   }
-
   const showToastSuccess = title => {
     setTimeout(() => {
       Toast.show({
@@ -91,7 +87,7 @@ const Favorites = props => {
         text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' },
         //  text2: 'Đây là một cái gì đó '
         onPress: () => {
-          navigation.navigate('BagPage')
+          navigation.navigate('BagStack')
         }
       })
     }, 3000)
@@ -104,21 +100,20 @@ const Favorites = props => {
         Animated.parallel([
           Animated.timing(scale, {
             toValue: 0, // Thu nhỏ modal
-            duration: 300, // Thời gian thu nhỏ (500ms)
+            duration: 400, // Thời gian thu nhỏ (400ms)
             useNativeDriver: true
           }),
           Animated.timing(position, {
-            toValue: { x: windowWith, y: -windowHeight }, // Di chuyển modal về góc trên cùng tay phải (giá trị điều chỉnh theo yêu cầu)
-            duration: 800, // Thời gian di chuyển (500ms)
+            toValue: { x: windowWith - 300, y: windowHeight - 300 }, // Di chuyển modal về góc trên cùng tay phải (giá trị điều chỉnh theo yêu cầu)
+            duration: 800, // Thời gian di chuyển (400ms)
             useNativeDriver: true
           })
         ]).start(() => handleOffModalCart())
-      }, 300)
+      }, 400)
     }
   }, [modalAddToCart])
   const handleOffModalCart = () => {
     setModalAddToCart(false)
-    setlength(storageData.length)
   }
   const showModalAddToCart = () => {
     const { product_Name, image, base_price } = itemStates
@@ -334,7 +329,7 @@ const Favorites = props => {
               padding: 16,
               borderRadius: 4
             }}
-            onPress={() => props.navigation.navigate('HomeStack')}
+            onPress={() => navigation.navigate('HomeStack')}
           >
             <Text
               style={[
@@ -372,102 +367,118 @@ const Favorites = props => {
     }
   }
 
+  const handleClickItem = item => {
+    const { _id, product_id } = item
+    navigation.navigate('ShopStack', {
+      screen: 'ProductDetail',
+      params: { _id, product_id }
+    })
+  }
+
   // renderItem
   const renderItemFavorite = ({ item }) => {
     const { image, product_Name, base_price, color, nameCategoryById } = item
     const formattedBasePrice = formatCurrency(base_price)
     return (
-      <KeyboardAvoidingView style={{ flexDirection: 'row' }}>
-        <View style={{ width: windowWith / 2 }}>
-          <View
-            style={{
-              backgroundColor: Colors.grayBg
-            }}
-          >
-            <Image
-              style={{ width: '100%', height: windowHeight / 3, resizeMode: 'contain' }}
-              source={{
-                uri: image
+      <TouchableOpacity onPress={() => handleClickItem(item)}>
+        <KeyboardAvoidingView style={{ flexDirection: 'row' }}>
+          <View style={{ width: windowWith / 2 }}>
+            <View
+              style={{
+                backgroundColor: Colors.grayBg
               }}
-            />
-            <View style={{ position: 'absolute', right: 16, top: '62%' }}>
-              <TouchableOpacity
-                onPress={() => handleDeleteFavorite(item)}
-                style={{
-                  padding: 4,
-                  backgroundColor: Colors.white,
-                  borderRadius: 100
+            >
+              <Image
+                style={{ width: '100%', height: windowHeight / 3, resizeMode: 'contain' }}
+                source={{
+                  uri: image
                 }}
-              >
-                <Icons.Feather name={'trash-2'} size={20} color={Colors.black} />
-              </TouchableOpacity>
-            </View>
-            <View style={{ padding: 16 }}>
-              <Text numberOfLines={1} style={[styles.txt_title, { fontSize: 14, marginBottom: 4 }]}>
-                {product_Name}
-              </Text>
-              <Text numberOfLines={1} style={[styles.txt_title, { fontSize: 14, marginBottom: 4 }]}>
-                {formattedBasePrice}
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: 4
-                }}
-              >
-                <MyText numberOfLines={1} style={styles.txt_description}>
-                  Loại trang phục:
-                </MyText>
-                <Text numberOfLines={1} style={[styles.txt_title, { fontSize: 10 }]}>
-                  {nameCategoryById}
-                </Text>
+              />
+              <View style={{ position: 'absolute', right: 16, top: '62%' }}>
+                <TouchableOpacity
+                  onPress={() => handleDeleteFavorite(item)}
+                  style={{
+                    padding: 4,
+                    backgroundColor: Colors.white,
+                    borderRadius: 100
+                  }}
+                >
+                  <Icons.Feather name={'trash-2'} size={20} color={Colors.black} />
+                </TouchableOpacity>
               </View>
-              <View
+              <View style={{ padding: 16 }}>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.txt_title, { fontSize: 14, marginBottom: 4 }]}
+                >
+                  {product_Name}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.txt_title, { fontSize: 14, marginBottom: 4 }]}
+                >
+                  {formattedBasePrice}
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: 4
+                  }}
+                >
+                  <MyText numberOfLines={1} style={styles.txt_description}>
+                    Loại trang phục:
+                  </MyText>
+                  <Text numberOfLines={1} style={[styles.txt_title, { fontSize: 10 }]}>
+                    {nameCategoryById}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}
+                >
+                  <MyText numberOfLines={1} style={styles.txt_description}>
+                    Màu sắc:
+                  </MyText>
+                  <Text numberOfLines={1} style={[styles.txt_title, { fontSize: 10 }]}>
+                    {color}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={{ paddingHorizontal: 8 }}>
+              <TouchableOpacity
+                onPress={() => handleSelectAndPresentModal(item)}
                 style={{
+                  backgroundColor: Colors.black,
                   flexDirection: 'row',
-                  justifyContent: 'space-between',
+                  justifyContent: 'center',
+                  padding: 16,
                   alignItems: 'center'
                 }}
               >
-                <MyText numberOfLines={1} style={styles.txt_description}>
-                  Màu sắc:
+                <Icons.FontAwesome name={'shopping-bag'} size={16} color={Colors.white} />
+                <MyText
+                  fontFamily={'Montserrat-SemiBold'}
+                  style={{
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: '600',
+                    marginStart: 8
+                  }}
+                >
+                  Thêm
                 </MyText>
-                <Text numberOfLines={1} style={[styles.txt_title, { fontSize: 10 }]}>
-                  {color}
-                </Text>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
-
-          <View style={{ paddingHorizontal: 8 }}>
-            <TouchableOpacity
-              onPress={() => handleSelectAndPresentModal(item)}
-              style={{
-                backgroundColor: Colors.black,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                padding: 16,
-                alignItems: 'center'
-              }}
-            >
-              <Icons.FontAwesome name={'shopping-bag'} size={16} color={Colors.white} />
-              <MyText
-                fontFamily={'Montserrat-SemiBold'}
-                style={{
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: '600',
-                  marginStart: 8
-                }}
-              >
-                Thêm
-              </MyText>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </TouchableOpacity>
     )
   }
 
@@ -534,7 +545,7 @@ const Favorites = props => {
         noFavorite()
       )}
       <BottomSheet
-        height={450}
+        height={500}
         style={{ backgroundColor: Colors.white }}
         ref={sheetRef}
         onClose={() => handleCloseBottomSheet()}
@@ -662,7 +673,11 @@ const Favorites = props => {
               </View>
             </View>
             <TouchableOpacity
-              onPress={() => props.navigation.navigate('SizeInfo')}
+              onPress={() =>
+                navigation.navigate('ShopStack', {
+                  screen: 'SizeInfo'
+                })
+              }
               style={{
                 justifyContent: 'space-between',
                 flexDirection: 'row',

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useFocusEffect, useIsFocused } from '@react-navigation/native'
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -22,12 +22,11 @@ const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 const ItemCategories = props => {
   const {
-    navigation,
     route: {
       params: { categoryById, _products }
     }
   } = props
-  const sheetRef = useRef(null)
+  const navigation = useNavigation()
   const { storageFavorites, setStorageFavorites } = useStorage()
   const [windowWith, setwindowWith] = useState(width)
   const [windowHeight, setwindowHeight] = useState(height)
@@ -43,6 +42,7 @@ const ItemCategories = props => {
   const [isShowProducts, setIsShowProducts] = useState(false)
   const [productsParent, setproductsParent] = useState([])
   const [favoritesIds, setFavoritesIds] = useState([])
+  const [_id, set_id] = useState(null)
 
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -86,6 +86,7 @@ const ItemCategories = props => {
             setnameCategoryById(response.name)
             const { _id, name, parentID, image } = response
             const arr = response.child
+            set_id(response._id)
             setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
             setwindowWith(width / 2)
             setwindowHeight(height / 2.4)
@@ -110,7 +111,6 @@ const ItemCategories = props => {
   }
   const handlePressProduct = () => {
     if (isShowProducts == true) {
-      // console.log(JSON.stringify(imagesModel, null, 2))
       const newData = products.map((item, index) => {
         ;[item.images[0], item.images[1]] = [item.images[1], item.images[0]]
         return item
@@ -234,18 +234,7 @@ const ItemCategories = props => {
   }
 
   const renderItems = ({ item }) => {
-    const {
-      _id,
-      name,
-      images,
-      base_price,
-      discount_price,
-      category_id,
-      attributes,
-      description,
-      product_id,
-      code
-    } = item
+    const { _id, name, images, base_price, product_id } = item
     const formattedCurrency = formatCurrency(base_price)
 
     return (
@@ -300,15 +289,8 @@ const ItemCategories = props => {
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('ProductDetail', {
-                product_id: product_id,
-                product_Name: name,
-                images: images,
-                base_price: base_price,
-                category_id: category_id,
-                attributes: attributes,
-                description: description,
-                code: code,
-                discount_price: discount_price
+                _id: _id,
+                product_id: product_id
               })
             }
             style={{
@@ -352,7 +334,7 @@ const ItemCategories = props => {
             <Icons.Ionicons name={'chevron-back'} size={24} />
           </TouchableOpacity>
           <Text style={styles.txt_title}>{nameCategoryById}</Text>
-          <TouchableOpacity onPress={() => props.navigation.navigate('SearchPage')}>
+          <TouchableOpacity onPress={() => navigation.navigate('SearchPage')}>
             <Icons.Ionicons name={'search'} size={24} />
           </TouchableOpacity>
         </View>

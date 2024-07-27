@@ -51,3 +51,20 @@ export const register = async (email, password, username) => {
     throw error // Ném lỗi để bên ngoài có thể xử lý tiếp
   }
 }
+
+export const forgotPass = async email => {
+  try {
+    if (!email) {
+      console.log('AxiosInstance:', 'Vui lòng nhập đầy đủ tài khoản và mật khẩu')
+      return
+    }
+    const url = '/users/forgot-password'
+    const body = {
+      email: email
+    }
+    const res = await AxiosInstance().post(url, body)
+    ToastAndroid.show('Đã gửi Email khôi phục thành công', ToastAndroid.SHORT)
+    return res
+  } catch (error) {}
+}
+export default {forgotPass}

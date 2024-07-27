@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
   Dimensions,
@@ -23,11 +24,11 @@ const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 const PayPage = props => {
   const {
-    navigation,
     route: {
       params: { shippingFee }
     }
   } = props
+  const navigation = useNavigation()
   const { storageData, setStorageData } = useStorage()
   const [showOrderDetails, setShowOrderDetails] = useState(false)
   const goBack = () => {
@@ -426,7 +427,7 @@ const PayPage = props => {
         </Text>
         <Text style={[styles.txt_description, { marginTop: 16 }]}>Đăng nhập ngay bây giờ *</Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation.navigate('UserNavigation', { screen: 'Login' })}
           style={{ backgroundColor: Colors.black, padding: 16, marginVertical: 16 }}
         >
           <Text

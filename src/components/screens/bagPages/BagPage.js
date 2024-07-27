@@ -1,6 +1,6 @@
 import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
+import { useNavigation } from '@react-navigation/native'
 import { useContext, useEffect, useRef, useState } from 'react'
 import {
   Dimensions,
@@ -12,7 +12,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View
 } from 'react-native'
 import Toast from 'react-native-toast-message'
@@ -26,7 +25,7 @@ const windowHeight = Dimensions.get('window').height
 const BagPage = props => {
   const { user } = useContext(UserContext)
   const sheetRef = useRef(null)
-  const { navigation } = props
+  const navigation = useNavigation()
   // sate selected code sale off
   const [selected, setSelected] = useState(DataCodeSale)
   const [selectedCodeSale, setSelectedCodeSale] = useState()
@@ -223,11 +222,7 @@ const BagPage = props => {
           {!user ? (
             <TouchableOpacity
               style={{ backgroundColor: Colors.black2, paddingVertical: 16 }}
-              onPress={() =>
-                navigation.navigate('ProfileStack', {
-                  screen: 'Login'
-                })
-              }
+              onPress={() => navigation.navigate('UserNavigation', { screen: 'Login' })}
             >
               <Text
                 style={{
@@ -275,11 +270,7 @@ const BagPage = props => {
               />
             </View>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('ProfileStack', {
-                  screen: 'Register'
-                })
-              }
+              onPress={() => navigation.navigate('UserNavigation', { screen: 'Register' })}
               style={{
                 backgroundColor: Colors.white,
                 paddingVertical: 16,
@@ -347,30 +338,12 @@ const BagPage = props => {
     setStorageData(newStorageData)
   }
 
-  const handlePressProductItem = item => {
-    const {
-      base_price,
-      product_id,
-      product_Name,
-      images,
-      description,
-      code,
-      discount_price,
-      category_id,
-      attributes
-    } = item
-    console.log(JSON.stringify(item, null, 2))
-    // navigation.navigate('ProductDetail', {
-    //   product_id: product_id,
-    //   product_Name: product_Name,
-    //   images: images,
-    //   base_price: base_price,
-    //   category_id: category_id,
-    //   attributes: attributes,
-    //   description: description,
-    //   code: code,
-    //   discount_price: discount_price
-    // })
+  const handleClickItem = item => {
+    const { _id, product_id } = item
+    navigation.navigate('ShopStack', {
+      screen: 'ProductDetail',
+      params: { _id: _id, product_id: product_id }
+    })
   }
 
   const ItemCart = ({ item, index }) => {
@@ -381,16 +354,16 @@ const BagPage = props => {
     const formattedPriceProduct = formatCurrency(newPrice.newPrice)
 
     return (
-      <SafeAreaView style={{ marginBottom: 24 }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            backgroundColor: Colors.white,
-            borderRadius: 8,
-            marginHorizontal: 16
-          }}
-        >
-          <TouchableWithoutFeedback onPress={() => handlePressProductItem(item)}>
+      <TouchableOpacity onPress={() => handleClickItem(item)}>
+        <SafeAreaView style={{ marginBottom: 24 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              backgroundColor: Colors.white,
+              borderRadius: 8,
+              marginHorizontal: 16
+            }}
+          >
             <Image
               style={{
                 width: 104,
@@ -400,127 +373,139 @@ const BagPage = props => {
               }}
               source={{ uri: image }}
             />
-          </TouchableWithoutFeedback>
 
-          <View
-            style={{
-              flex: 1,
-              paddingHorizontal: 16,
-              paddingVertical: 12,
-              backgroundColor: Colors.white
-            }}
-          >
-            <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_price}>
-              {product_Name}
-            </MyText>
             <View
               style={{
-                flexDirection: 'column',
-                marginVertical: 8,
-                justifyContent: 'space-between'
+                flex: 1,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                backgroundColor: Colors.white
               }}
             >
-              <View style={{ flexDirection: 'row', width: windowWith / 2.2 }}>
-                <MyText
-                  fontFamily={'Montserrat-SemiBold'}
-                  style={{ color: Colors.gray, fontSize: 12 }}
-                >
-                  Màu sắc:
-                </MyText>
-                <Text
-                  numberOfLines={1}
-                  style={{
-                    color: Colors.black,
-                    marginStart: 8,
-                    fontWeight: '500',
-                    fontFamily: 'Montserrat-SemiBold',
-                    fontSize: 12
-                  }}
-                >
-                  {color}
-                </Text>
-              </View>
-              <View style={{ height: 8 }} />
+              <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_price}>
+                {product_Name}
+              </MyText>
               <View
                 style={{
-                  flexDirection: 'row'
+                  flexDirection: 'column',
+                  marginVertical: 8,
+                  justifyContent: 'space-between'
                 }}
               >
-                <MyText
-                  fontFamily={'Montserrat-SemiBold'}
-                  style={{ color: Colors.gray, fontSize: 12 }}
+                <View style={{ flexDirection: 'row', width: windowWith / 2.2 }}>
+                  <MyText
+                    fontFamily={'Montserrat-SemiBold'}
+                    style={{ color: Colors.gray, fontSize: 12 }}
+                  >
+                    Màu sắc:
+                  </MyText>
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      color: Colors.black,
+                      marginStart: 8,
+                      fontWeight: '500',
+                      fontFamily: 'Montserrat-SemiBold',
+                      fontSize: 12
+                    }}
+                  >
+                    {color}
+                  </Text>
+                </View>
+                <View style={{ height: 8 }} />
+                <View
+                  style={{
+                    flexDirection: 'row'
+                  }}
                 >
-                  Size:
-                </MyText>
-                <MyText
-                  fontFamily={'Montserrat-SemiBold'}
-                  style={{ color: Colors.black, marginStart: 8, fontSize: 12 }}
-                >
-                  {size}
-                </MyText>
+                  <MyText
+                    fontFamily={'Montserrat-SemiBold'}
+                    style={{ color: Colors.gray, fontSize: 12 }}
+                  >
+                    Size:
+                  </MyText>
+                  <MyText
+                    fontFamily={'Montserrat-SemiBold'}
+                    style={{ color: Colors.black, marginStart: 8, fontSize: 12 }}
+                  >
+                    {size}
+                  </MyText>
+                </View>
               </View>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: 16
-              }}
-            >
               <View
                 style={{
                   flexDirection: 'row',
-                  alignItems: 'center'
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: 16
                 }}
               >
-                <TouchableOpacity
-                  onPress={() => handlePlus(item, priceProduct)}
+                <View
                   style={{
-                    padding: 6,
-                    backgroundColor: Colors.white,
-                    borderRadius: 50,
-                    elevation: 8,
-                    shadowColor: Colors.gray
+                    flexDirection: 'row',
+                    alignItems: 'center'
                   }}
                 >
-                  <Icons.AntDesign name={'plus'} size={18} />
-                </TouchableOpacity>
-                <MyText
-                  fontFamily={'Montserrat-SemiBold'}
-                  style={{ textAlign: 'center', marginHorizontal: 16, fontSize: 12 }}
-                >
-                  {quantity}
-                </MyText>
-                <TouchableOpacity
-                  onPress={() => handleMinus(item)}
-                  style={{
-                    padding: 6,
-                    backgroundColor: Colors.white,
-                    borderRadius: 50,
-                    elevation: 8,
-                    shadowColor: Colors.gray
-                  }}
-                >
-                  <Icons.AntDesign name={'minus'} size={18} />
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handlePlus(item, priceProduct)}
+                    style={{
+                      padding: 6,
+                      backgroundColor: Colors.white,
+                      borderRadius: 50,
+                      elevation: 8,
+                      shadowColor: Colors.gray
+                    }}
+                  >
+                    <Icons.AntDesign name={'plus'} size={18} />
+                  </TouchableOpacity>
+                  <MyText
+                    fontFamily={'Montserrat-SemiBold'}
+                    style={{ textAlign: 'center', marginHorizontal: 16, fontSize: 12 }}
+                  >
+                    {quantity}
+                  </MyText>
+                  <TouchableOpacity
+                    onPress={() => handleMinus(item)}
+                    style={{
+                      padding: 6,
+                      backgroundColor: Colors.white,
+                      borderRadius: 50,
+                      elevation: 8,
+                      shadowColor: Colors.gray
+                    }}
+                  >
+                    <Icons.AntDesign name={'minus'} size={18} />
+                  </TouchableOpacity>
+                </View>
+                <MyText style={{ fontSize: 12, fontWeight: '500' }}>{formattedPriceProduct}</MyText>
               </View>
-              <MyText style={{ fontSize: 12, fontWeight: '500' }}>{formattedPriceProduct}</MyText>
+              {visiblePopupMenu === attributes ? popupMenu(attributes, item) : null}
             </View>
-            {visiblePopupMenu === attributes ? popupMenu(attributes, item) : null}
-          </View>
-          <TouchableOpacity
-            onPress={() => handleStatusProduct(attributes)}
-            style={{
-              borderTopRightRadius: 8
-            }}
-          >
-            {visiblePopupMenu === attributes ? (
-              <TouchableOpacity onPress={() => setVisiblePopupMenu(!visiblePopupMenu)}>
-                <Icons.Feather
-                  name={'x'}
+            <TouchableOpacity
+              onPress={() => handleStatusProduct(attributes)}
+              style={{
+                borderTopRightRadius: 8
+              }}
+            >
+              {visiblePopupMenu === attributes ? (
+                <TouchableOpacity onPress={() => setVisiblePopupMenu(!visiblePopupMenu)}>
+                  <Icons.Feather
+                    name={'x'}
+                    size={18}
+                    color={Colors.red}
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      padding: 8,
+                      borderTopRightRadius: 8
+                    }}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <Icons.Entypo
+                  name={'dots-three-vertical'}
                   size={18}
-                  color={Colors.red}
+                  color={Colors.gray}
                   style={{
                     position: 'absolute',
                     right: 0,
@@ -528,23 +513,11 @@ const BagPage = props => {
                     borderTopRightRadius: 8
                   }}
                 />
-              </TouchableOpacity>
-            ) : (
-              <Icons.Entypo
-                name={'dots-three-vertical'}
-                size={18}
-                color={Colors.gray}
-                style={{
-                  position: 'absolute',
-                  right: 0,
-                  padding: 8,
-                  borderTopRightRadius: 8
-                }}
-              />
-            )}
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+              )}
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </TouchableOpacity>
     )
   }
 
@@ -629,7 +602,7 @@ const BagPage = props => {
               Đăng nhập để sử dụng các ưu đãi cá nhân!
             </MyText>
             <TouchableOpacity
-              onPress={() => navigation.navigate('UserNavigation')}
+              onPress={() => navigation.navigate('UserNavigation', { screen: 'Login' })}
               style={{
                 backgroundColor: Colors.white,
                 paddingVertical: 16,
@@ -758,9 +731,6 @@ const BagPage = props => {
     )
   }
 
-  const goBack = () => {
-    navigation.goBack()
-  }
   return (
     <View
       style={{
@@ -771,7 +741,7 @@ const BagPage = props => {
     >
       <View style={[styles.header]}>
         <View style={{ flexDirection: 'row' }}>
-          <TouchableOpacity onPress={() => goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icons.Ionicons name={'arrow-back-sharp'} size={24} color={Colors.black} />
           </TouchableOpacity>
           <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_header}>
