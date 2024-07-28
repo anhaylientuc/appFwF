@@ -1007,7 +1007,7 @@ const ProductDetail = props => {
                       justifyContent: 'center',
                       alignItems: 'center',
                       borderRadius: 8,
-                      width: 100,
+                      width: 94,
                       padding: 12,
                       marginEnd: 16,
                       marginBottom: 16,

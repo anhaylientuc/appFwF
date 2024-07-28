@@ -21,6 +21,7 @@ const Profile = props => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('user')
+      await AsyncStorage.clear()
       setUser(undefined) // Clear user context
       navigation.navigate('Login') // Redirect to login screen or any other screen
     } catch (error) {

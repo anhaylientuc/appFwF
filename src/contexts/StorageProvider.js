@@ -7,6 +7,7 @@ const StorageProvider = ({ children }) => {
   const [storageData, setStorageData] = useState([])
   const [userData, setuserData] = useState({})
   const [storageFavorites, setStorageFavorites] = useState([])
+
   const getDataProducts = async () => {
     const result = await AsyncStorage.getItem('my-cart')
     if (result !== null) {
@@ -25,6 +26,7 @@ const StorageProvider = ({ children }) => {
       setStorageFavorites(JSON.parse(result))
     }
   }
+
   useEffect(() => {
     getDataProducts()
     getDataUser()
@@ -36,8 +38,10 @@ const StorageProvider = ({ children }) => {
       value={{
         storageData,
         storageFavorites,
+
         setStorageData,
         setStorageFavorites,
+
         getDataProducts,
         getDataFavorites
       }}

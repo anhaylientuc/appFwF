@@ -11,12 +11,12 @@ import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
 import WebViewPayment from 'src/components/screens/bagPages/WebViewPayment'
 import Favorites from 'src/components/screens/favoritesPage/Favorites'
 import HomePage from 'src/components/screens/homePages/HomePage'
-import EditAddress from 'src/components/screens/profilePage/EditAddress'
-import EditProfile from 'src/components/screens/profilePage/EditProfile'
-import GoogleMaps from 'src/components/screens/profilePage/GoogleMaps'
-import MyOder from 'src/components/screens/profilePage/MyOder'
-import SettingProfile from 'src/components/screens/profilePage/SettingProfile'
-import Edit from 'src/components/screens/profilePage/edit'
+import EditAddress from 'src/components/screens/profilePages/EditAddress'
+import EditProfile from 'src/components/screens/profilePages/EditProfile'
+import GoogleMaps from 'src/components/screens/profilePages/GoogleMaps'
+import MyOder from 'src/components/screens/profilePages/MyOder'
+import SettingProfile from 'src/components/screens/profilePages/SettingProfile'
+import Edit from 'src/components/screens/profilePages/edit'
 import Categories from 'src/components/screens/shopPages/Categories'
 import ItemCategories from 'src/components/screens/shopPages/ItemCategories'
 import ProductDetail from 'src/components/screens/shopPages/ProductDetail'
@@ -26,14 +26,14 @@ import ShopPage from 'src/components/screens/shopPages/ShopPage'
 import SizeInfo from 'src/components/screens/shopPages/SizeInfo'
 import DetailFilter from 'src/components/screens/shopPages/filterScreens/DetailFilter'
 import Filter from 'src/components/screens/shopPages/filterScreens/Filter'
-import ForgotPassword from 'src/components/screens/user/screen/ForgotPassword/ForgotPassword'
-import Login from 'src/components/screens/user/screen/Login'
-import Register from 'src/components/screens/user/screen/Register'
+import ForgotPassword from 'src/components/screens/users/ForgotPassword'
+import Login from 'src/components/screens/users/Login'
+import Register from 'src/components/screens/users/Register'
 import Colors from 'src/constants/Colors'
 import { FilterProvider } from 'src/contexts/FilterProvider'
 import StorageProvider from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
-import Profile from '../components/screens/profilePage/Profile'
+import Profile from '../components/screens/profilePages/Profile'
 
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
@@ -43,12 +43,6 @@ function MainNavigator() {
   const navigation = useNavigation()
 
   const ShopStack = ({ navigation }) => {
-    const handleNavigate = screenName => {
-      const jumpToAction = TabActions.jumpTo('ShopStack')
-      navigation.dispatch(jumpToAction)
-      navigation.navigate(screenName)
-    }
-
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="ShopPage" component={ShopPage} options={{ title: 'Trang chủ Shop' }} />
@@ -92,27 +86,19 @@ function MainNavigator() {
   )
 
   const FavoriteStack = ({ navigation }) => {
-    const handleNavigate = screenName => {
-      const jumpToAction = TabActions.jumpTo('FavoriteStack')
-      navigation.dispatch(jumpToAction)
-      navigation.navigate(screenName)
-    }
-
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Favorites" component={Favorites} options={{ title: 'Favorite' }} />
-        <Stack.Screen name="ShopStack" component={ShopStack} options={{ title: 'ShopStack' }} />
+        <Stack.Screen
+          name="ProductDetail"
+          component={ProductDetail}
+          options={{ title: 'ProductDetail', tabBarStyle: { display: 'none' } }}
+        />
       </Stack.Navigator>
     )
   }
 
   const BagStack = ({ navigation }) => {
-    const handleNavigate = screenName => {
-      const jumpToAction = TabActions.jumpTo('BagStack')
-      navigation.dispatch(jumpToAction)
-      navigation.navigate(screenName)
-    }
-
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="BagPage" component={BagPage} options={{ title: 'BagPage' }} />
@@ -123,7 +109,11 @@ function MainNavigator() {
         />
         <Stack.Screen name="MyChecks" component={MyChecks} options={{ title: 'MyChecks' }} />
         <Stack.Screen name="PayPage" component={PayPage} options={{ title: 'PayPage' }} />
-        <Stack.Screen name="ShopStack" component={ShopStack} options={{ title: 'ShopStack' }} />
+        <Stack.Screen
+          name="ProductDetail"
+          component={ProductDetail}
+          options={{ title: 'ProductDetail', tabBarStyle: { display: 'none' } }}
+        />
         <Stack.Screen
           name="WebViewPayment"
           component={WebViewPayment}

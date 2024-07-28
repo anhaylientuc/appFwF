@@ -60,19 +60,16 @@ const ItemCategories = props => {
       if (navigation) {
         setBottomBar()
       }
-    }, [navigation])
-  )
-
-  useEffect(() => {
-    const loadFavorites = async () => {
-      const storedFavorites = await AsyncStorage.getItem('my-favorites')
-      if (storedFavorites) {
-        const favorites = JSON.parse(storedFavorites)
-        setFavoritesIds(favorites.map(favorite => favorite._id))
+      const loadFavorites = async () => {
+        const storedFavorites = await AsyncStorage.getItem('my-favorites')
+        if (storedFavorites) {
+          const favorites = JSON.parse(storedFavorites)
+          setFavoritesIds(favorites.map(favorite => favorite._id))
+        }
       }
-    }
-    loadFavorites()
-  }, [storageFavorites])
+      loadFavorites()
+    }, [navigation, storageFavorites])
+  )
 
   useEffect(() => {
     const fetchData = async () => {

@@ -477,13 +477,13 @@ const PayPage = props => {
 
           <View
             style={{
-              flex: 1,
+              width: windowWith / 2,
               paddingHorizontal: 16,
               paddingVertical: 12,
               backgroundColor: Colors.white
             }}
           >
-            <Text style={[styles.txt_description, { fontSize: 14 }]}>{product_Name}</Text>
+            <Text style={[styles.txt_title, { fontSize: 14 }]}>{product_Name}</Text>
             <Text style={[styles.txt_description, { fontSize: 14, marginTop: 4 }]}>
               {formattedBasePriceProduct}
             </Text>
@@ -491,11 +491,12 @@ const PayPage = props => {
               style={{
                 flexDirection: 'column',
                 marginVertical: 8,
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                flex: 1
               }}
             >
-              <View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
                   <Text style={styles.txt_description_items}>Mã số :</Text>
                   <Text numberOfLines={1} style={styles.txt_description_items}>
                     {code}
@@ -518,15 +519,9 @@ const PayPage = props => {
                   <Text style={styles.txt_description_items}>Số lượng</Text>
                   <Text style={styles.txt_description_items}>{quantity}</Text>
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={styles.txt_description_items}>Tổng</Text>
-                  <Text style={styles.txt_description_items}>{formattedPriceProduct}</Text>
+                  <Text style={[styles.txt_description_items]}>{formattedPriceProduct}</Text>
                 </View>
               </View>
             </View>
