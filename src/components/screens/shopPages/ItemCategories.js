@@ -164,6 +164,8 @@ const ItemCategories = props => {
       await AsyncStorage.setItem('my-favorites', JSON.stringify(newStorage))
     }
   }
+
+
   const handleColum = () => {
     if (numColumns) {
       setNumColumns(null)
@@ -287,7 +289,8 @@ const ItemCategories = props => {
             onPress={() =>
               navigation.navigate('ProductDetail', {
                 _id: _id,
-                product_id: product_id
+                product_id: product_id,
+                nameCategoryById: nameCategoryById
               })
             }
             style={{

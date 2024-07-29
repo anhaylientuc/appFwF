@@ -26,24 +26,53 @@ const BagPage = props => {
   const { user } = useContext(UserContext)
   const sheetRef = useRef(null)
   const navigation = useNavigation()
-  // sate selected code sale off
+  const { storageData, setStorageData } = useStorage()
+  const { storageFavorites, setStorageFavorites } = useStorage()
   const [selected, setSelected] = useState(DataCodeSale)
   const [selectedCodeSale, setSelectedCodeSale] = useState()
-  const { storageData, setStorageData } = useStorage()
+
   const [visiblePopupMenu, setVisiblePopupMenu] = useState(null)
   const [addFavorite, setAddFavorite] = useState(null)
   const [price, setPrice] = useState()
   const [transportFee, setTransportFee] = useState()
   const [cart, setCart] = useState([])
+  const [favoritesIds, setFavoritesIds] = useState([])
+
+  useEffect(() => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    const loadFavorites = async () => {
+      const storedFavorites = await AsyncStorage.getItem('my-favorites')
+      if (storedFavorites) {
+        const favorites = JSON.parse(storedFavorites)
+        setFavoritesIds(favorites.map(favorite => favorite._id))
+      }
+    }
+
+    loadFavorites()
+  }, [storageFavorites, navigation])
 
   const showToastDeleted = title => {
     Toast.show({
       type: 'info', // 'info' | 'error' | 'success'
-      text1: 'Xóa sản phẩm thành công ✔',
-      // text2: title + ' đã được xóa khỏi giỏ hàng',
-      text1Style: { fontSize: 12, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
+      text1: 'Xóa sản phẩm ✔',
+      text2: title,
+      text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
       text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
       //  text2: 'Đây là một cái gì đó '
+    })
+  }
+
+  const showToastSuccess = title => {
+    Toast.show({
+      type: 'success', // 'info' | 'error' | 'success'
+      text1: 'Thêm vào yêu thích ✔',
+      text2: '' + title,
+      text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
+      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' },
+      //  text2: 'Đây là một cái gì đó '
+      onPress: () => {
+        navigation.navigate('FavoriteStack')
+      }
     })
   }
 
@@ -59,9 +88,9 @@ const BagPage = props => {
   }
 
   // onClick title itemProduct set attributes_id
-  const handleStatusProduct = attributes => {
+  const handleStatusProduct = attributes_id => {
     // set attributes_id to PopupMenu
-    setVisiblePopupMenu(attributes)
+    setVisiblePopupMenu(attributes_id)
   }
   // duyệt mảng lấy tất cả giá tiền
   const allBasePrices = storageData.map(item => item.newPrice)
@@ -117,32 +146,65 @@ const BagPage = props => {
 
   // PopupMenu
 
-  const handleAddFavorites = attributes => {
-    console.log(attributes)
-    ;setAddFavorite(!addFavorite) &
-      console.log('Thêm vào yêu thích') &
-      setTimeout(() => {
-        setVisiblePopupMenu(false)
-      }, 2000)
+  const handleAddFavorites = async item => {
+    const {
+      _id,
+      image,
+      product_Name,
+      base_price,
+      color,
+      product_id,
+      category_id,
+      code,
+      discount_price,
+      nameCategoryById,
+      attributes
+    } = item
+    const newFavoritesProduct = {
+      _id: _id,
+      product_id: product_id,
+      product_Name: product_Name,
+      color: color,
+      category_id: category_id,
+      code: code,
+      base_price: base_price,
+      discount_price: discount_price,
+      nameCategoryById: nameCategoryById,
+      image: image,
+      attributes: attributes
+    }
+
+    // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích chưa
+    const isDuplicate = storageFavorites.some(favorite => favorite._id === _id)
+    if (!isDuplicate) {
+      const updateFavorites = [...storageFavorites, newFavoritesProduct]
+      setStorageFavorites(updateFavorites)
+      await AsyncStorage.setItem('my-favorites', JSON.stringify(updateFavorites))
+      handleDeleteFromList(product_Name, _id)
+    } else {
+      handleDeleteFromList(product_Name, _id)
+    }
   }
 
   // Logic: onClick delete Item from List
-  const handleDeleteFromList = async (attributes, product_Name) => {
+  const handleDeleteFromList = async (product_Name, _id) => {
     const result = await AsyncStorage.getItem('my-cart')
     let storage = []
     if (result !== null) {
       storage = JSON.parse(result)
     }
 
-    const newStorage = storage.filter(s => s.attributes !== visiblePopupMenu)
+    const newStorage = storage.filter(s => s.attributes_id !== visiblePopupMenu)
     setStorageData(newStorage)
     await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
     let title = product_Name
-    showToastDeleted(title)
+    if (_id) {
+      showToastSuccess(title)
+    } else showToastDeleted(title)
   }
 
   // Menu popup Item
-  const popupMenu = (attributes, item) => {
+  const popupMenu = (attributes_id, item) => {
     const { product_Name } = item
 
     return (
@@ -158,7 +220,7 @@ const BagPage = props => {
         }}
       >
         <TouchableOpacity
-          onPress={() => handleAddFavorites(attributes)}
+          onPress={() => handleAddFavorites(item)}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -185,7 +247,7 @@ const BagPage = props => {
           }}
         />
         <TouchableOpacity
-          onPress={() => handleDeleteFromList(attributes, product_Name)}
+          onPress={() => handleDeleteFromList(product_Name)}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -296,11 +358,11 @@ const BagPage = props => {
   }
 
   const handlePlus = item => {
-    const { quantity, attributes, cnt, base_price } = item
+    const { quantity, attributes_id, cnt, base_price } = item
     const newQuantity = quantity + 1
     const newPrice = base_price * newQuantity
     const newStorageData = storageData.map((val, index) => {
-      if (val.attributes === attributes && newQuantity <= val.cnt) {
+      if (val.attributes_id === attributes_id && newQuantity <= val.cnt) {
         return {
           ...val,
           quantity: newQuantity,
@@ -320,11 +382,11 @@ const BagPage = props => {
 
   // Số lượng giảm
   const handleMinus = item => {
-    const { quantity, attributes, cnt, base_price } = item
+    const { quantity, attributes_id, cnt, base_price } = item
     const newQuantity = quantity - 1
     let newPrice = base_price * newQuantity
     const newStorageData = storageData.map((val, index) => {
-      if (val.attributes === attributes && newQuantity >= 1) {
+      if (val.attributes_id === attributes_id && newQuantity >= 1) {
         console.log(val.quantity)
         return { ...val, quantity: newQuantity, base_price: base_price, newPrice: newPrice }
       } else {
@@ -347,10 +409,9 @@ const BagPage = props => {
   }
 
   const ItemCart = ({ item, index }) => {
-    const { product_Name, base_price, size, color, image, quantity, attributes } = item
+    const { product_Name, base_price, size, color, image, quantity, attributes_id } = item
     const priceProduct = base_price
     const newPrice = { ...item, newPrice: base_price * quantity }
-
     const formattedPriceProduct = formatCurrency(newPrice.newPrice)
 
     return (
@@ -479,15 +540,15 @@ const BagPage = props => {
                 </View>
                 <MyText style={{ fontSize: 12, fontWeight: '500' }}>{formattedPriceProduct}</MyText>
               </View>
-              {visiblePopupMenu === attributes ? popupMenu(attributes, item) : null}
+              {visiblePopupMenu === attributes_id ? popupMenu(attributes_id, item) : null}
             </View>
             <TouchableOpacity
-              onPress={() => handleStatusProduct(attributes)}
+              onPress={() => handleStatusProduct(attributes_id)}
               style={{
                 borderTopRightRadius: 8
               }}
             >
-              {visiblePopupMenu === attributes ? (
+              {visiblePopupMenu === attributes_id ? (
                 <TouchableOpacity onPress={() => setVisiblePopupMenu(!visiblePopupMenu)}>
                   <Icons.Feather
                     name={'x'}

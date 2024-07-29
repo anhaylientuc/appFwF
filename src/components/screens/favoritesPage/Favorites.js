@@ -152,6 +152,8 @@ const Favorites = () => {
     )
   }
 
+
+
   const handleSelectAndPresentModal = (item, index = null) => {
     // Đóng tab bar
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })

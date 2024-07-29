@@ -25,7 +25,7 @@ const EditAddress = props => {
 
   useEffect(() => {
     console.log('====================================')
-    const ok = user.shipping_address
+    const ok = user
     console.log('shipping_address: ', JSON.stringify(ok, null, 2))
   }, [user])
 
@@ -60,9 +60,7 @@ const EditAddress = props => {
   }
 
   const itemShippingAddress = () => {
-    console.log('====================================')
     console.log(user)
-    console.log('====================================')
   }
 
   const handleSave = async () => {
@@ -211,7 +209,7 @@ const EditAddress = props => {
         <TouchableOpacity onPress={() => navigation.navigate('Edit')}>
           <Text style={[styles.txt_title]}>Địa chỉ giao hàng</Text>
           <View style={{ height: 32 }} />
-          {user.length == [] ? (
+          {user.shipping_address == [] ? (
             <MyText style={[styles.txt_description, { color: Colors.gray }]}>
               Chưa có địa chỉ giao hàng được lưu
             </MyText>

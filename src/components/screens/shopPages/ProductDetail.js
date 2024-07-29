@@ -26,18 +26,16 @@ import ItemListNew from '../homePages/ItemListNews'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
-// const { height: screenHeight } = Dimensions.get('window')
 const ProductDetail = props => {
   const {
     route: {
-      params: { _id, product_id }
+      params: { _id, product_id, nameCategoryById }
     }
   } = props
   const navigation = useNavigation()
   const { storageData, setStorageData } = useStorage()
   const { storageFavorites, setStorageFavorites } = useStorage()
   const sheetRef = useRef(null)
-  const [isOpen, setIsOpen] = useState(false)
   const [thumbs, setthumbs] = useState([])
   const [selected, setSelected] = useState()
   const [wallPaper, setwallPaper] = useState([])
@@ -48,7 +46,6 @@ const ProductDetail = props => {
   const [cnt, setcnt] = useState()
   const [attributes_id, setattributes_id] = useState(null)
   const [quantity, setQuantity] = useState(1)
-  const [length, setlength] = useState(null)
   const [activated, setActivated] = useState(0)
   const [modalAddToCart, setModalAddToCart] = useState(false)
   const [favoritesIds, setFavoritesIds] = useState([])
@@ -62,6 +59,8 @@ const ProductDetail = props => {
   const [description, setdescription] = useState(null)
   const [code, setcode] = useState(null)
   const [discount_price, setdiscount_price] = useState(null)
+  const [category_id, setcategory_id] = useState(null)
+  const [attributes, setattributes] = useState()
 
   useEffect(() => {
     const listener = scrollY.addListener(({ value }) => {
@@ -78,11 +77,9 @@ const ProductDetail = props => {
       scrollY.removeListener(listener)
     }
   }, [scrollY])
-  useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-  }, [])
 
   useEffect(() => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const loadFavorites = async () => {
       const storedFavorites = await AsyncStorage.getItem('my-favorites')
       if (storedFavorites) {
@@ -114,16 +111,13 @@ const ProductDetail = props => {
             setdescription(item.description)
             setcode(item.code)
             setdiscount_price(item.discount_price)
-          }
-        })
-        const product_Name = thumb.map(i => i.name)
-        thumb.map(item => {
-          if (item._id == _id) {
+            setcategory_id(item.category_id)
+            setproduct_Name(item.name)
             setwallPaper(item.images)
+            setselectedId(item._id)
+            setattributes(item.attributes)
           }
         })
-        setproduct_Name(product_Name[0])
-        setselectedId(_id)
       } catch (error) {
         console.error('Error:', error)
       }
@@ -162,7 +156,7 @@ const ProductDetail = props => {
 
   const handleAddToCart = async () => {
     // Check if product already exists in storage
-    const existingProductIndex = storageData.findIndex(obj => obj.attributes === attributes_id)
+    const existingProductIndex = storageData.findIndex(obj => obj.attributes_id === attributes_id)
 
     if (existingProductIndex !== -1) {
       // Update quantity if product exists
@@ -208,7 +202,10 @@ const ProductDetail = props => {
         quantity: quantity,
         cnt: cnt,
         discount_price: discount_price,
-        attributes: attributes_id
+        attributes_id: attributes_id,
+        nameCategoryById: nameCategoryById,
+        category_id: category_id,
+        attributes: attributes
       }
 
       const updatedStorage = [...storageData, newProduct]
@@ -244,7 +241,6 @@ const ProductDetail = props => {
 
   const handleOffModalCart = () => {
     setModalAddToCart(false)
-    setlength(storageData.length)
   }
   const showModalAddToCart = () => {
     return (
@@ -347,9 +343,6 @@ const ProductDetail = props => {
   // show Bottom Sheet
   const handlePresentModal = () => {
     sheetRef.current?.open()
-    setTimeout(() => {
-      setIsOpen(true)
-    }, 300)
   }
 
   // format base_price
@@ -364,34 +357,20 @@ const ProductDetail = props => {
     }
   }
 
-  const handleAddFavorite = async thumbs => {
-    const {
-      _id,
-      name,
-      images,
-      base_price,
-      discount_price,
-      category_id,
-      attributes,
-      product_id,
-      code
-    } = thumbs
-
-    const name_filter = attributes.filter(params => params.key === 'Color')
+  const handleAddFavorite = async () => {
     const newFavoritesProduct = {
       _id: _id,
-      image: images[0].url,
-      product_Name: name,
+      image: wallPaper[0].url,
+      product_Name: product_Name,
       base_price: base_price,
-      color: name_filter[0]?.value,
+      color: selectedName,
       product_id: product_id,
       category_id: category_id,
       code: code,
       discount_price: discount_price,
-      attributes: attributes,
-      nameCategoryById: nameCategoryById
+      nameCategoryById: nameCategoryById,
+      attributes: attributes
     }
-
     // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích chưa
     const isDuplicate = storageFavorites.some(favorite => favorite._id === _id)
     if (!isDuplicate) {
@@ -956,7 +935,7 @@ const ProductDetail = props => {
         }}
         height={450}
         onDismiss={() => {
-          setIsOpen(false)
+          handlePresentModal()
         }}
       >
         <View
