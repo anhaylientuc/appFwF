@@ -165,7 +165,6 @@ const ItemCategories = props => {
     }
   }
 
-
   const handleColum = () => {
     if (numColumns) {
       setNumColumns(null)

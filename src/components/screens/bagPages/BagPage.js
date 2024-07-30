@@ -162,6 +162,7 @@ const BagPage = props => {
     } = item
     const newFavoritesProduct = {
       _id: _id,
+      image: image,
       product_id: product_id,
       product_Name: product_Name,
       color: color,
@@ -170,9 +171,9 @@ const BagPage = props => {
       base_price: base_price,
       discount_price: discount_price,
       nameCategoryById: nameCategoryById,
-      image: image,
       attributes: attributes
     }
+    console.log(JSON.stringify(item, null, 2))
 
     // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích chưa
     const isDuplicate = storageFavorites.some(favorite => favorite._id === _id)
@@ -204,9 +205,9 @@ const BagPage = props => {
   }
 
   // Menu popup Item
-  const popupMenu = (attributes_id, item) => {
+  const popupMenu = item => {
     const { product_Name } = item
-
+    console.log('>>>', item)
     return (
       <View
         style={{
@@ -413,6 +414,7 @@ const BagPage = props => {
     const priceProduct = base_price
     const newPrice = { ...item, newPrice: base_price * quantity }
     const formattedPriceProduct = formatCurrency(newPrice.newPrice)
+    console.log(JSON.stringify(item.attributes, null, 2))
 
     return (
       <TouchableOpacity onPress={() => handleClickItem(item)}>
@@ -540,7 +542,7 @@ const BagPage = props => {
                 </View>
                 <MyText style={{ fontSize: 12, fontWeight: '500' }}>{formattedPriceProduct}</MyText>
               </View>
-              {visiblePopupMenu === attributes_id ? popupMenu(attributes_id, item) : null}
+              {visiblePopupMenu === attributes_id ? popupMenu( item) : null}
             </View>
             <TouchableOpacity
               onPress={() => handleStatusProduct(attributes_id)}

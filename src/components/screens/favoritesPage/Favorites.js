@@ -152,10 +152,8 @@ const Favorites = () => {
     )
   }
 
-
-
   const handleSelectAndPresentModal = (item, index = null) => {
-    // Đóng tab bar
+    //Đóng tab bar
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     // Xử lý khi mở BottomSheet
     if (index === null) {
@@ -177,10 +175,19 @@ const Favorites = () => {
 
   // Logic AddToCart
   const handleAddToCart = async () => {
-    const { _id, product_Name, product_id, color, base_price, image, code, discount_price } =
-      itemStates
+    const {
+      _id,
+      product_Name,
+      product_id,
+      color,
+      base_price,
+      image,
+      code,
+      discount_price,
+      attributes
+    } = itemStates
     // Check if product already exists in storage
-    const existingProductIndex = storageData.findIndex(obj => obj.attributes === attributes_id)
+    const existingProductIndex = storageData.findIndex(obj => obj.attributes_id === attributes_id)
     if (existingProductIndex !== -1) {
       // Update quantity if product exists
       const updatedStorage = storageData.map((obj, index) => {
@@ -226,7 +233,8 @@ const Favorites = () => {
         image: image,
         code: code,
         discount_price: discount_price,
-        attributes: attributes_id,
+        attributes_id: attributes_id,
+        attributes: attributes,
         newPrice: base_price * quantity,
         quantity: quantity,
         cnt: cnt

@@ -16,7 +16,8 @@ const Profile = props => {
 
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-  }, [props])
+    console.log(user._id)
+  }, [navigation])
 
   const handleLogout = async () => {
     try {
@@ -44,9 +45,12 @@ const Profile = props => {
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       <View style={styles.header}>
-        <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 20 }}>
-          Xin chào {user && user.username ? user.username : 'Guest'}
-        </MyText>
+        <View>
+          <Text style={{ fontSize: 18, fontFamily: 'Montserrat-SemiBold' }}>Xin chào</Text>
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16 }}>
+            {user && user.username ? user.username : 'Guest'}
+          </MyText>
+        </View>
         <Icons.Ionicons name="settings-outline" size={28} />
       </View>
       <View

@@ -306,7 +306,6 @@ const ProductDetail = props => {
     // Update selected items efficiently
     setQuantity(1)
     setVaLueSelectSize(item.value)
-    // console.log('>>> id attributes: ', attributes_id)
     setcnt(item.cnt)
     setattributes_id(item._id)
   }
