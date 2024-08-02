@@ -17,6 +17,8 @@ import Icons from '../icons/Icon'
 import { useIsFocused } from '@react-navigation/native'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
+import qs from 'qs';
+
 const Filter = props => {
   const {
     navigation,
@@ -32,50 +34,39 @@ const Filter = props => {
   const [newValues, setnewValues] = useState([])
   const [newKey, setnewKey] = useState()
   const isFocusScreen = useIsFocused()
-  
+  const [keys, setkeys] = useState([])
   useEffect(() => {
     //navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const fetchData = async () => {
       try {
+
+        if (category_id) {
+          set_category_id(category_id)
+        }
+        const attributes=[];
+        for( const [key,value] of filterState.entries()){
+            if(filterState.get(key).length>0)
+              attributes.push({key,value})
+        }
+        console.log('attr',attributes)
+        const query={};
+        if(attributes.length>0)
+          query.attributes=attributes
+        query.category_id=_category_id
         
-          
-
-          if(category_id){
-            set_category_id(category_id)
-            console.log('>>>',_category_id)
-          }
-          const query={};
-          query["category_id"]=_category_id
-
-          for (const [key, value] of filterState.entries()) {
-            if (value.length > 0) {
-              query[key]=value.join(',')
-            }
-          }
-          const response = await getFilter(query)
-          const { products, table } = response
-          set_products(products)
-          setFilter(table)
+        const queryString=qs.stringify(query)
         
-
-
+        const response=await NewHTTP.getFilter(queryString)
+        console.log(response)
+        setFilter(response)
 
       } catch (error) {
-        console.log(error)
+        console.log('loi',error)
       }
     }
     fetchData()
-  }, [filterState, isFocusScreen,_category_id])
-  const loadFilters = async () => {
+  }, [filterState, isFocusScreen, _category_id])
 
-    try {
-
-
-    } catch (error) {
-      console.log('cccccccccccccccccccccccc', error)
-    }
-  }
-  // set Bottom navigation on
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -87,21 +78,21 @@ const Filter = props => {
       }
     })
   }
+  const fetchKey = async () => {
 
-  const handleBack = async() => {
-    
+  }
+  const handleBack = async () => {
+
     setBottomBar()
     setFilterState([])
-    console.log('ccccccc',_category_id)
-    const query={category_id:_category_id,version:2}
-    const response=await NewHTTP.getProducts(query)
-    console.log('res',JSON.stringify(response))
-    navigation.navigate("ItemCategoryWomen",{params:category_id,_products:response})
+    const query = { category_id: _category_id, version: 2 }
+    const response = await NewHTTP.getProducts(query)
+    navigation.navigate("ItemCategoryWomen", { params: category_id, _products: response })
   }
   const renderItem = ({ item, index }) => {
     const { key, quantity, child } = item
-
-    const value = child
+    
+    console.log(child)
 
     return (
       <Pressable
@@ -193,10 +184,9 @@ const Filter = props => {
             backgroundColor: Colors.black,
             padding: 16
           }}
-          onPress={()=>{
-            console.log(_products)
-            navigation.navigate("ItemCategoryWomen",{params:category_id,_products})
-            
+          onPress={() => {
+            navigation.navigate("ItemCategoryWomen", { params: category_id, _products })
+
           }}
         >
           <Text

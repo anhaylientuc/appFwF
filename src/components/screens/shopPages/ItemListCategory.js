@@ -158,25 +158,27 @@ const ItemCategoryWomen = props => {
   const [productsParent, setproductsParent] = useState([])
 
   // Logic: onclick set product by category Id
-  const handlePressedCategoryId = async _id => {
-    ; (async () => {
+  const handlePressedCategoryId = async (_id) => {
+      
       const version = 2
       const category_id = _id
       try {
         setFilterState([])
-        const products = await getProducts({ version, category_id })
+        console.log('cate',category_id)
+        const products = await getProducts({ version:version, category_id:category_id })
+        console.log('products',products)
         const productsParent = await getProducts({ version: 1, category_id })
-        // setproductsParent(productsParent[0])
+         setproductsParent(productsParent[0])
         setproductsParent(productsParent[0].category_id)
         setproducts(products)
         setselectedProductId(_id)
 
         // console.log(JSON.stringify(products, null, 2))
       } catch (error) {
-        console.error('Error:', error)
+        console.error('Error 1:', error)
         // Handle errors appropriately in your application
       }
-    })()
+    
   }
 
   // Slide show image

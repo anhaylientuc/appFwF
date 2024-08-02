@@ -12,6 +12,7 @@ import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import Icons from '../icons/Icon'
+import NewHTTP from 'src/utils/http/NewHTTP'
 
 const windowWidth = Dimensions.get('window').width
 
@@ -29,8 +30,9 @@ const DetailFilter = props => {
   const [quantity, setQuantity] = useState()
   const [map, setmap] = useState([])
   const { filterState, setFilterState } = useContext(FilterContext)
+  const [products, setproducts] = useState([])
   const [myHashMap, setmyHashMap] = useState(null)
-
+  const [attr, setattr] = useState(null)
   useEffect(() => {
     Animated.timing(position, {
       toValue: { x: 0, y: 0 },
@@ -48,51 +50,67 @@ const DetailFilter = props => {
         const newHashMap = new Map()
         setSelectedId(response)
         if (filterState) {
+
           for (const [key, value] of filterState.entries()) {
-            if (keySelected == key) {
+
+            if (keySelected === key) {
               setListItem(value)
             }
             newHashMap.set(key, value)
           }
           setmyHashMap(newHashMap)
           fetchValues()
+
+
         }
+        fetchAttr()
       } catch (error) {
         // Handle error
+        console.log(error)
       }
     }
     fetchData()
-  }, [child])
+  }, [])
   const [values, setvalues] = useState([])
   const fetchValues = () => {
-    const newValues = child.map((item, index) => {
-      var isCheck = false
-      for (const value of filterState.get(keySelected)) {
-        if (item.value == value) {
-          isCheck = true;
-          break;
+    try {
+      const newValues = child.map((item, index) => {
+        var isCheck = false
+        if (filterState instanceof Map) {
+          for (const value of filterState.get(keySelected)) {
+            if (item.value == value) {
+              isCheck = true;
+              break;
+            }
+
+          }
+
         }
+        return { ...item, selected: isCheck }
+
+      });
+      if (newValues.length > 0) {
+        console.log(newValues)
+        setvalues(newValues)
+
       }
-      return { ...item, selected: isCheck }
-    });
-    if (newValues.length > 0) {
-
-      setvalues(newValues)
-
+    } catch (error) {
+      console.log('fetchValues', error)
     }
+
   }
 
-  const handleChecked = (item, index) => {
+  const handleChecked = async (item, index) => {
     const newValues = values.map((obj, i) => {
       const { selected } = obj
 
       if (index == i) {
+        
         return { ...obj, selected: !selected }
       }
       return obj
     })
     setvalues(newValues)
-
     const isDuplicate = isListItem.some(listItemValue => listItemValue === item.value)
     if (!isDuplicate) {
       const newList = [...isListItem, item.value]
@@ -107,8 +125,34 @@ const DetailFilter = props => {
     }
 
     setFilterState(myHashMap)
+    console.log('filter',filterState)
+    await fetchAttr()
   }
+  const fetchAttr = async () => {
+    try {
+      const newAttr = {}
+      for (const [key, value] of filterState.entries()) {
+        if (key != keySelected) {
+          newAttr[key] = value.join(',');
+        }
+      }
+      setattr(newAttr)
+      console.log('newAttr: ', newAttr)
+      const res = await NewHTTP.getFilter(newAttr)
+      console.log('res',res)
+    } catch (error) {
+      console.log('haha',error)
+    }
 
+  }
+  const fetchProducts = async () => {
+
+    //console.log(attr)
+  }
+  const handleSubmit = async () => {
+    console.log(attr)
+    await fetchProducts()
+  }
   return (
     <KeyboardAvoidingView>
       <Animated.View
@@ -127,8 +171,8 @@ const DetailFilter = props => {
               onPress={() => {
                 navigation.navigate('Filter', {
                   map: map,
-                 
-                  
+
+
                 })
               }
               }
@@ -172,6 +216,7 @@ const DetailFilter = props => {
         }}
       >
         <TouchableOpacity
+          onPress={handleSubmit}
           style={{
             backgroundColor: Colors.black,
             padding: 16

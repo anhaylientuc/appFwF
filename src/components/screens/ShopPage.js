@@ -43,7 +43,7 @@ const ShopPage = props => {
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <PicassoImage
             style={{ height: 48, width: 48, borderRadius: 50 }}
-            source={{ uri: image }}
+            source={{ uri: image?image:'' }}
           />
 
           <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16, marginLeft: 16 }}>
