@@ -1,23 +1,23 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import React, { useContext, useEffect, useState } from 'react'
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
+import React, { useCallback, useContext } from 'react'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import UserContext from '../../../contexts/UserContext'
 import Icons from '../../icons/Icon'
-
-const windowWith = Dimensions.get('window').width
-const windowHeight = Dimensions.get('window').height
 const Profile = props => {
   const { navigation } = props
-  const [score, setScore] = useState(0)
   const { user, setUser } = useContext(UserContext) // Assuming UserContext provides user and setUser
-  const [isLoading, setIsLoading] = useState(false) // Initially not loading
+  // Initially not loading
 
-  useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-    console.log(user._id)
-  }, [navigation])
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        setBottomBar()
+      }
+    }, [navigation])
+  )
 
   const handleLogout = async () => {
     try {
@@ -47,7 +47,7 @@ const Profile = props => {
       <View style={styles.header}>
         <View>
           <Text style={{ fontSize: 18, fontFamily: 'Montserrat-SemiBold' }}>Xin chào</Text>
-          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16 }}>
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 18 }}>
             {user && user.username ? user.username : 'Guest'}
           </MyText>
         </View>
@@ -111,7 +111,7 @@ const Profile = props => {
             style={styles.container_setting}
             onPress={() => props.navigation.navigate('MyOder')}
           >
-            <Icons.AntDesign name="inbox" size={28} />
+            <Icons.AntDesign name="inbox" size={24} />
             <Text style={styles.txtSetting}>Đơn hàng</Text>
           </TouchableOpacity>
           <View style={{ width: 12 }} />
@@ -119,7 +119,7 @@ const Profile = props => {
             style={styles.container_setting}
             onPress={() => navigation.navigate('SettingProfile')}
           >
-            <Icons.Ionicons name="settings-outline" size={28} />
+            <Icons.Ionicons name="settings-outline" size={24} />
 
             <Text style={styles.txtSetting}>Cài đặt</Text>
           </TouchableOpacity>
@@ -127,12 +127,12 @@ const Profile = props => {
         <View style={{ height: 12 }} />
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <TouchableOpacity style={styles.container_setting}>
-            <Icons.SimpleLineIcons name="user" size={28} />
+            <Icons.SimpleLineIcons name="user" size={24} />
             <Text style={styles.txtSetting}>Tư cách thành viên FwF</Text>
           </TouchableOpacity>
           <View style={{ width: 12 }} />
           <TouchableOpacity style={styles.container_setting}>
-            <Icons.MaterialCommunityIcons name="account-star-outline" size={28} />
+            <Icons.MaterialCommunityIcons name="account-star-outline" size={24} />
             <Text style={styles.txtSetting}>Điểm</Text>
           </TouchableOpacity>
         </View>

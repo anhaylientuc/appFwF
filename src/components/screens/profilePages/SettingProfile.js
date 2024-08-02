@@ -1,12 +1,21 @@
-import React, { useContext } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
+import React, { useCallback, useContext } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import UserContext from '../../../contexts/UserContext'
 const SettingProfile = props => {
   const { navigation } = props
-
   const { user, setUser } = useContext(UserContext)
+
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+      }
+    }, [navigation])
+  )
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <Text style={styles.txtHeader}>Cài đặt của tôi</Text>
@@ -53,13 +62,13 @@ const SettingProfile = props => {
           <Text style={styles.txtTitleProfile}>Họ và tên</Text>
           <Text style={styles.txtUserName}>{user.username}</Text>
           <Text style={styles.txtTitleProfile}>Ngày tháng năm sinh</Text>
-          <Text style={styles.txtUserName}>30/09/2003</Text>
+          <Text style={styles.txtUserName}>{user.dateOfBirth}</Text>
           <Text style={styles.txtTitleProfile}>Số điện thoại</Text>
-          <Text style={styles.txtUserName}>84+ </Text>
+          <Text style={styles.txtUserName}>84+ {user.phoneNumber}</Text>
           <Text style={styles.txtTitleProfile}>Giới tính</Text>
-          <Text style={styles.txtUserName}>Nam</Text>
+          <Text style={styles.txtUserName}>{user.gender}</Text>
           <Text style={styles.txtTitleProfile}>Mã bưu chính</Text>
-          <Text style={styles.txtUserName}>18000</Text>
+          <Text style={styles.txtUserName}>{user.zipCode}</Text>
           <Text style={styles.txtTitleProfile}>Quốc gia</Text>
           <Text style={styles.txtUserName}>Việt Nam</Text>
         </View>
@@ -73,7 +82,7 @@ const SettingProfile = props => {
               Danh sách địa chỉ
             </Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('EditAddress')}>
+          <TouchableOpacity onPress={() => navigation.navigate('MyAddress')}>
             <Text style={{ fontSize: 12, fontFamily: 'Montserrat-Medium', borderBottomWidth: 1 }}>
               Sửa
             </Text>

@@ -38,6 +38,17 @@ const BagPage = props => {
   const [cart, setCart] = useState([])
   const [favoritesIds, setFavoritesIds] = useState([])
 
+  const setBottomBar = () => {
+    navigation.getParent().setOptions({
+      tabBarStyle: {
+        backgroundColor: Colors.white,
+        bottom: 0,
+        paddingVertical: 8,
+        height: 54
+      }
+    })
+  }
+
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const loadFavorites = async () => {
@@ -72,6 +83,7 @@ const BagPage = props => {
       //  text2: 'Đây là một cái gì đó '
       onPress: () => {
         navigation.navigate('FavoriteStack')
+        setBottomBar()
       }
     })
   }
@@ -173,7 +185,6 @@ const BagPage = props => {
       nameCategoryById: nameCategoryById,
       attributes: attributes
     }
-    console.log(JSON.stringify(item, null, 2))
 
     // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích chưa
     const isDuplicate = storageFavorites.some(favorite => favorite._id === _id)
@@ -207,7 +218,7 @@ const BagPage = props => {
   // Menu popup Item
   const popupMenu = item => {
     const { product_Name } = item
-    console.log('>>>', item)
+
     return (
       <View
         style={{
@@ -238,7 +249,7 @@ const BagPage = props => {
             )}
           </View>
 
-          <MyText style={{ textAlign: 'center', flex: 1 }}>Yêu thích</MyText>
+          <MyText style={{ textAlign: 'center', flex: 1, fontSize: 12 }}>Yêu thích</MyText>
         </TouchableOpacity>
         <View
           style={{
@@ -252,14 +263,15 @@ const BagPage = props => {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-
             width: '100%',
             padding: 16
           }}
         >
           <Icons.Feather name={'trash-2'} size={24} />
 
-          <MyText style={{ textAlign: 'center', marginStart: 8 }}>Xóa khỏi danh sách</MyText>
+          <MyText style={{ textAlign: 'center', marginStart: 8, fontSize: 12 }}>
+            Xóa khỏi danh sách
+          </MyText>
         </TouchableOpacity>
       </View>
     )
@@ -388,7 +400,6 @@ const BagPage = props => {
     let newPrice = base_price * newQuantity
     const newStorageData = storageData.map((val, index) => {
       if (val.attributes_id === attributes_id && newQuantity >= 1) {
-        console.log(val.quantity)
         return { ...val, quantity: newQuantity, base_price: base_price, newPrice: newPrice }
       } else {
         if (newQuantity <= 1) {
@@ -414,7 +425,6 @@ const BagPage = props => {
     const priceProduct = base_price
     const newPrice = { ...item, newPrice: base_price * quantity }
     const formattedPriceProduct = formatCurrency(newPrice.newPrice)
-    console.log(JSON.stringify(item.attributes, null, 2))
 
     return (
       <TouchableOpacity onPress={() => handleClickItem(item)}>
@@ -542,7 +552,7 @@ const BagPage = props => {
                 </View>
                 <MyText style={{ fontSize: 12, fontWeight: '500' }}>{formattedPriceProduct}</MyText>
               </View>
-              {visiblePopupMenu === attributes_id ? popupMenu( item) : null}
+              {visiblePopupMenu === attributes_id ? popupMenu(item) : null}
             </View>
             <TouchableOpacity
               onPress={() => handleStatusProduct(attributes_id)}
@@ -942,7 +952,7 @@ const BagPage = props => {
         height={windowHeight / 1.6}
         style={{ backgroundColor: Colors.white }}
         ref={sheetRef}
-        onDismiss={() => setBottomBar()}
+        // onDismiss={() => setBottomBar()}
       >
         <View>
           <View

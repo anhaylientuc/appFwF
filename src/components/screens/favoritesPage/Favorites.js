@@ -186,13 +186,11 @@ const Favorites = () => {
       discount_price,
       attributes
     } = itemStates
-    // Check if product already exists in storage
+
     const existingProductIndex = storageData.findIndex(obj => obj.attributes_id === attributes_id)
     if (existingProductIndex !== -1) {
-      // Update quantity if product exists
       const updatedStorage = storageData.map((obj, index) => {
         if (index === existingProductIndex) {
-          // Check stock before updating
           if (obj.quantity + quantity <= cnt) {
             const newQuantity = obj.quantity + quantity
             const newPrice = base_price * newQuantity

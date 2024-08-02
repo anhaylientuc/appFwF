@@ -10,43 +10,79 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native'
+import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
+import UserHTTP from 'src/utils/http/UserHTTP'
 import UserContext from '../../../contexts/UserContext'
 
 const EditProfile = props => {
   const { navigation } = props
-  const [date, setDate] = useState(new Date())
+  const [birthDate, setbirthDate] = useState(new Date())
   const [isShowGender, setIsShowGender] = useState(false)
   const [gender, setGender] = useState(null) // Initialize gender state
   const [showPassWord, setShowPassWord] = useState(false)
+  const [email, setemail] = useState('')
+  const [name, setname] = useState('')
+  const [sdt, setsdt] = useState('')
+
+  const [zipCode, setZipCode] = useState('')
 
   const { user, setUser } = useContext(UserContext)
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-  }, [])
+    setemail(user.email)
+    setname(user.username)
+    setsdt(user.phoneNumber)
+    setGender(user.gender)
+    setZipCode(user.zipCode)
+  }, [user])
+
+  // show chọn ngày tháng năm
   const showDatePicker = () => {
     DateTimePickerAndroid.open({
-      value: date,
+      value: birthDate,
       onChange: (event, selectedDate) => {
         if (selectedDate) {
-          setDate(selectedDate)
+          setbirthDate(selectedDate)
         }
       },
       mode: 'date',
       is24Hour: true
     })
   }
-  const setBottomBar = () => {
-    navigation.getParent().setOptions({
-      tabBarStyle: {
-        backgroundColor: Colors.white,
-        bottom: 0,
-        paddingVertical: 8,
-        height: 54
-        // position: 'absolute'
-      }
-    })
+
+  // lưu giá trị cho mỗi textInput
+  const handleInputChange = setter => e => {
+    setter(e.nativeEvent.text)
+  }
+
+  const showToastSuccess = title => {
+    setTimeout(() => {
+      Toast.show({
+        type: 'success',
+        text1: 'Cập nhật địa chỉ giao hàng thành công ✔',
+        text1Style: { fontSize: 14, fontFamily: 'Montserrat-SemiBold', color: Colors.green }
+      })
+    }, 500)
+  }
+
+  // Logic: lưu lại thay đổi
+  const handleSave = async () => {
+    const data = {
+      ...user,
+      email: email,
+      username: name,
+      phoneNumber: sdt,
+      gender: gender,
+      zipCode: zipCode,
+      dateOfBirth: birthDate.toLocaleDateString()
+    }
+    console.log(JSON.stringify(data, null, 2))
+    const newUser = await UserHTTP.updateUser(user._id, data)
+    setUser(newUser)
+    showToastSuccess()
+    navigation.goBack()
   }
 
   const showGender = () => {
@@ -83,8 +119,8 @@ const EditProfile = props => {
                 }}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={{ fontSize: 18, fontFamily: 'Montserrat-SemiBold' }}>
-                    Thông tin cá nhân
+                  <Text style={{ fontSize: 16, fontFamily: 'Montserrat-SemiBold' }}>
+                    Chỉnh sửa thông tin cá nhân
                   </Text>
                 </View>
               </View>
@@ -96,7 +132,11 @@ const EditProfile = props => {
                 <View style={styles.container_title}>
                   <Text style={styles.txtTitleProfile}>*Email</Text>
                   <View style={styles.container_textInput}>
-                    <TextInput style={styles.txtTextInput} />
+                    <TextInput
+                      style={styles.txtTextInput}
+                      value={email}
+                      onChange={handleInputChange(setemail)}
+                    />
                   </View>
                 </View>
 
@@ -106,7 +146,11 @@ const EditProfile = props => {
                 <View style={styles.container_title}>
                   <Text style={styles.txtTitleProfile}>*Họ và tên</Text>
                   <View style={styles.container_textInput}>
-                    <TextInput style={styles.txtTextInput} />
+                    <TextInput
+                      style={styles.txtTextInput}
+                      value={name}
+                      onChange={handleInputChange(setname)}
+                    />
                   </View>
                 </View>
 
@@ -117,7 +161,11 @@ const EditProfile = props => {
                   <Text style={styles.txtTitleProfile}>*Ngày tháng năm sinh</Text>
                   <TouchableOpacity onPress={showDatePicker}>
                     <View style={styles.container_textInput}>
-                      <Text style={styles.txtTextInput}>{date.toLocaleDateString()}</Text>
+                      {user.birthDate ? (
+                        <Text>{user.birthDate}</Text>
+                      ) : (
+                        <Text style={styles.txtTextInput}>{birthDate.toLocaleDateString()}</Text>
+                      )}
                     </View>
                   </TouchableOpacity>
                 </View>
@@ -126,7 +174,7 @@ const EditProfile = props => {
                   // phone
                 }
                 <View style={styles.container_title}>
-                  <Text style={styles.txtTitleProfile}>*Bạn phải nhập số điện thoại di động</Text>
+                  <Text style={styles.txtTitleProfile}>*Nhập số điện thoại di động</Text>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -160,7 +208,11 @@ const EditProfile = props => {
                         paddingVertical: 4
                       }}
                     >
-                      <TextInput style={styles.txtTextInput} />
+                      <TextInput
+                        style={styles.txtTextInput}
+                        value={sdt}
+                        onChange={handleInputChange(setsdt)}
+                      />
                     </View>
                   </View>
                 </View>
@@ -195,46 +247,53 @@ const EditProfile = props => {
                 <View style={styles.container_title}>
                   <Text style={styles.txtTitleProfile}>*Mã bưu điện</Text>
                   <View style={styles.container_textInput}>
-                    <TextInput style={styles.txtTextInput} />
+                    <TextInput
+                      style={styles.txtTextInput}
+                      value={zipCode}
+                      onChange={handleInputChange(setZipCode)}
+                    />
                   </View>
                 </View>
 
                 {
                   // Mật khẩu
+                  // <View style={styles.container_title}>
+                  //   <Text style={styles.txtTitleProfile}>*Mật khẩu</Text>
+                  //   <View
+                  //     style={[
+                  //       styles.container_textInput,
+                  //       { flexDirection: 'row', justifyContent: 'space-between' }
+                  //     ]}
+                  //   >
+                  //     <TextInput
+                  //       secureTextEntry={showPassWord}
+                  //       style={[styles.txtTextInput, { width: '70%' }]}
+                  //     />
+                  //     <TouchableOpacity onPress={() => setShowPassWord(!showPassWord)}>
+                  //       {showPassWord ? (
+                  //         <Icons.Ionicons
+                  //           name="eye-sharp"
+                  //           size={28}
+                  //           color={Colors.gray}
+                  //           style={styles.icons}
+                  //         />
+                  //       ) : (
+                  //         <Icons.Ionicons
+                  //           name="eye-off-sharp"
+                  //           size={28}
+                  //           color={Colors.gray}
+                  //           style={styles.icons}
+                  //         />
+                  //       )}
+                  //     </TouchableOpacity>
+                  //   </View>
+                  // </View>
                 }
-                <View style={styles.container_title}>
-                  <Text style={styles.txtTitleProfile}>*Mật khẩu</Text>
-                  <View
-                    style={[
-                      styles.container_textInput,
-                      { flexDirection: 'row', justifyContent: 'space-between' }
-                    ]}
-                  >
-                    <TextInput
-                      secureTextEntry={showPassWord}
-                      style={[styles.txtTextInput, { width: '70%' }]}
-                    />
-                    <TouchableOpacity onPress={() => setShowPassWord(!showPassWord)}>
-                      {showPassWord ? (
-                        <Icons.Ionicons
-                          name="eye-sharp"
-                          size={28}
-                          color={Colors.gray}
-                          style={styles.icons}
-                        />
-                      ) : (
-                        <Icons.Ionicons
-                          name="eye-off-sharp"
-                          size={28}
-                          color={Colors.gray}
-                          style={styles.icons}
-                        />
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                </View>
 
-                <View style={[styles.container_btn, { backgroundColor: Colors.black2 }]}>
+                <TouchableOpacity
+                  onPress={() => handleSave()}
+                  style={[styles.container_btn, { backgroundColor: Colors.black2 }]}
+                >
                   <Text
                     style={{
                       textAlign: 'center',
@@ -245,12 +304,9 @@ const EditProfile = props => {
                   >
                     Lưu
                   </Text>
-                </View>
+                </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.container_btn}
-                  onPress={() => navigation.goBack() & setBottomBar()}
-                >
+                <TouchableOpacity style={styles.container_btn} onPress={() => navigation.goBack()}>
                   <Text
                     style={{
                       textAlign: 'center',
@@ -297,7 +353,8 @@ const styles = StyleSheet.create({
   txtTextInput: {
     marginStart: 8,
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 14
+    fontSize: 14,
+    color: Colors.black2
   },
   txtTitleProfile: {
     color: Colors.black,

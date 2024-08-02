@@ -78,6 +78,8 @@ const ProductDetail = props => {
     }
   }, [scrollY])
 
+  // useEffect(() => {}, [storageFavorites, navigation])
+
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const loadFavorites = async () => {
@@ -87,11 +89,6 @@ const ProductDetail = props => {
         setFavoritesIds(favorites.map(favorite => favorite._id))
       }
     }
-
-    loadFavorites()
-  }, [storageFavorites, navigation])
-
-  useEffect(() => {
     const fetchData = async () => {
       const version = 2
       const product_id = props.route.params.product_id
@@ -124,6 +121,7 @@ const ProductDetail = props => {
     }
 
     fetchData()
+    loadFavorites()
   }, [])
 
   const showToastError = title => {
@@ -861,14 +859,14 @@ const ProductDetail = props => {
                 justifyContent: 'center',
                 right: 0,
                 top: 0,
-                width: 20,
-                height: 20
+                width: 16,
+                height: 16
               }}
             >
               <Text
                 style={{
                   color: Colors.white,
-                  fontSize: 12,
+                  fontSize: 10,
                   textAlign: 'center',
                   fontWeight: 'bold'
                 }}

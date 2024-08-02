@@ -14,9 +14,9 @@ import HomePage from 'src/components/screens/homePages/HomePage'
 import EditAddress from 'src/components/screens/profilePages/EditAddress'
 import EditProfile from 'src/components/screens/profilePages/EditProfile'
 import GoogleMaps from 'src/components/screens/profilePages/GoogleMaps'
+import MyAddress from 'src/components/screens/profilePages/MyAddress'
 import MyOder from 'src/components/screens/profilePages/MyOder'
 import SettingProfile from 'src/components/screens/profilePages/SettingProfile'
-import Edit from 'src/components/screens/profilePages/edit'
 import Categories from 'src/components/screens/shopPages/Categories'
 import ItemCategories from 'src/components/screens/shopPages/ItemCategories'
 import ProductDetail from 'src/components/screens/shopPages/ProductDetail'
@@ -150,12 +150,12 @@ function MainNavigator() {
           component={EditProfile}
           options={{ title: 'EditProfile' }}
         />
+        <Stack.Screen name="MyAddress" component={MyAddress} options={{ title: 'MyAddress' }} />
         <Stack.Screen
           name="EditAddress"
           component={EditAddress}
           options={{ title: 'EditAddress' }}
         />
-        <Stack.Screen name="Edit" component={Edit} options={{ title: 'Edit' }} />
         <Stack.Screen name="GoogleMaps" component={GoogleMaps} options={{ title: 'GoogleMaps' }} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
       </Stack.Navigator>

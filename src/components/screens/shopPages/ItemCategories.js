@@ -190,11 +190,8 @@ const ItemCategories = props => {
         setproductsParent(productsParent[0].category_id)
         setproducts(products)
         setselectedProductId(_id)
-
-        // console.log(JSON.stringify(products, null, 2))
       } catch (error) {
         console.error('Error:', error)
-        // Handle errors appropriately in your application
       }
     })()
   }

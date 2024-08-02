@@ -67,4 +67,13 @@ export const forgotPass = async email => {
     return res
   } catch (error) {}
 }
-export default {forgotPass}
+
+export const updateUser = async (_id, data) => {
+  try {
+    const url = `/users/${_id}`
+    const res = await AxiosInstance().put(url, data)
+    return res
+  } catch (error) {}
+}
+
+export default { forgotPass, updateUser }
