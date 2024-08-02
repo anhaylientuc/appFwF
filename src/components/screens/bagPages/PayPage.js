@@ -34,7 +34,8 @@ const PayPage = props => {
   const goBack = () => {
     navigation.goBack()
   }
-  const { user } = useContext(UserContext)
+  const { user, setUser } = useContext(UserContext)
+  const [shipping, setshipping] = useState({})
 
   const allBasePrices = storageData.map(item => item.newPrice)
   const totalBasePrice = sumBasePrices(allBasePrices)
@@ -73,7 +74,13 @@ const PayPage = props => {
       }
     })
   }
+  console.log(shipping)
   useEffect(() => {
+    user.shipping.map(item => {
+      if (item.selected == true) {
+        setshipping(item)
+      }
+    })
     if (storageData.length === 0) {
       goBack()
     } else {
@@ -251,14 +258,26 @@ const PayPage = props => {
               }}
             >
               <View style={{ flexDirection: 'row' }}>
-                <Icons.Ionicons name="location-outline" size={24} />
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('ProfileStack', { screen: 'MyAddress' })}
+                >
+                  <Icons.Ionicons name="location-outline" size={24} />
+                </TouchableOpacity>
                 <View style={{ marginStart: 8 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={styles.txt_title}>{user.username}</Text>
-                    <Text style={[styles.txt_title, { marginStart: 8 }]}>(+84)988002974</Text>
+                    <Text style={[styles.txt_title, { marginStart: 8 }]}>
+                      (84+) {user.phoneNumber}
+                    </Text>
                   </View>
-                  <Text>143 Đào Duy Anh</Text>
-                  <Text>Phường 9, Phú Nhuận, Hồ Chí Minh, Việt Nam</Text>
+                  <Text>{shipping.name}</Text>
+                  <View style={{ flexDirection: 'row', gap: 8 }}>
+                    <Text>{shipping.address}</Text>
+                    <Text>P. {shipping.ward}</Text>
+                    <Text>{shipping.district}</Text>
+                    <Text>{shipping.city}</Text>
+                  </View>
+                  <Text>{shipping.zipCode}</Text>
                 </View>
               </View>
               <Icons.MaterialIcons name={'navigate-next'} size={20} />

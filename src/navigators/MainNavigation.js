@@ -158,6 +158,7 @@ function MainNavigator() {
         />
         <Stack.Screen name="GoogleMaps" component={GoogleMaps} options={{ title: 'GoogleMaps' }} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
+        <Stack.Screen name="PayPage" component={PayPage} />
       </Stack.Navigator>
     ) : (
       UserNavigation()

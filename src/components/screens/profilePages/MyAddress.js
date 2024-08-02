@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import UserContext from 'src/contexts/UserContext'
 import UserHTTP from 'src/utils/http/UserHTTP'
@@ -16,7 +17,11 @@ const MyAddress = () => {
   const [zipCode, setZipCode] = useState('')
   const [shippingList, setShippingList] = useState(user.shipping)
 
-  const [selectedId, setSelectedId] = useState(false)
+  useEffect(() => {
+    const fetchData = () => {}
+    fetchData()
+  }, [])
+
   const radioButtons = useMemo(
     () => [
       {
@@ -65,7 +70,8 @@ const MyAddress = () => {
       city: city,
       district: district,
       ward: ward,
-      zipCode: zipCode
+      zipCode: zipCode,
+      selected: false
     }
     var arrShipping = shippingList
     arrShipping.push(newShipping)
@@ -85,6 +91,18 @@ const MyAddress = () => {
     setUser(newUser)
   }
 
+  const handleSelected = async (index, item) => {
+    shippingList.map((item, i) => {
+      if (i === index) {
+        item.selected = true
+      } else {
+        item.selected = false
+      }
+      return item
+    })
+    const newUser = await UserHTTP.updateUser(user._id, { shipping: shippingList })
+    setUser(newUser)
+  }
   const viewEditAddress = () => {
     return (
       <View
@@ -235,7 +253,7 @@ const MyAddress = () => {
               >
                 <Text style={[styles.txt_title, { fontSize: 16 }]}>Địa chỉ giao hàng</Text>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('EditAddress', { index: index })}
+                  onPress={() => navigation.navigate('EditAddress', { index: index, item: item })}
                 >
                   <Text style={[styles.txt_description, { borderBottomWidth: 1 }]}>Sửa</Text>
                 </TouchableOpacity>
@@ -243,12 +261,26 @@ const MyAddress = () => {
               <View style={{ height: 32 }} />
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View>
-                  <Text style={styles.txt_description}>Họ và tên {item.name}</Text>
-                  <Text>Phường {item.ward}</Text>
-                  <Text>Tỉnh/Thành phố {item.city}</Text>
-                  <Text>Quận/Huyện {item.district}</Text>
-                  <Text>Mã bưu điện {item.zipCode}</Text>
+                  <Text style={styles.txt_title}>{item.name}</Text>
+                  <Text style={styles.txt_title}>{item.ward}</Text>
+                  <Text style={styles.txt_title}>{item.city}</Text>
+                  <Text style={styles.txt_title}>{item.district}</Text>
+                  <Text style={styles.txt_title}>{item.zipCode}</Text>
+                  <TouchableOpacity
+                    onPress={() => handleSelected(index, item)}
+                    style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center' }}
+                  >
+                    {item.selected === false ? (
+                      <Icons.Ionicons name="radio-button-off-outline" size={24} />
+                    ) : (
+                      <Icons.Ionicons name="radio-button-on-outline" size={24} />
+                    )}
+                    <Text style={[styles.txt_description, { marginStart: 8, fontSize: 14 }]}>
+                      Địa chỉ mặc định
+                    </Text>
+                  </TouchableOpacity>
                 </View>
+
                 <TouchableOpacity onPress={() => handleDeleteShipping(index)}>
                   <Text style={[styles.txt_description, { borderBottomWidth: 1 }]}>Xóa</Text>
                 </TouchableOpacity>

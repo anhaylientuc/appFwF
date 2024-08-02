@@ -17,7 +17,7 @@ import UserHTTP from 'src/utils/http/UserHTTP'
 const EditAddress = props => {
   const {
     route: {
-      params: { index }
+      params: { index, item }
     }
   } = props
   const navigation = useNavigation()
@@ -60,7 +60,8 @@ const EditAddress = props => {
       city,
       district,
       ward,
-      zipCode
+      zipCode,
+      selected: item.selected
     }
 
     var updatedShipping = [...user.shipping]
