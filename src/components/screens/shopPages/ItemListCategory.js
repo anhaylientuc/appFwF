@@ -27,11 +27,11 @@ const ItemCategoryWomen = props => {
   const {
     navigation,
     route: {
-      params: { categoryById, _products, params }
+      params: { categoryById, _products, item }
 
     }
   } = props
-  console.log(params)
+
   const [windowWith, setwindowWith] = useState(width)
   const [windowHeight, setwindowHeight] = useState(height)
   const [categoriesById, setCategoriesById] = useState([])
@@ -58,12 +58,19 @@ const ItemCategoryWomen = props => {
     })
   }
   useEffect(() => {
+    const fetchData = () => {
+      console.log('show item')
+      setproducts(item)
+    }
+    fetchData()
+  }, [item])
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         if (isFocusScreen) {
 
           if (_products) {
-
             setproducts(_products)
           }
           else {
