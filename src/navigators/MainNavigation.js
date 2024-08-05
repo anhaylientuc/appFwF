@@ -1,264 +1,173 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { useNavigation } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import Favorites from '@screens/Favorites'
 import { useContext } from 'react'
-import { Dimensions, View } from 'react-native'
+import { View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
-import DetailFilter from 'src/components/screens/DetailFilter'
-import Filter from 'src/components/screens/Filter'
-import SearchPage from 'src/components/screens/SearchPage'
-import ShopPage from 'src/components/screens/ShopPage'
 import BagPage from 'src/components/screens/bagPages/BagPage'
+import MyChecks from 'src/components/screens/bagPages/MyChecks'
+import PayPage from 'src/components/screens/bagPages/PayPage'
 import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
+import WebViewPayment from 'src/components/screens/bagPages/WebViewPayment'
+import Favorites from 'src/components/screens/favoritesPage/Favorites'
 import HomePage from 'src/components/screens/homePages/HomePage'
-import EditAddress from 'src/components/screens/profilePage/EditAddress'
-import EditProfile from 'src/components/screens/profilePage/EditProfile'
-import GoogleMaps from 'src/components/screens/profilePage/GoogleMaps'
-import MyOder from 'src/components/screens/profilePage/MyOder'
-import SettingProfile from 'src/components/screens/profilePage/SettingProfile'
-import Edit from 'src/components/screens/profilePage/edit'
+import EditAddress from 'src/components/screens/profilePages/EditAddress'
+import EditProfile from 'src/components/screens/profilePages/EditProfile'
+import GoogleMaps from 'src/components/screens/profilePages/GoogleMaps'
+import MyAddress from 'src/components/screens/profilePages/MyAddress'
+import MyOder from 'src/components/screens/profilePages/MyOder'
+import SettingProfile from 'src/components/screens/profilePages/SettingProfile'
 import Categories from 'src/components/screens/shopPages/Categories'
 import ItemCategories from 'src/components/screens/shopPages/ItemCategories'
 import ProductDetail from 'src/components/screens/shopPages/ProductDetail'
 import ReviewProduct from 'src/components/screens/shopPages/ReviewProduct'
+import SearchPage from 'src/components/screens/shopPages/SearchPage'
+import ShopPage from 'src/components/screens/shopPages/ShopPage'
 import SizeInfo from 'src/components/screens/shopPages/SizeInfo'
-import UserContext from 'src/components/screens/user/UserContext'
-import ForgotPassword from 'src/components/screens/user/screen/ForgotPassword/ForgotPassword'
-import Login from 'src/components/screens/user/screen/Login'
-import Register from 'src/components/screens/user/screen/Register'
+import DetailFilter from 'src/components/screens/shopPages/filterScreens/DetailFilter'
+import Filter from 'src/components/screens/shopPages/filterScreens/Filter'
+import ForgotPassword from 'src/components/screens/users/ForgotPassword'
+import Login from 'src/components/screens/users/Login'
+import Register from 'src/components/screens/users/Register'
 import Colors from 'src/constants/Colors'
 import { FilterProvider } from 'src/contexts/FilterProvider'
-import { KeyboardContext } from 'src/contexts/KeyboardContext'
 import StorageProvider from 'src/contexts/StorageProvider'
-import Profile from '../components/screens/Profile'
+import UserContext from 'src/contexts/UserContext'
+import Profile from '../components/screens/profilePages/Profile'
+
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
 
 function MainNavigator() {
   const { user } = useContext(UserContext)
-  const windowHeight = Dimensions.get('window').height
+  const navigation = useNavigation()
 
-  const isKeyboardVisible = useContext(KeyboardContext)
-  const ShopStack = () => {
+  const ShopStack = ({ navigation }) => {
     return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen
-          name="ShopPage"
-          component={ShopPage}
-          options={{ title: 'Trang chủ Shop' }}
-        ></Stack.Screen>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="ShopPage" component={ShopPage} options={{ title: 'Trang chủ Shop' }} />
         <Stack.Screen
           name="ItemCategories"
           component={ItemCategories}
-          options={{ title: 'List Category Women' }}
-        ></Stack.Screen>
+          options={{ title: 'Items Category' }}
+        />
         <Stack.Screen
           name="Categories"
           component={Categories}
-          options={{ title: 'Tab Category Women' }}
-        ></Stack.Screen>
+          options={{ title: 'List Category' }}
+        />
         <Stack.Screen
           name="ProductDetail"
           component={ProductDetail}
-          options={{
-            title: 'ProductDetail',
-            tabBarStyle: { display: 'none' }
-          }}
-        ></Stack.Screen>
+          options={{ title: 'ProductDetail', tabBarStyle: { display: 'none' } }}
+        />
         <Stack.Screen
           name="ReviewProduct"
           component={ReviewProduct}
-          options={{
-            title: 'ReviewProduct',
-            tabBarStyle: { display: 'none' }
-          }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="SizeInfo"
-          component={SizeInfo}
-          options={{
-            title: 'SizeInfo'
-          }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="BagPage"
-          component={BagPage}
-          options={{
-            title: 'BagPage'
-          }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="SearchPage"
-          component={SearchPage}
-          options={{
-            title: 'SearchPage',
-            tabBarStyle: { display: 'none' }
-          }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="Filter"
-          component={Filter}
-          options={{
-            title: 'Filter',
-            tabBarStyle: { display: 'none' }
-          }}
-        ></Stack.Screen>
+          options={{ title: 'ReviewProduct' }}
+        />
+        <Stack.Screen name="SizeInfo" component={SizeInfo} options={{ title: 'SizeInfo' }} />
+        <Stack.Screen name="SearchPage" component={SearchPage} options={{ title: 'SearchPage' }} />
+        <Stack.Screen name="Filter" component={Filter} options={{ title: 'Filter' }} />
         <Stack.Screen
           name="DetailFilter"
           component={DetailFilter}
-          options={{
-            title: 'DetailFilter',
-            tabBarStyle: { display: 'none' }
-          }}
-        ></Stack.Screen>
-      </Stack.Navigator>
-    )
-  }
-  const HomeStack = () => {
-    return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen
-          name="Home"
-          component={HomePage}
-          options={{ title: 'Trang chủ Shop' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="Favorites"
-          component={Favorites}
-          options={{ title: 'Favorite' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="UserNavigation"
-          component={UserNavigation}
-          options={{ title: 'UserNavigation', tabBarStyle: { display: 'none' } }}
-        ></Stack.Screen>
-      </Stack.Navigator>
-    )
-  }
-  const FavoriteStack = () => {
-    return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen
-          name="Favorites"
-          component={Favorites}
-          options={{ title: 'Favorite' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="SizeInfo"
-          component={SizeInfo}
-          options={{ title: 'SizeInfo' }}
-        ></Stack.Screen>
+          options={{ title: 'DetailFilter' }}
+        />
+        <Stack.Screen name="BagStack" component={BagStack} options={{ title: 'BagStack' }} />
       </Stack.Navigator>
     )
   }
 
-  const BagStack = () => {
+  const HomeStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Home" component={HomePage} options={{ title: 'Trang chủ Shop' }} />
+    </Stack.Navigator>
+  )
+
+  const FavoriteStack = ({ navigation }) => {
     return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Favorites" component={Favorites} options={{ title: 'Favorite' }} />
         <Stack.Screen
-          name="BagPage"
-          component={BagPage}
-          options={{ title: 'BagPage' }}
-        ></Stack.Screen>
+          name="ProductDetail"
+          component={ProductDetail}
+          options={{ title: 'ProductDetail', tabBarStyle: { display: 'none' } }}
+        />
+      </Stack.Navigator>
+    )
+  }
+
+  const BagStack = ({ navigation }) => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="BagPage" component={BagPage} options={{ title: 'BagPage' }} />
         <Stack.Screen
           name="ReturnMethod"
           component={ReturnMethod}
           options={{ title: 'ReturnMethod' }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="UserNavigation"
-          component={ProfileStack}
-          options={{ title: 'UserNavigation' }}
-        ></Stack.Screen>
+        />
+        <Stack.Screen name="MyChecks" component={MyChecks} options={{ title: 'MyChecks' }} />
+        <Stack.Screen name="PayPage" component={PayPage} options={{ title: 'PayPage' }} />
         <Stack.Screen
           name="ProductDetail"
           component={ProductDetail}
-          options={{ title: 'ProductDetail' }}
-        ></Stack.Screen>
+          options={{ title: 'ProductDetail', tabBarStyle: { display: 'none' } }}
+        />
+        <Stack.Screen
+          name="WebViewPayment"
+          component={WebViewPayment}
+          options={{ title: 'WebViewPayment' }}
+        />
+        <Stack.Screen name="MyAddress" component={MyAddress} />
+        <Stack.Screen name="UserNavigation" component={UserNavigation} />
       </Stack.Navigator>
     )
   }
 
   const ProfileStack = () => {
     return user ? (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{ title: 'Profile' }}
-        ></Stack.Screen>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Profile" component={Profile} options={{ title: 'Profile' }} />
         <Stack.Screen
           name="ReturnMethod"
           component={ReturnMethod}
           options={{ title: 'ReturnMethod' }}
-        ></Stack.Screen>
-        <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }}></Stack.Screen>
-        <Stack.Screen
-          name="HomePage"
-          component={HomePage}
-          options={{ title: 'HomePage' }}
-        ></Stack.Screen>
+        />
+        <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }} />
         <Stack.Screen
           name="SettingProfile"
           component={SettingProfile}
           options={{ title: 'SettingProfile' }}
-        ></Stack.Screen>
+        />
         <Stack.Screen
           name="EditProfile"
           component={EditProfile}
           options={{ title: 'EditProfile' }}
-        ></Stack.Screen>
+        />
+        <Stack.Screen name="MyAddress" component={MyAddress} options={{ title: 'MyAddress' }} />
         <Stack.Screen
           name="EditAddress"
           component={EditAddress}
           options={{ title: 'EditAddress' }}
-        ></Stack.Screen>
-        <Stack.Screen name="Edit" component={Edit} options={{ title: 'Edit' }}></Stack.Screen>
-        <Stack.Screen
-          name="GoogleMaps"
-          component={GoogleMaps}
-          options={{ title: 'GoogleMaps' }}
-        ></Stack.Screen>
+        />
+        <Stack.Screen name="GoogleMaps" component={GoogleMaps} options={{ title: 'GoogleMaps' }} />
+        <Stack.Screen name="UserNavigation" component={UserNavigation} />
+        <Stack.Screen name="PayPage" component={PayPage} />
       </Stack.Navigator>
     ) : (
       UserNavigation()
     )
   }
 
-  const UserNavigation = props => {
-    return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: { display: 'none' }
-        }}
-      >
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-      </Stack.Navigator>
-    )
-  }
+  const UserNavigation = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' } }}>
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Register" component={Register} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="FavoriteStack" component={FavoriteStack} />
+    </Stack.Navigator>
+  )
 
   return (
     <StorageProvider>
@@ -273,8 +182,7 @@ function MainNavigator() {
               backgroundColor: Colors.white,
               bottom: 0,
               paddingVertical: 8,
-              height: 54,
-              display: isKeyboardVisible ? 'none' : 'flex'
+              height: 54
             }
           }}
         >

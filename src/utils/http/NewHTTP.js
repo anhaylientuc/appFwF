@@ -1,5 +1,5 @@
+import { ToastAndroid } from 'react-native'
 import AxiosInstance from '../AxiosInstance'
-
 export const getCategory = async () => {
   try {
     const axiosInstance = AxiosInstance()
@@ -9,7 +9,7 @@ export const getCategory = async () => {
     return response
   } catch (error) {
     console.log(error)
-    throw error
+    throw ToastAndroid.show('Có lỗi xảy ra xin vui lòng thử lại sau', ToastAndroid.SHORT)
   }
 }
 
@@ -21,7 +21,7 @@ export const uploadImage = async formData => {
     return response
   } catch (error) {
     console.log(error)
-    throw error
+    throw ToastAndroid.show('Có lỗi xảy ra xin vui lòng thử lại sau', ToastAndroid.SHORT)
   }
 }
 
@@ -33,7 +33,7 @@ export const getCategoryById = async id => {
     return response
   } catch (error) {
     console.log(error)
-    throw error
+    throw ToastAndroid.show('Có lỗi xảy ra xin vui lòng thử lại sau', ToastAndroid.SHORT)
   }
 }
 
@@ -47,7 +47,7 @@ export const getProducts = async query => {
     return response
   } catch (error) {
     console.log(error)
-    throw error
+    throw ToastAndroid.show('Có lỗi xảy ra xin vui lòng thử lại sau', ToastAndroid.SHORT)
   }
 }
 
@@ -60,7 +60,7 @@ export const getProductById = async query => {
     return response
   } catch (error) {
     console.log(error)
-    throw error
+    throw ToastAndroid.show('Có lỗi xảy ra xin vui lòng thử lại sau', ToastAndroid.SHORT)
   }
 }
 

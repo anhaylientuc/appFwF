@@ -1,7 +1,7 @@
 import React from 'react'
 import { Image, View } from 'react-native'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 
 const ItemListSale = props => {
   const { data } = props

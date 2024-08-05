@@ -19,7 +19,7 @@ import {
 import ImageView from 'react-native-image-viewing'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 const windowWidth = Dimensions.get('window').width
 
 const ReviewProduct = props => {

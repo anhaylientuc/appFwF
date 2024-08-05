@@ -1,18 +1,18 @@
+import { useNavigation } from '@react-navigation/native'
 import React, { useEffect, useState } from 'react'
 import { FlatList, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import { getCategoryById } from 'src/utils/http/NewHTTP'
 
 const Categories = props => {
   const {
-    navigation,
     route: {
       params: { categoryId }
     }
   } = props
-
+  const navigation = useNavigation()
   const [categoriesId, setCategoriesId] = useState({})
   const [nameCategories, setnameCategories] = useState('')
   useEffect(() => {

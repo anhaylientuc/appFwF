@@ -2,9 +2,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React from 'react'
 const Stack = createNativeStackNavigator()
 
-import ForgotPassword from 'src/components/screens/user/screen/ForgotPassword/ForgotPassword'
-import Login from 'src/components/screens/user/screen/Login'
-import Register from 'src/components/screens/user/screen/Register'
+import ForgotPassword from 'src/components/screens/users/ForgotPassword'
+import Login from 'src/components/screens/users/Login'
+import Register from 'src/components/screens/users/Register'
 const UserNavigation = props => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

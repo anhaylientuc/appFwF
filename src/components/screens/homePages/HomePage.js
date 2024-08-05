@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import Colors from 'src/constants/Colors'
 import { DaTaNews, DaTaSale } from 'src/constants/Databases'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import ItemListNew from './ItemListNews'
 import ItemListSale from './ItemListSales'
 

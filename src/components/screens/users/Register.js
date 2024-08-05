@@ -14,14 +14,11 @@ import {
 } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import { register } from 'src/utils/http/UserHTTP'
 
-const Register = props => {
+const Register = () => {
   const navigation = useNavigation()
-  const {
-    navigation: { goBack }
-  } = props
   const [userName, setUserName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -127,7 +124,7 @@ const Register = props => {
         style={styles.container}
       >
         <View style={styles.view_search}>
-          <TouchableOpacity onPress={() => goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icons.Ionicons name={'chevron-back'} size={24} />
           </TouchableOpacity>
         </View>

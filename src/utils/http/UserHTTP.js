@@ -52,15 +52,28 @@ export const register = async (email, password, username) => {
   }
 }
 
-// export const fogotPass = async email => {
-//   try {
-//     const url = '/users/forgot-password';
-//     const body = {
-//       email: email,
-//     };
-//     return await AxiosInstance().post(url, body);
-//   } catch (error) {
-//     console.log(error);
-//     throw error;
-//   }
-// };
+export const forgotPass = async email => {
+  try {
+    if (!email) {
+      console.log('AxiosInstance:', 'Vui lòng nhập đầy đủ tài khoản và mật khẩu')
+      return
+    }
+    const url = '/users/forgot-password'
+    const body = {
+      email: email
+    }
+    const res = await AxiosInstance().post(url, body)
+    ToastAndroid.show('Đã gửi Email khôi phục thành công', ToastAndroid.SHORT)
+    return res
+  } catch (error) {}
+}
+
+export const updateUser = async (_id, data) => {
+  try {
+    const url = `/users/${_id}`
+    const res = await AxiosInstance().put(url, data)
+    return res
+  } catch (error) {}
+}
+
+export default { forgotPass, updateUser }

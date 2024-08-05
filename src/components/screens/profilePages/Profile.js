@@ -1,24 +1,55 @@
-import React, { useContext, useState } from 'react'
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import React, { useCallback, useContext } from 'react'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
-import Icons from '../icons/Icon'
-import UserContext from './user/UserContext'
-
-const windowWith = Dimensions.get('window').width
-const windowHeight = Dimensions.get('window').height
-const Profile = props => {
-  const { navigation } = props
-  const [score, setScore] = useState(0)
+import MyText from 'src/constants/FontFamily'
+import UserContext from '../../../contexts/UserContext'
+import Icons from '../../icons/Icon'
+const Profile = () => {
+  const navigation = useNavigation()
   const { user, setUser } = useContext(UserContext) // Assuming UserContext provides user and setUser
-  const [isLoading, setIsLoading] = useState(false) // Initially not loading
+  // Initially not loading
+
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        setBottomBar()
+      }
+    }, [navigation])
+  )
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('user')
+      await AsyncStorage.clear()
+      setUser(undefined) // Clear user context
+      navigation.navigate('Login') // Redirect to login screen or any other screen
+    } catch (error) {
+      console.error('Failed to logout', error)
+    }
+  }
+
+  const setBottomBar = () => {
+    navigation.getParent().setOptions({
+      tabBarStyle: {
+        backgroundColor: Colors.white,
+        bottom: 0,
+        paddingVertical: 8,
+        height: 54
+      }
+    })
+  }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       <View style={styles.header}>
-        <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 20 }}>
-          Xin chào {user && user.username ? user.username : 'Guest'}
-        </MyText>
+        <View>
+          <Text style={{ fontSize: 18, fontFamily: 'Montserrat-SemiBold' }}>Xin chào</Text>
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 18 }}>
+            {user && user.username ? user.username : 'Guest'}
+          </MyText>
+        </View>
         <Icons.Ionicons name="settings-outline" size={28} />
       </View>
       <View
@@ -43,17 +74,7 @@ const Profile = props => {
             <MyText style={{ borderBottomWidth: 1 }}>Điểm</MyText>
           </View>
         </View>
-        {/* <Slider
-          style={styles.slider}
-          minimumValue={100}
-          maximumValue={200}
-          step={1}
-          value={score}
-          onValueChange={value => setScore(value)}
-          minimumTrackTintColor="#1FB28A"
-          maximumTrackTintColor="#d3d3d3"
-          thumbTintColor="#1FB28A"
-        /> */}
+
         <Text
           style={{
             marginTop: 16,
@@ -89,7 +110,7 @@ const Profile = props => {
             style={styles.container_setting}
             onPress={() => props.navigation.navigate('MyOder')}
           >
-            <Icons.AntDesign name="inbox" size={28} />
+            <Icons.AntDesign name="inbox" size={24} />
             <Text style={styles.txtSetting}>Đơn hàng</Text>
           </TouchableOpacity>
           <View style={{ width: 12 }} />
@@ -97,7 +118,7 @@ const Profile = props => {
             style={styles.container_setting}
             onPress={() => navigation.navigate('SettingProfile')}
           >
-            <Icons.Ionicons name="settings-outline" size={28} />
+            <Icons.Ionicons name="settings-outline" size={24} />
 
             <Text style={styles.txtSetting}>Cài đặt</Text>
           </TouchableOpacity>
@@ -105,12 +126,12 @@ const Profile = props => {
         <View style={{ height: 12 }} />
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <TouchableOpacity style={styles.container_setting}>
-            <Icons.SimpleLineIcons name="user" size={28} />
+            <Icons.SimpleLineIcons name="user" size={24} />
             <Text style={styles.txtSetting}>Tư cách thành viên FwF</Text>
           </TouchableOpacity>
           <View style={{ width: 12 }} />
           <TouchableOpacity style={styles.container_setting}>
-            <Icons.MaterialCommunityIcons name="account-star-outline" size={28} />
+            <Icons.MaterialCommunityIcons name="account-star-outline" size={24} />
             <Text style={styles.txtSetting}>Điểm</Text>
           </TouchableOpacity>
         </View>
@@ -164,9 +185,9 @@ const Profile = props => {
         </View>
         <View style={styles.container_option}>
           <Icons.MaterialIcons name="logout" size={20} />
-          <View>
+          <TouchableOpacity onPress={() => handleLogout()}>
             <Text style={styles.txtOption}>Đăng xuất</Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.container_option2}>
           <Icons.MaterialCommunityIcons name="comment-edit-outline" size={20} />
@@ -233,7 +254,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     paddingVertical: 16,
     alignItems: 'center'
   },

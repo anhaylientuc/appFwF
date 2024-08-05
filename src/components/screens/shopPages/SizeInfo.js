@@ -3,7 +3,7 @@ import { Image, KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, View } 
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 
 const Tab1 = () => {
   return (

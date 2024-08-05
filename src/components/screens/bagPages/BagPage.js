@@ -12,86 +12,32 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View
 } from 'react-native'
 import Toast from 'react-native-toast-message'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
+import UserContext from '../../../contexts/UserContext'
 import Icons from '../../icons/Icon'
-import UserContext from '../user/UserContext'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 const BagPage = props => {
   const { user } = useContext(UserContext)
   const sheetRef = useRef(null)
   const navigation = useNavigation()
-  // sate selected code sale off
+  const { storageData, setStorageData } = useStorage()
+  const { storageFavorites, setStorageFavorites } = useStorage()
   const [selected, setSelected] = useState(DataCodeSale)
   const [selectedCodeSale, setSelectedCodeSale] = useState()
-  const { storageData, setStorageData } = useStorage()
+
   const [visiblePopupMenu, setVisiblePopupMenu] = useState(null)
   const [addFavorite, setAddFavorite] = useState(null)
-  const BottomSheetRef = useRef(null)
   const [price, setPrice] = useState()
-  const [cart, setCart] = useState([])
   const [transportFee, setTransportFee] = useState()
+  const [cart, setCart] = useState([])
+  const [favoritesIds, setFavoritesIds] = useState([])
 
-  const showToastDeleted = title => {
-    Toast.show({
-      type: 'info', // 'info' | 'error' | 'success'
-      text1: 'Xóa sản phẩm thành công ✔',
-      // text2: title + ' đã được xóa khỏi giỏ hàng',
-      text1Style: { fontSize: 12, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
-      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
-      //  text2: 'Đây là một cái gì đó '
-    })
-  }
-
-  // onClick title itemProduct set attributes_id
-  const handleStatusProduct = attributes => {
-    // set attributes_id to PopupMenu
-    setVisiblePopupMenu(attributes)
-  }
-
-  useEffect(() => {
-    setCart(...storageData)
-    setPrice(totalBasePrice)
-    setTransportFee(49000)
-  }, [storageData])
-
-  // duyệt mảng lấy tất cả giá tiền
-  const allBasePrices = storageData.map(item => item.newPrice)
-  const totalBasePrice = sumBasePrices(allBasePrices)
-
-  // tính tổng cần thanh toán -> { tổng giá trị đơn hàng + phí ship }
-  const totalPrices = totalBasePrice + transportFee
-
-  // hàm tính tổng các giá trị đơn hàng
-  function sumBasePrices(allBasePrices) {
-    let total = 0
-    for (const price of allBasePrices) {
-      total += price
-    }
-    return total
-  }
-
-  // Example usage
-  const formattedCurrency = formatCurrency(price)
-  const formattedTransportfee = formatCurrency(transportFee)
-  const formattedTotalPrices = formatCurrency(totalPrices)
-
-  // set sate Bottom sheet to useRef
-
-  // Logic: onclick Open Bottom Sheet Modal
-  const handlePresentModal = () => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-    sheetRef.current?.open()
-    setTimeout(() => {}, 300)
-  }
-
-  // Logic: onclick show Bottom bar
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -99,10 +45,103 @@ const BagPage = props => {
         bottom: 0,
         paddingVertical: 8,
         height: 54
-        // position: 'absolute'
       }
     })
   }
+
+  useEffect(() => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    const loadFavorites = async () => {
+      const storedFavorites = await AsyncStorage.getItem('my-favorites')
+      if (storedFavorites) {
+        const favorites = JSON.parse(storedFavorites)
+        setFavoritesIds(favorites.map(favorite => favorite._id))
+      }
+    }
+
+    loadFavorites()
+  }, [storageFavorites, navigation])
+
+  const showToastDeleted = title => {
+    Toast.show({
+      type: 'info', // 'info' | 'error' | 'success'
+      text1: 'Xóa sản phẩm ✔',
+      text2: title,
+      text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
+      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
+      //  text2: 'Đây là một cái gì đó '
+    })
+  }
+
+  const showToastSuccess = title => {
+    Toast.show({
+      type: 'success', // 'info' | 'error' | 'success'
+      text1: 'Thêm vào yêu thích ✔',
+      text2: '' + title,
+      text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
+      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' },
+      //  text2: 'Đây là một cái gì đó '
+      onPress: () => {
+        navigation.navigate('FavoriteStack')
+        setBottomBar()
+      }
+    })
+  }
+
+  const showToastError = title => {
+    Toast.show({
+      type: 'error', // 'info' | 'error' | 'success'
+      text1: 'Thông báo ♲',
+      text2: title,
+      text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.red },
+      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
+      //  text2: 'Đây là một cái gì đó '
+    })
+  }
+
+  // onClick title itemProduct set attributes_id
+  const handleStatusProduct = attributes_id => {
+    // set attributes_id to PopupMenu
+    setVisiblePopupMenu(attributes_id)
+  }
+  // duyệt mảng lấy tất cả giá tiền
+  const allBasePrices = storageData.map(item => item.newPrice)
+  const totalBasePrice = sumBasePrices(allBasePrices)
+  // tính tổng cần thanh toán -> { tổng giá trị đơn hàng + phí ship }
+  const totalPrices = totalBasePrice + transportFee
+
+  // Example usage
+  // đơn giá
+  const formattedCurrency = formatCurrency(price)
+  // phí ship
+  const formattedTransportfee = formatCurrency(transportFee)
+  // thành tiền
+  const formattedTotalPrices = formatCurrency(totalPrices)
+
+  // hàm tính tổng các giá trị đơn hàng
+  function sumBasePrices(allBasePrices) {
+    let total = 0
+    for (const price of allBasePrices) {
+      total += price
+    }
+
+    return total
+  }
+
+  useEffect(() => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    setCart(...storageData)
+    setPrice(totalBasePrice)
+    setTransportFee(49000)
+  }, [storageData])
+  // set sate Bottom sheet to useRef
+
+  // Logic: onclick Open Bottom Sheet Modal
+  const handlePresentModal = () => {
+    sheetRef.current?.open()
+    setTimeout(() => {}, 300)
+  }
+
   // Logic: onclick item code sale
   const handleSelectCodeSale = (item, index) => {
     const updatedSelected = [...selected]
@@ -119,32 +158,65 @@ const BagPage = props => {
 
   // PopupMenu
 
-  const handleAddFavorites = attributes => {
-    console.log(attributes)
-    ;setAddFavorite(!addFavorite) &
-      console.log('Thêm vào yêu thích') &
-      setTimeout(() => {
-        setVisiblePopupMenu(false)
-      }, 2000)
+  const handleAddFavorites = async item => {
+    const {
+      _id,
+      image,
+      product_Name,
+      base_price,
+      color,
+      product_id,
+      category_id,
+      code,
+      discount_price,
+      nameCategoryById,
+      attributes
+    } = item
+    const newFavoritesProduct = {
+      _id: _id,
+      image: image,
+      product_id: product_id,
+      product_Name: product_Name,
+      color: color,
+      category_id: category_id,
+      code: code,
+      base_price: base_price,
+      discount_price: discount_price,
+      nameCategoryById: nameCategoryById,
+      attributes: attributes
+    }
+
+    // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích chưa
+    const isDuplicate = storageFavorites.some(favorite => favorite._id === _id)
+    if (!isDuplicate) {
+      const updateFavorites = [...storageFavorites, newFavoritesProduct]
+      setStorageFavorites(updateFavorites)
+      await AsyncStorage.setItem('my-favorites', JSON.stringify(updateFavorites))
+      handleDeleteFromList(product_Name, _id)
+    } else {
+      handleDeleteFromList(product_Name, _id)
+    }
   }
 
   // Logic: onClick delete Item from List
-  const handleDeleteFromList = async (attributes, product_Name) => {
+  const handleDeleteFromList = async (product_Name, _id) => {
     const result = await AsyncStorage.getItem('my-cart')
     let storage = []
     if (result !== null) {
       storage = JSON.parse(result)
     }
 
-    const newStorage = storage.filter(s => s.attributes !== visiblePopupMenu)
+    const newStorage = storage.filter(s => s.attributes_id !== visiblePopupMenu)
     setStorageData(newStorage)
     await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
     let title = product_Name
-    showToastDeleted(title)
+    if (_id) {
+      showToastSuccess(title)
+    } else showToastDeleted(title)
   }
 
   // Menu popup Item
-  const popupMenu = (attributes, item) => {
+  const popupMenu = item => {
     const { product_Name } = item
 
     return (
@@ -160,7 +232,7 @@ const BagPage = props => {
         }}
       >
         <TouchableOpacity
-          onPress={() => handleAddFavorites(attributes)}
+          onPress={() => handleAddFavorites(item)}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -177,7 +249,7 @@ const BagPage = props => {
             )}
           </View>
 
-          <MyText style={{ textAlign: 'center', flex: 1 }}>Yêu thích</MyText>
+          <MyText style={{ textAlign: 'center', flex: 1, fontSize: 12 }}>Yêu thích</MyText>
         </TouchableOpacity>
         <View
           style={{
@@ -187,18 +259,19 @@ const BagPage = props => {
           }}
         />
         <TouchableOpacity
-          onPress={() => handleDeleteFromList(attributes, product_Name)}
+          onPress={() => handleDeleteFromList(product_Name)}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-
             width: '100%',
             padding: 16
           }}
         >
           <Icons.Feather name={'trash-2'} size={24} />
 
-          <MyText style={{ textAlign: 'center', marginStart: 8 }}>Xóa khỏi danh sách</MyText>
+          <MyText style={{ textAlign: 'center', marginStart: 8, fontSize: 12 }}>
+            Xóa khỏi danh sách
+          </MyText>
         </TouchableOpacity>
       </View>
     )
@@ -214,7 +287,7 @@ const BagPage = props => {
             style={{
               textAlign: 'center',
               padding: 24,
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: '600'
             }}
           >
@@ -223,24 +296,19 @@ const BagPage = props => {
 
           {!user ? (
             <TouchableOpacity
-              style={{ backgroundColor: Colors.red, paddingVertical: 16 }}
-              onPress={() =>
-                navigation.navigate('ProfileStack', {
-                  screen: 'Login'
-                })
-              }
+              style={{ backgroundColor: Colors.black2, paddingVertical: 16 }}
+              onPress={() => navigation.navigate('UserNavigation', { screen: 'Login' })}
             >
-              <MyText
-                fontFamily={'Montserrat-SemiBold'}
+              <Text
                 style={{
                   color: Colors.white,
                   textAlign: 'center',
-                  fontWeight: '700',
-                  fontSize: 12
+                  fontSize: 14,
+                  fontFamily: 'Montserrat-SemiBold'
                 }}
               >
                 Đăng Nhập
-              </MyText>
+              </Text>
             </TouchableOpacity>
           ) : null}
         </View>
@@ -277,11 +345,7 @@ const BagPage = props => {
               />
             </View>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('ProfileStack', {
-                  screen: 'Register'
-                })
-              }
+              onPress={() => navigation.navigate('UserNavigation', { screen: 'Register' })}
               style={{
                 backgroundColor: Colors.white,
                 paddingVertical: 16,
@@ -289,17 +353,16 @@ const BagPage = props => {
                 borderWidth: 1
               }}
             >
-              <MyText
-                fontFamily={'Montserrat-SemiBold'}
+              <Text
                 style={{
                   color: Colors.black,
                   textAlign: 'center',
-                  fontWeight: '700',
-                  fontSize: 12
+                  fontSize: 14,
+                  fontFamily: 'Montserrat-SemiBold'
                 }}
               >
                 Tạo tài khoản mới
-              </MyText>
+              </Text>
             </TouchableOpacity>
           </View>
         ) : null}
@@ -308,11 +371,11 @@ const BagPage = props => {
   }
 
   const handlePlus = item => {
-    const { quantity, attributes, cnt, base_price } = item
+    const { quantity, attributes_id, cnt, base_price } = item
     const newQuantity = quantity + 1
     const newPrice = base_price * newQuantity
     const newStorageData = storageData.map((val, index) => {
-      if (val.attributes === attributes && newQuantity <= val.cnt) {
+      if (val.attributes_id === attributes_id && newQuantity <= val.cnt) {
         return {
           ...val,
           quantity: newQuantity,
@@ -320,62 +383,60 @@ const BagPage = props => {
           newPrice: newPrice
         }
       } else {
-        console.log('Chọn tối đa ' + (newQuantity - 1))
+        if (newQuantity == cnt) {
+          let title = 'Chọn tối đa ' + cnt
+          showToastError(title)
+        }
         return val
       }
-
-      return val
     })
     setStorageData(newStorageData)
   }
 
   // Số lượng giảm
   const handleMinus = item => {
-    const { quantity, attributes, cnt, base_price } = item
+    const { quantity, attributes_id, cnt, base_price } = item
     const newQuantity = quantity - 1
     let newPrice = base_price * newQuantity
     const newStorageData = storageData.map((val, index) => {
-      if (val.attributes === attributes && newQuantity >= 1) {
-        console.log(val.quantity)
+      if (val.attributes_id === attributes_id && newQuantity >= 1) {
         return { ...val, quantity: newQuantity, base_price: base_price, newPrice: newPrice }
       } else {
-        console.log('Chọn tối thiểu 1')
+        if (newQuantity <= 1) {
+          let title = 'Chọn tối thiểu 1'
+          showToastError(title)
+        }
         return val
       }
-      return val
     })
     setStorageData(newStorageData)
   }
 
-  const handlePressProductItem = item => {
-    const { product_id, _id } = item
+  const handleClickItem = item => {
+    const { _id, product_id } = item
     navigation.navigate('ProductDetail', {
-      product_id: product_id,
-      _id: _id
+      _id: _id,
+      product_id: product_id
     })
-    console.log('product_id', item.product_id)
-    console.log('_id', item._id)
   }
 
   const ItemCart = ({ item, index }) => {
-    const { product_Name, base_price, cnt, size, _id, color, image, code, quantity, attributes } =
-      item
+    const { product_Name, base_price, size, color, image, quantity, attributes_id } = item
     const priceProduct = base_price
     const newPrice = { ...item, newPrice: base_price * quantity }
-
     const formattedPriceProduct = formatCurrency(newPrice.newPrice)
 
     return (
-      <SafeAreaView style={{ marginBottom: 24 }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            backgroundColor: Colors.white,
-            borderRadius: 8,
-            marginHorizontal: 16
-          }}
-        >
-          <TouchableWithoutFeedback onPress={() => handlePressProductItem(item)}>
+      <TouchableOpacity onPress={() => handleClickItem(item)}>
+        <SafeAreaView style={{ marginBottom: 24 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              backgroundColor: Colors.white,
+              borderRadius: 8,
+              marginHorizontal: 16
+            }}
+          >
             <Image
               style={{
                 width: 104,
@@ -385,127 +446,139 @@ const BagPage = props => {
               }}
               source={{ uri: image }}
             />
-          </TouchableWithoutFeedback>
 
-          <View
-            style={{
-              flex: 1,
-              paddingHorizontal: 16,
-              paddingVertical: 12,
-              backgroundColor: Colors.white
-            }}
-          >
-            <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_price}>
-              {product_Name}
-            </MyText>
             <View
               style={{
-                flexDirection: 'column',
-                marginVertical: 8,
-                justifyContent: 'space-between'
+                flex: 1,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                backgroundColor: Colors.white
               }}
             >
-              <View style={{ flexDirection: 'row', width: windowWith / 2.2 }}>
-                <MyText
-                  fontFamily={'Montserrat-SemiBold'}
-                  style={{ color: Colors.gray, fontSize: 12 }}
-                >
-                  Màu sắc:
-                </MyText>
-                <Text
-                  numberOfLines={1}
-                  style={{
-                    color: Colors.black,
-                    marginStart: 8,
-                    fontWeight: '500',
-                    fontFamily: 'Montserrat-SemiBold',
-                    fontSize: 12
-                  }}
-                >
-                  {color}
-                </Text>
-              </View>
-              <View style={{ height: 8 }} />
+              <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_price}>
+                {product_Name}
+              </MyText>
               <View
                 style={{
-                  flexDirection: 'row'
+                  flexDirection: 'column',
+                  marginVertical: 8,
+                  justifyContent: 'space-between'
                 }}
               >
-                <MyText
-                  fontFamily={'Montserrat-SemiBold'}
-                  style={{ color: Colors.gray, fontSize: 12 }}
+                <View style={{ flexDirection: 'row', width: windowWith / 2.2 }}>
+                  <MyText
+                    fontFamily={'Montserrat-SemiBold'}
+                    style={{ color: Colors.gray, fontSize: 12 }}
+                  >
+                    Màu sắc:
+                  </MyText>
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      color: Colors.black,
+                      marginStart: 8,
+                      fontWeight: '500',
+                      fontFamily: 'Montserrat-SemiBold',
+                      fontSize: 12
+                    }}
+                  >
+                    {color}
+                  </Text>
+                </View>
+                <View style={{ height: 8 }} />
+                <View
+                  style={{
+                    flexDirection: 'row'
+                  }}
                 >
-                  Size:
-                </MyText>
-                <MyText
-                  fontFamily={'Montserrat-SemiBold'}
-                  style={{ color: Colors.black, marginStart: 8, fontSize: 12 }}
-                >
-                  {size}
-                </MyText>
+                  <MyText
+                    fontFamily={'Montserrat-SemiBold'}
+                    style={{ color: Colors.gray, fontSize: 12 }}
+                  >
+                    Size:
+                  </MyText>
+                  <MyText
+                    fontFamily={'Montserrat-SemiBold'}
+                    style={{ color: Colors.black, marginStart: 8, fontSize: 12 }}
+                  >
+                    {size}
+                  </MyText>
+                </View>
               </View>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: 16
-              }}
-            >
               <View
                 style={{
                   flexDirection: 'row',
-                  alignItems: 'center'
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: 16
                 }}
               >
-                <TouchableOpacity
-                  onPress={() => handlePlus(item, priceProduct)}
+                <View
                   style={{
-                    padding: 6,
-                    backgroundColor: Colors.white,
-                    borderRadius: 50,
-                    elevation: 8,
-                    shadowColor: Colors.gray
+                    flexDirection: 'row',
+                    alignItems: 'center'
                   }}
                 >
-                  <Icons.AntDesign name={'plus'} size={18} />
-                </TouchableOpacity>
-                <MyText
-                  fontFamily={'Montserrat-SemiBold'}
-                  style={{ textAlign: 'center', marginHorizontal: 16, fontSize: 12 }}
-                >
-                  {quantity}
-                </MyText>
-                <TouchableOpacity
-                  onPress={() => handleMinus(item)}
-                  style={{
-                    padding: 6,
-                    backgroundColor: Colors.white,
-                    borderRadius: 50,
-                    elevation: 8,
-                    shadowColor: Colors.gray
-                  }}
-                >
-                  <Icons.AntDesign name={'minus'} size={18} />
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handlePlus(item, priceProduct)}
+                    style={{
+                      padding: 6,
+                      backgroundColor: Colors.white,
+                      borderRadius: 50,
+                      elevation: 8,
+                      shadowColor: Colors.gray
+                    }}
+                  >
+                    <Icons.AntDesign name={'plus'} size={18} />
+                  </TouchableOpacity>
+                  <MyText
+                    fontFamily={'Montserrat-SemiBold'}
+                    style={{ textAlign: 'center', marginHorizontal: 16, fontSize: 12 }}
+                  >
+                    {quantity}
+                  </MyText>
+                  <TouchableOpacity
+                    onPress={() => handleMinus(item)}
+                    style={{
+                      padding: 6,
+                      backgroundColor: Colors.white,
+                      borderRadius: 50,
+                      elevation: 8,
+                      shadowColor: Colors.gray
+                    }}
+                  >
+                    <Icons.AntDesign name={'minus'} size={18} />
+                  </TouchableOpacity>
+                </View>
+                <MyText style={{ fontSize: 12, fontWeight: '500' }}>{formattedPriceProduct}</MyText>
               </View>
-              <MyText style={{ fontSize: 12, fontWeight: '500' }}>{formattedPriceProduct}</MyText>
+              {visiblePopupMenu === attributes_id ? popupMenu(item) : null}
             </View>
-            {visiblePopupMenu === attributes ? popupMenu(attributes, item) : null}
-          </View>
-          <TouchableOpacity
-            onPress={() => handleStatusProduct(attributes)}
-            style={{
-              borderTopRightRadius: 8
-            }}
-          >
-            {visiblePopupMenu === attributes ? (
-              <TouchableOpacity onPress={() => setVisiblePopupMenu(!visiblePopupMenu)}>
-                <Icons.Feather
-                  name={'x'}
+            <TouchableOpacity
+              onPress={() => handleStatusProduct(attributes_id)}
+              style={{
+                borderTopRightRadius: 8
+              }}
+            >
+              {visiblePopupMenu === attributes_id ? (
+                <TouchableOpacity onPress={() => setVisiblePopupMenu(!visiblePopupMenu)}>
+                  <Icons.Feather
+                    name={'x'}
+                    size={18}
+                    color={Colors.red}
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      padding: 8,
+                      borderTopRightRadius: 8
+                    }}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <Icons.Entypo
+                  name={'dots-three-vertical'}
                   size={18}
-                  color={Colors.red}
+                  color={Colors.gray}
                   style={{
                     position: 'absolute',
                     right: 0,
@@ -513,23 +586,11 @@ const BagPage = props => {
                     borderTopRightRadius: 8
                   }}
                 />
-              </TouchableOpacity>
-            ) : (
-              <Icons.Entypo
-                name={'dots-three-vertical'}
-                size={18}
-                color={Colors.gray}
-                style={{
-                  position: 'absolute',
-                  right: 0,
-                  padding: 8,
-                  borderTopRightRadius: 8
-                }}
-              />
-            )}
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+              )}
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </TouchableOpacity>
     )
   }
 
@@ -614,7 +675,7 @@ const BagPage = props => {
               Đăng nhập để sử dụng các ưu đãi cá nhân!
             </MyText>
             <TouchableOpacity
-              onPress={() => navigation.navigate('UserNavigation')}
+              onPress={() => navigation.navigate('UserNavigation', { screen: 'Login' })}
               style={{
                 backgroundColor: Colors.white,
                 paddingVertical: 16,
@@ -684,7 +745,7 @@ const BagPage = props => {
   }
   // render item list Product
   const renderItem = ({ item, index }) => {
-    const { id, name_saleOff, image_saleOff, date_saleOff, code_saleOff, subject } = item
+    const { name_saleOff, image_saleOff, date_saleOff, code_saleOff, subject } = item
     return (
       <View style={styles.wrapper_promoCodes}>
         <View style={styles.image_promoCodes}>
@@ -743,10 +804,6 @@ const BagPage = props => {
     )
   }
 
-  const goBack = () => {
-    navigation.goBack()
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-  }
   return (
     <View
       style={{
@@ -757,7 +814,7 @@ const BagPage = props => {
     >
       <View style={[styles.header]}>
         <View style={{ flexDirection: 'row' }}>
-          <TouchableOpacity onPress={() => goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icons.Ionicons name={'arrow-back-sharp'} size={24} color={Colors.black} />
           </TouchableOpacity>
           <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_header}>
@@ -766,9 +823,14 @@ const BagPage = props => {
         </View>
         {cart ? (
           <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('PayPage', {
+                shippingFee: transportFee
+              })
+            }
             style={{
               paddingVertical: 16,
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.black2,
 
               marginTop: 16
             }}
@@ -779,7 +841,7 @@ const BagPage = props => {
                 color: Colors.white,
                 textAlign: 'center',
                 fontWeight: '500',
-                fontSize: 12
+                fontSize: 14
               }}
             >
               Tiếp tục thanh toán
@@ -817,10 +879,10 @@ const BagPage = props => {
             }}
           >
             <View>
-              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 12 }}>
+              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 10 }}>
                 Thanh toán khi
               </MyText>
-              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 12 }}>
+              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 10 }}>
                 nhận hàng
               </MyText>
             </View>
@@ -846,7 +908,7 @@ const BagPage = props => {
               width: windowWith
             }}
           >
-            <MyText style={{ fontSize: 12 }}>
+            <MyText style={{ fontSize: 10 }}>
               Giá cả và chi phí giao hàng này chưa phải là cuối cùng cho đến khi bạn tới phần thanh
               toán.
             </MyText>
@@ -857,8 +919,8 @@ const BagPage = props => {
                 width: windowWith - 16
               }}
             >
-              <MyText style={{ fontSize: 12 }}>Miễn phí trả hàng trong 30 ngày.</MyText>
-              <MyText style={{ borderBottomWidth: 0.5, marginStart: 4, fontSize: 12 }}>
+              <MyText style={{ fontSize: 10 }}>Miễn phí trả hàng trong 30 ngày.</MyText>
+              <MyText style={{ borderBottomWidth: 0.5, marginStart: 4, fontSize: 10 }}>
                 trả hàng và hoàn tiền
               </MyText>
             </View>
@@ -877,7 +939,7 @@ const BagPage = props => {
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Icons.Feather name={'box'} size={32} />
-              <MyText style={{ marginStart: 16, fontWeight: '500', fontSize: 12 }}>
+              <MyText style={{ marginStart: 16, fontWeight: '500', fontSize: 10 }}>
                 Giao hàng và chọn phương thức đổi trả
               </MyText>
             </View>
@@ -890,7 +952,7 @@ const BagPage = props => {
         height={windowHeight / 1.6}
         style={{ backgroundColor: Colors.white }}
         ref={sheetRef}
-        onDismiss={() => setBottomBar()}
+        // onDismiss={() => setBottomBar()}
       >
         <View>
           <View

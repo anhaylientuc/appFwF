@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
   Keyboard,
@@ -11,12 +12,11 @@ import {
 } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import MyText from 'src/constants/FontFamily'
 import { login } from 'src/utils/http/UserHTTP'
-import UserContext from '../UserContext'
-
-const Login = props => {
-  const { navigation } = props
+import UserContext from '../../../contexts/UserContext'
+const Login = () => {
+  const navigation = useNavigation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const { setUser, user } = useContext(UserContext)
@@ -31,7 +31,7 @@ const Login = props => {
 
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-  }, [props])
+  }, [navigation])
   const handleBack = () => {
     setisShowError(false)
     setisShowErrorPass(false)
@@ -71,12 +71,17 @@ const Login = props => {
     try {
       if (userError) {
         !email ? setisShowError(true) : setisShowError(false)
-        !password ? setisShowErrorPass(true) : setisShowErrorPass(false)
+        !password ? setisShowErrorPass(true) & setIncorrect(false) : setisShowErrorPass(false)
       }
       const result = await login(email, password)
       if (userError || result) {
+        // email and password = true
         setUser(result)
+        if (result) {
+          navigation.goBack()
+        }
       } else {
+        // trường hợp sai tài khoản hoặc mật khẩu
         setIncorrect(true)
       }
     } catch (error) {
@@ -207,7 +212,7 @@ const Login = props => {
                     * Mật khẩu không được để trống
                   </Text>
                 ) : null}
-                {incorrect ? (
+                {incorrect & passwordVerify ? (
                   <Text
                     style={{
                       color: Colors.red,
