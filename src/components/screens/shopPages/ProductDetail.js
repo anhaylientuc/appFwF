@@ -50,8 +50,8 @@ const ProductDetail = props => {
     const fetchData = async () => {
       const version = 2
       const product_id = props.route.params.product_id
-      const name_filter = props.route.params.attributes.filter(params => params.key === 'Color')
-      const size = props.route.params.attributes.filter(params => params.key === 'Size')
+      const name_filter = props.route.params.attributes.filter(params => params.key === 'Màu sắc')
+      const size = props.route.params.attributes.filter(params => params.key === 'Kích cỡ')
       navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
       try {
         const thumb = await getProducts({ version, product_id })
@@ -59,6 +59,7 @@ const ProductDetail = props => {
         setwallPaper(props.route.params.images)
         setselectedId(props.route.params._id)
         setSelected(size)
+        console.log('namefilet', name_filter[0])
         setselectedName(name_filter[0].value)
       } catch (error) {
         console.error('Error:', error)
@@ -68,7 +69,6 @@ const ProductDetail = props => {
 
     fetchData()
   }, [])
-  console.log(attributes_id)
 
   const handleAddToCart = async () => {
     // Check if product already exists in storage
@@ -131,20 +131,23 @@ const ProductDetail = props => {
   }
 
   const handelPresenProductId = item => {
-    ;(async () => {
-      const filteredData = item.attributes.filter(item => item.key === 'Size')
+    ; (async () => {
+      const filteredData = item.attributes.filter(item => item.key === 'Kích cỡ')
+      console.log('ok')
       const filteredImages = item.images
-      const filterName = item.attributes.filter(item => item.key === 'Color')
+      const filterName = item.attributes.filter(item => item.key === 'Màu sắc')
       try {
         setselectedId(item._id)
         setSelected(filteredData)
         setwallPaper(filteredImages)
+        console.log('filtlet', filterName[0])
+        console.log(filterName)
         setselectedName(filterName[0].value)
         setVaLueSelectSize(null)
         console.log('id sản phẩm: ', selectedId)
       } catch (error) {
         console.error('Error:', error)
-        // Handle errors appropriately in your application
+
       }
     })()
   }
@@ -152,7 +155,8 @@ const ProductDetail = props => {
     // Update selected items efficiently
     setQuantity(1)
     setVaLueSelectSize(item.value)
-    console.log('>>> id attributes: ', attributes_id)
+    console.log('>>>>',item)
+    //console.log('>>> id attributes: ', attributes_id)
     setcnt(item.cnt)
     setattributes_id(item._id)
   }
@@ -418,11 +422,11 @@ const ProductDetail = props => {
             horizontal
             style={{ width: windowWith, height: windowHeight / 1.5 }}
             data={wallPaper}
+            keyExtractor={(item) => item._id || item.url} // Ensure unique key
             renderItem={({ item, index }) => (
-              <Pressable>
+              item.url && <Pressable key={item._id || item.url}>
                 <Image
                   resizeMode="cover"
-                  key={index}
                   style={{ width: windowWith, height: windowHeight / 1.5 }}
                   source={{ uri: item.url }}
                 />
@@ -494,6 +498,7 @@ const ProductDetail = props => {
               horizontal
               showsHorizontalScrollIndicator={false}
               data={thumbs}
+              keyExtractor={(item) => item._id} // Use a unique property
               renderItem={({ item, index }) => (
                 <TouchableOpacity
                   onPress={() => handelPresenProductId(item)}
@@ -503,11 +508,11 @@ const ProductDetail = props => {
                     style={
                       selectedId === item._id
                         ? {
-                            width: 57,
-                            height: 86,
-                            borderColor: Colors.black,
-                            borderWidth: 1.5
-                          }
+                          width: 57,
+                          height: 86,
+                          borderColor: Colors.black,
+                          borderWidth: 1.5
+                        }
                         : { width: 57, height: 86 }
                     }
                     source={{ uri: item.images[0].url }}
@@ -515,6 +520,7 @@ const ProductDetail = props => {
                 </TouchableOpacity>
               )}
             />
+
           </View>
 
           <View style={{ flexDirection: 'row', marginEnd: 20, marginTop: 16 }}>
@@ -793,48 +799,61 @@ const ProductDetail = props => {
               height: windowHeight / 2.8
             }}
           >
-            <FlatList
-              // render Item Data Sort by
-              scrollEnabled={false}
-              style={{ marginTop: 16 }}
-              data={selected}
-              numColumns={3}
-              renderItem={({ item, index }) => {
-                return (
-                  <TouchableOpacity
-                    style={{
-                      borderWidth: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: 8,
-                      width: 100,
-                      padding: 10,
-                      marginEnd: 22,
-                      borderColor: item._id === attributes_id ? Colors.red : Colors.gray,
-                      marginBottom: 22,
-                      backgroundColor: item._id === attributes_id ? Colors.red : Colors.white
-                    }}
-                    onPress={() => {
-                      handleSelect(item, index)
-                    }}
-                  >
-                    <View>
-                      <MyText
-                        fontFamily={'Montserrat-SemiBold'}
-                        style={{
-                          fontSize: 16,
-                          fontWeight: '500',
-                          color: item._id === attributes_id ? Colors.white : Colors.black,
-                          lineHeight: 20
-                        }}
-                      >
-                        {item.value}
-                      </MyText>
-                    </View>
-                  </TouchableOpacity>
-                )
-              }}
-            />
+           <FlatList
+  scrollEnabled={false}
+  style={{ marginTop: 16 }}
+  data={selected}
+  numColumns={3}
+  keyExtractor={(item) => item._id} // Ensure each key is unique
+  renderItem={({ item, index }) => {
+    const { _id, cnt } = item;
+    const isDisabled = cnt === 0; // Disable the touchable component if cnt is zero
+
+    return (
+      <TouchableOpacity
+        key={_id}
+        style={{
+          borderWidth: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: 8,
+          width: 100,
+          padding: 10,
+          marginEnd: 22,
+          borderColor: item._id === attributes_id ? Colors.red : Colors.gray,
+          marginBottom: 22,
+          backgroundColor: item._id === attributes_id ? Colors.red : Colors.white,
+          opacity: isDisabled ? 0.5 : 1, // Change opacity to indicate disabled state
+        }}
+        onPress={() => {
+          if (!isDisabled) {
+            handleSelect(item, index); // Call the handleSelect function only if the item is not disabled
+          }
+        }}
+        disabled={isDisabled} // Disable the touchable component if cnt is zero
+      >
+        <View>
+          <MyText
+            fontFamily={'Montserrat-SemiBold'}
+            style={{
+              fontSize: 16,
+              fontWeight: '500',
+              color: item._id === attributes_id ? Colors.white : Colors.black,
+              lineHeight: 20,
+            }}
+          >
+            {item.value}
+          </MyText>
+          {isDisabled && (
+            <MyText style={{ fontSize: 10, color: Colors.gray }}>Hết hàng</MyText> // Optional: Add a text to indicate it's out of stock
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  }}
+/>
+
+
             <View
               style={{
                 flexDirection: 'row',

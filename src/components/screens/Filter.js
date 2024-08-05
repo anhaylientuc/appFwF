@@ -57,8 +57,9 @@ const Filter = props => {
         const queryString=qs.stringify(query)
         
         const response=await NewHTTP.getFilter(queryString)
+        const {_attributes,_products}=response
         console.log(response)
-        setFilter(response)
+        setFilter(_attributes)
 
       } catch (error) {
         console.log('loi',error)
@@ -92,10 +93,10 @@ const Filter = props => {
   const renderItem = ({ item, index }) => {
     const { key, quantity, child } = item
     
-    console.log(child)
+    console.log(key)
 
     return (
-      <Pressable
+      <Pressable key={key}
         onPress={() => {
           props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key })
 

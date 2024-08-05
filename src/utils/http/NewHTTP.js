@@ -70,7 +70,7 @@ export const getFilter = async (query) => {
   try {
     const axiosInstance = AxiosInstance()
     const url = `/filters?${query}`
-    console.log(url)
+    console.log(JSON.stringify(url))
     const response = await axiosInstance.get(url)
     return response
   } catch (error) {

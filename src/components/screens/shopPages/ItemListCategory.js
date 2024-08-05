@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState,useContext } from 'react'
+import React, { useEffect, useRef, useState, useContext } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -9,7 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
-  
+
 } from 'react-native'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import BottomSheet from '@devvie/bottom-sheet'
@@ -76,16 +76,19 @@ const ItemCategoryWomen = props => {
 
 
         const response = await getCategoryById(categoryById)
-        setnameCategoryById(response.name)
-        const { _id, name, parentID, image } = response
-        const arr = response.child
-        setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
+        if (response) {
+          setnameCategoryById(response.name)
+          const { _id, name, parentID, image } = response
+          const arr = response.child
+
+          setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
+        }
 
 
         setwindowWith(width / 2)
         setwindowHeight(height / 2.4)
       } catch (error) {
-        console.log(error)
+        console.log('errorne', error)
         throw error
       }
     }
@@ -159,26 +162,30 @@ const ItemCategoryWomen = props => {
 
   // Logic: onclick set product by category Id
   const handlePressedCategoryId = async (_id) => {
-      
-      const version = 2
-      const category_id = _id
-      try {
-        setFilterState([])
-        console.log('cate',category_id)
-        const products = await getProducts({ version:version, category_id:category_id })
-        console.log('products',products)
-        const productsParent = await getProducts({ version: 1, category_id })
-         setproductsParent(productsParent[0])
-        setproductsParent(productsParent[0].category_id)
-        setproducts(products)
-        setselectedProductId(_id)
 
-        // console.log(JSON.stringify(products, null, 2))
-      } catch (error) {
-        console.error('Error 1:', error)
-        // Handle errors appropriately in your application
+    const version = 2
+    const category_id = _id
+    console.log('cate', category_id)
+    try {
+      setFilterState([])
+      const products = await getProducts({ version: version, category_id: category_id })
+      const productsParent = await getProducts({ version: 1, category_id: category_id })
+      if (products.length == 0 || productsParent.length == 0) {
+        setproducts([])
+        setproductsParent([])
+        return
       }
-    
+      setproductsParent(productsParent[0])
+      setproductsParent(productsParent[0].category_id)
+      setproducts(products)
+      setselectedProductId(_id)
+
+      // console.log(JSON.stringify(products, null, 2))
+    } catch (error) {
+      console.error('Error 1:', error)
+      // Handle errors appropriately in your application
+    }
+
   }
 
   // Slide show image
@@ -238,7 +245,7 @@ const ItemCategoryWomen = props => {
       code
     } = item
 
-    // format base_price
+    console.log('render')
     function formatCurrency(amount, options = {}) {
       const { currency = 'VND', locale = 'vi-VN' } = options
 
@@ -271,15 +278,17 @@ const ItemCategoryWomen = props => {
             horizontal
           >
             {images.map((image, index) => (
-              <Image
-                resizeMode={numColumns ? 'contain' : 'cover'}
-                key={index}
-                style={{
-                  width: windowWith - 20,
-                  height: windowHeight
-                }}
-                source={{ uri: image.url }}
-              />
+              image && image.url ? ( // Kiểm tra image và image.url
+                <Image
+                  resizeMode={numColumns ? 'contain' : 'cover'}
+                  key={index}
+                  style={{
+                    width: windowWith - 20,
+                    height: windowHeight
+                  }}
+                  source={{ uri: image.url }}
+                />
+              ) : null // Không render nếu image.url không hợp lệ
             ))}
           </ScrollView>
 
