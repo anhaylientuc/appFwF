@@ -1,13 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import React, { useCallback, useContext } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import UserContext from '../../../contexts/UserContext'
 import Icons from '../../icons/Icon'
-const Profile = props => {
-  const { navigation } = props
+const Profile = () => {
+  const navigation = useNavigation()
   const { user, setUser } = useContext(UserContext) // Assuming UserContext provides user and setUser
   // Initially not loading
 
@@ -37,7 +37,6 @@ const Profile = props => {
         bottom: 0,
         paddingVertical: 8,
         height: 54
-        // position: 'absolute'
       }
     })
   }
@@ -255,7 +254,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     paddingVertical: 16,
     alignItems: 'center'
   },

@@ -13,7 +13,6 @@ import Toast from 'react-native-toast-message'
 import Colors from 'src/constants/Colors'
 import UserContext from 'src/contexts/UserContext'
 import UserHTTP from 'src/utils/http/UserHTTP'
-
 const EditAddress = props => {
   const {
     route: {
@@ -184,7 +183,12 @@ const EditAddress = props => {
               borderColor: Colors.black2
             }}
           >
-            <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.white }]}>
+            <Text
+              style={[
+                styles.txt_title,
+                { textAlign: 'center', color: Colors.white, fontFamily: 'Montserrat-SemiBold' }
+              ]}
+            >
               Lưu
             </Text>
           </TouchableOpacity>
@@ -198,7 +202,12 @@ const EditAddress = props => {
             }}
             onPress={() => navigation.goBack()}
           >
-            <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.black2 }]}>
+            <Text
+              style={[
+                styles.txt_title,
+                { textAlign: 'center', color: Colors.black2, fontFamily: 'Montserrat-SemiBold' }
+              ]}
+            >
               Hủy
             </Text>
           </TouchableOpacity>

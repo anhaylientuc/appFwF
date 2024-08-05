@@ -78,8 +78,6 @@ const ProductDetail = props => {
     }
   }, [scrollY])
 
-  // useEffect(() => {}, [storageFavorites, navigation])
-
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const loadFavorites = async () => {
@@ -131,7 +129,6 @@ const ProductDetail = props => {
       text2: title,
       text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.red },
       text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
-      //  text2: 'Đây là một cái gì đó '
     })
   }
 
@@ -143,7 +140,7 @@ const ProductDetail = props => {
         text2: '' + title.product_Name,
         text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
         text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' },
-        //  text2: 'Đây là một cái gì đó '
+
         onPress: () => {
           handleGoBag()
         }

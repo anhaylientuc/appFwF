@@ -71,13 +71,17 @@ const Login = () => {
     try {
       if (userError) {
         !email ? setisShowError(true) : setisShowError(false)
-        !password ? setisShowErrorPass(true) : setisShowErrorPass(false)
+        !password ? setisShowErrorPass(true) & setIncorrect(false) : setisShowErrorPass(false)
       }
       const result = await login(email, password)
       if (userError || result) {
+        // email and password = true
         setUser(result)
-        navigation.goBack()
+        if (result) {
+          navigation.goBack()
+        }
       } else {
+        // trường hợp sai tài khoản hoặc mật khẩu
         setIncorrect(true)
       }
     } catch (error) {
@@ -208,7 +212,7 @@ const Login = () => {
                     * Mật khẩu không được để trống
                   </Text>
                 ) : null}
-                {incorrect ? (
+                {incorrect & passwordVerify ? (
                   <Text
                     style={{
                       color: Colors.red,

@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { TabActions, useNavigation } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { useContext } from 'react'
 import { View } from 'react-native'
@@ -119,18 +119,13 @@ function MainNavigator() {
           component={WebViewPayment}
           options={{ title: 'WebViewPayment' }}
         />
+        <Stack.Screen name="MyAddress" component={MyAddress} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
       </Stack.Navigator>
     )
   }
 
-  const ProfileStack = ({ navigation }) => {
-    const handleNavigate = screenName => {
-      const jumpToAction = TabActions.jumpTo('ProfileStack')
-      navigation.dispatch(jumpToAction)
-      navigation.navigate(screenName)
-    }
-
+  const ProfileStack = () => {
     return user ? (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Profile" component={Profile} options={{ title: 'Profile' }} />

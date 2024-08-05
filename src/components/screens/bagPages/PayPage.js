@@ -21,7 +21,6 @@ import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import OrderHTTP from 'src/utils/http/OrderHTTP'
 const windowWith = Dimensions.get('window').width
-const windowHeight = Dimensions.get('window').height
 const PayPage = props => {
   const {
     route: {
@@ -29,30 +28,28 @@ const PayPage = props => {
     }
   } = props
   const navigation = useNavigation()
+  const { user, setUser } = useContext(UserContext)
+  const [shipping, setshipping] = useState({})
   const { storageData, setStorageData } = useStorage()
   const [showOrderDetails, setShowOrderDetails] = useState(false)
+  const [order, setOrder] = useState(null)
+
   const goBack = () => {
     navigation.goBack()
   }
-  const { user, setUser } = useContext(UserContext)
-  const [shipping, setshipping] = useState({})
 
   const allBasePrices = storageData.map(item => item.newPrice)
   const totalBasePrice = sumBasePrices(allBasePrices)
-  console.log(totalBasePrice)
   function sumBasePrices(allBasePrices) {
     let total = 0
     for (const price of allBasePrices) {
       total += price
     }
-    // const newStorage = { ...storageData, total: total, intoMoney: total + transportFee }
-    // console.log(JSON.stringify(newStorage, null, 2))
     return total
   }
 
   // thành tiền
   const totalPrices = totalBasePrice + shippingFee
-
   // format phí ships
   const formattedShippingFee = formatCurrency(shippingFee)
   // format giá trị đơn hàng
@@ -60,21 +57,6 @@ const PayPage = props => {
   // format thành tiền
   const formattedTotalPrices = formatCurrency(totalPrices)
 
-  const [order, setOrder] = useState(null)
-  const [shippingAddress, setShippingAddress] = useState('')
-
-  const setBottomBar = () => {
-    navigation.getParent().setOptions({
-      tabBarStyle: {
-        backgroundColor: Colors.white,
-        bottom: 0,
-        paddingVertical: 8,
-        height: 54
-        // position: 'absolute'
-      }
-    })
-  }
-  console.log(shipping)
   useEffect(() => {
     user.shipping.map(item => {
       if (item.selected == true) {
@@ -87,7 +69,6 @@ const PayPage = props => {
       navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     }
 
-    setShippingAddress('143 Đào Duy Anh, Phường 9 Phú Phuận')
     setOrder({
       ...order,
       amount: totalPrices,
@@ -100,23 +81,23 @@ const PayPage = props => {
   const showToastDeleted = title => {
     Toast.show({
       type: 'info', // 'info' | 'error' | 'success'
-      text1: 'Xóa sản phẩm thành công ✔',
-      // text2: title + ' đã được xóa khỏi giỏ hàng',
-      text1Style: { fontSize: 12, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
+      text1: 'Xóa thành công ✔',
+      text2: title,
+      text1Style: { fontSize: 14, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
       text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
       //  text2: 'Đây là một cái gì đó '
     })
   }
 
   // Logic: onClick delete Item from List
-  const handleDeleteFromList = async (attributes, product_Name) => {
+  const handleDeleteFromList = async (attributes_id, product_Name) => {
     const result = await AsyncStorage.getItem('my-cart')
     let storage = []
     if (result !== null) {
       storage = JSON.parse(result)
     }
 
-    const newStorage = storage.filter(s => s.attributes !== attributes)
+    const newStorage = storage.filter(s => s.attributes_id !== attributes_id)
     setStorageData(newStorage)
     await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
     let title = product_Name
@@ -131,7 +112,6 @@ const PayPage = props => {
         amount: totalPrices
       }
       const res = await OrderHTTP.insert(body)
-      console.log('>>>>', res)
       setOrder(res)
       navigation.navigate('MyChecks', { order: order })
       return res
@@ -206,28 +186,7 @@ const PayPage = props => {
             <Icons.Feather name={'arrow-right'} size={24} color={Colors.black} />
           </View>
         </View>
-        {/* <View style={{ backgroundColor: Colors.white, padding: 16, marginTop: 16 }}>
-          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>
-            Địa chỉ thanh toán
-          </Text>
-          <TouchableOpacity
-            style={{ backgroundColor: Colors.black, padding: 16, marginVertical: 16 }}
-          >
-            <Text
-              style={[
-                styles.txt_description,
-                {
-                  textAlign: 'center',
-                  color: Colors.white,
-                  fontFamily: 'Montserrat-SemiBold',
-                  fontSize: 14
-                }
-              ]}
-            >
-              Chọn
-            </Text>
-          </TouchableOpacity>
-        </View> */}
+
         <View style={{ backgroundColor: Colors.white, padding: 16, marginTop: 16 }}>
           <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>Địa chỉ giao hàng</Text>
           {!user ? (
@@ -258,11 +217,7 @@ const PayPage = props => {
               }}
             >
               <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('ProfileStack', { screen: 'MyAddress' })}
-                >
-                  <Icons.Ionicons name="location-outline" size={24} />
-                </TouchableOpacity>
+                <Icons.Ionicons name="location-outline" size={24} />
                 <View style={{ marginStart: 8 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={styles.txt_title}>{user.username}</Text>
@@ -280,7 +235,9 @@ const PayPage = props => {
                   <Text>{shipping.zipCode}</Text>
                 </View>
               </View>
-              <Icons.MaterialIcons name={'navigate-next'} size={20} />
+              <TouchableOpacity onPress={() => navigation.navigate('MyAddress')}>
+                <Icons.MaterialIcons name={'navigate-next'} size={20} />
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -468,7 +425,7 @@ const PayPage = props => {
   }
 
   const ItemCarts = ({ item, index }) => {
-    const { product_Name, base_price, size, color, image, code, quantity, attributes } = item
+    const { product_Name, base_price, size, color, image, code, quantity, attributes_id } = item
     const newPrice = { ...item, newPrice: base_price * quantity }
     const formattedPriceProduct = formatCurrency(newPrice.newPrice)
     const formattedBasePriceProduct = formatCurrency(base_price)
@@ -546,18 +503,17 @@ const PayPage = props => {
             </View>
           </View>
           <TouchableOpacity
-            onPress={() => handleStatusProduct(attributes)}
+            onPress={() => handleStatusProduct(attributes_id)}
             style={{
               borderTopRightRadius: 8
             }}
           >
             <TouchableOpacity
               // onPress={() => handleDeleteFromList(attributes, product_Name)}
-              onPress={() => handleDeleteFromList(attributes, product_Name)}
+              onPress={() => handleDeleteFromList(attributes_id, product_Name)}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-
                 width: '100%',
                 padding: 16
               }}

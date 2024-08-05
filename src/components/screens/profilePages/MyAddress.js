@@ -1,11 +1,23 @@
 import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect, useMemo, useState } from 'react'
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native'
+import Modal from 'react-native-modal'
+import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import UserContext from 'src/contexts/UserContext'
 import UserHTTP from 'src/utils/http/UserHTTP'
 const MyAddress = () => {
+  const sheetRef = useRef(null)
   const { user, setUser } = useContext(UserContext)
   const navigation = useNavigation()
   const [showViewEdit, setShowViewEdit] = useState(false)
@@ -16,22 +28,172 @@ const MyAddress = () => {
   const [ward, setWard] = useState('')
   const [zipCode, setZipCode] = useState('')
   const [shippingList, setShippingList] = useState(user.shipping)
+  const [data, setData] = useState([])
+  const [dataTinhThanh, setdataTinhThanh] = useState([])
+  const [isShowTinhThanh, setisShowTinhThanh] = useState(false)
+  const [idTinhThanh, setidTinhThanh] = useState(null)
+  const [dataQuanHuyen, setdataQuanHuyen] = useState([])
+  const [isShowQuanHuyen, setisShowQuanHuyen] = useState(false)
+  const [idQuanHuyen, setidQuanHuyen] = useState(null)
+  const [dataPhuongXa, setdataPhuongXa] = useState([])
+  const [isShowPhuongXa, setisShowPhuongXa] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  const showToastSuccess = title => {
+    setTimeout(() => {
+      Toast.show({
+        type: 'success',
+        text1: 'Địa chỉ giao hàng của bạn đã được lưu ✔',
+        text1Style: { fontSize: 14, fontFamily: 'Montserrat-SemiBold', color: Colors.green }
+      })
+    }, 500)
+  }
 
   useEffect(() => {
-    const fetchData = () => {}
-    fetchData()
-  }, [])
-
-  const radioButtons = useMemo(
-    () => [
-      {
-        id: '1', // acts as primary key, should be unique and non-empty string
-        label: 'Chọn làm địa chỉ mặc định',
-        value: 'option1'
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
+        const responesQuan = await fetch(`https://esgoo.net/api-tinhthanh/2/${idTinhThanh}.htm`)
+        const responesPhuong = await fetch(`https://esgoo.net/api-tinhthanh/3/${idQuanHuyen}.htm`)
+        const json = await response.json()
+        const jsonQuan = await responesQuan.json()
+        const jsonPhuong = await responesPhuong.json()
+        setData(json)
+        setdataTinhThanh(json.data)
+        setdataQuanHuyen(jsonQuan.data)
+        setdataPhuongXa(jsonPhuong.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setLoading(false)
       }
-    ],
-    []
-  )
+    }
+
+    fetchData()
+  }, [idTinhThanh, idQuanHuyen])
+
+  const showTinhThanh = () => {
+    return (
+      <Modal isVisible={isShowTinhThanh}>
+        <View style={{ flex: 1, backgroundColor: Colors.white }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 16,
+              paddingTop: 8
+            }}
+          >
+            <Text style={[styles.txt_title, { fontSize: 14 }]}>Tỉnh/Thành Phố</Text>
+            <TouchableOpacity onPress={() => setisShowTinhThanh(!isShowTinhThanh)}>
+              <Icons.Feather name="x" size={24} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={true}
+            style={{ width: '100%' }}
+            data={dataTinhThanh}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  setCity(item.name)
+                  setisShowTinhThanh(false)
+                  setidTinhThanh(item.id)
+                  setDistrict('')
+                  setWard('')
+                }}
+                style={{ padding: 16, borderBottomWidth: 0.5, borderColor: Colors.gray }}
+              >
+                <Text style={styles.txt_description}>{item.full_name}</Text>
+              </TouchableOpacity>
+            )}
+            keyExtractor={item => item.id.toString()}
+          />
+        </View>
+      </Modal>
+    )
+  }
+
+  const showQuanHuyen = () => {
+    return (
+      <Modal isVisible={isShowQuanHuyen}>
+        <View style={{ flex: 1, backgroundColor: Colors.white }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 16,
+              paddingTop: 8
+            }}
+          >
+            <Text style={[styles.txt_title, { fontSize: 14 }]}>Quận/Huyện</Text>
+            <TouchableOpacity onPress={() => setisShowQuanHuyen(!isShowQuanHuyen)}>
+              <Icons.Feather name="x" size={24} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={true}
+            style={{ width: '100%' }}
+            data={dataQuanHuyen}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() =>
+                  setDistrict(item.full_name) &
+                  setisShowQuanHuyen(!isShowQuanHuyen) &
+                  setidQuanHuyen(item.id) &
+                  setWard('')
+                }
+                style={{ padding: 16, borderBottomWidth: 0.5, borderColor: Colors.gray }}
+              >
+                <Text style={styles.txt_description}>{item.full_name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      </Modal>
+    )
+  }
+
+  const showPhuongXa = () => {
+    return (
+      <Modal isVisible={isShowPhuongXa}>
+        <View style={{ flex: 1, backgroundColor: Colors.white }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 16,
+              paddingTop: 8
+            }}
+          >
+            <Text style={[styles.txt_title, { fontSize: 14 }]}>Phường/Xã</Text>
+            <TouchableOpacity onPress={() => setisShowPhuongXa(!isShowPhuongXa)}>
+              <Icons.Feather name="x" size={24} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={true}
+            style={{ width: '100%' }}
+            data={dataPhuongXa}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => setWard(item.full_name) & setisShowPhuongXa(!isShowPhuongXa)}
+                style={{ padding: 16, borderBottomWidth: 0.5, borderColor: Colors.gray }}
+              >
+                <Text style={styles.txt_description}>{item.full_name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      </Modal>
+    )
+  }
 
   function handleName(e) {
     const nameVar = e.nativeEvent.text
@@ -41,21 +203,6 @@ const MyAddress = () => {
   function handleAddress(e) {
     const addressVar = e.nativeEvent.text
     setAddress(addressVar)
-  }
-
-  function handleCity(e) {
-    const cityVar = e.nativeEvent.text
-    setCity(cityVar)
-  }
-
-  function handleWard(e) {
-    const wardVar = e.nativeEvent.text
-    setWard(wardVar)
-  }
-
-  function handleDistrict(e) {
-    const districtVar = e.nativeEvent.text
-    setDistrict(districtVar)
   }
 
   function handleZipCode(e) {
@@ -80,6 +227,7 @@ const MyAddress = () => {
     }
     const newUser = await UserHTTP.updateUser(user._id, data)
     setUser(newUser)
+    showToastSuccess()
   }
   const handleDeleteShipping = async index => {
     const newShippingList = shippingList.filter((_, i) => i !== index)
@@ -139,19 +287,23 @@ const MyAddress = () => {
         </View>
         <View style={styles.container_title}>
           <Text style={styles.txtTitleProfile}>*Tỉnh/Thành phố</Text>
-          <View style={styles.container_textInput}>
-            <TextInput value={city} onChange={e => handleCity(e)} style={styles.txtTextInput} />
-          </View>
+          <TouchableOpacity
+            onPress={() => setisShowTinhThanh(!isShowTinhThanh)}
+            style={styles.container_textInput}
+          >
+            <Text style={styles.txtTextInput}>{city}</Text>
+          </TouchableOpacity>
+          {isShowTinhThanh ? showTinhThanh() : null}
         </View>
         <View style={styles.container_title}>
           <Text style={styles.txtTitleProfile}>*Quận/Huyện</Text>
-          <View style={styles.container_textInput}>
-            <TextInput
-              value={district}
-              onChange={e => handleDistrict(e)}
-              style={styles.txtTextInput}
-            />
-          </View>
+          <TouchableOpacity
+            onPress={() => setisShowQuanHuyen(!isShowQuanHuyen)}
+            style={styles.container_textInput}
+          >
+            <Text style={styles.txtTextInput}>{district}</Text>
+          </TouchableOpacity>
+          {isShowQuanHuyen ? showQuanHuyen() : null}
           <Text
             style={[
               styles.txt_description,
@@ -163,9 +315,15 @@ const MyAddress = () => {
         </View>
         <View style={styles.container_title}>
           <Text style={styles.txtTitleProfile}>*Phường/Xã</Text>
-          <View style={styles.container_textInput}>
-            <TextInput value={ward} onChange={e => handleWard(e)} style={styles.txtTextInput} />
-          </View>
+
+          <TouchableOpacity
+            onPress={() => setisShowPhuongXa(!isShowPhuongXa)}
+            style={styles.container_textInput}
+          >
+            <Text style={styles.txtTextInput}>{ward}</Text>
+          </TouchableOpacity>
+          {isShowPhuongXa ? showPhuongXa() : null}
+
           <Text
             style={[
               styles.txt_description,
@@ -221,85 +379,92 @@ const MyAddress = () => {
     )
   }
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <Text style={styles.txtHeader}>Địa chỉ của tôi</Text>
-      {shippingList.length == [] ? (
-        <Text
-          style={[
-            styles.txt_title,
-            { color: Colors.black2, textAlign: 'center', paddingVertical: 32 }
-          ]}
-        >
-          Chưa có địa chỉ giao hàng được lưu
-        </Text>
-      ) : (
-        shippingList &&
-        shippingList.map((item, index) => (
-          <View
-            key={index}
-            style={{
-              padding: 24,
-              margin: 16,
-              backgroundColor: Colors.white
-            }}
+    <KeyboardAvoidingView>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <Text style={styles.txtHeader}>Địa chỉ của tôi</Text>
+        {shippingList.length == [] ? (
+          <Text
+            style={[
+              styles.txt_title,
+              { color: Colors.black2, textAlign: 'center', paddingVertical: 32 }
+            ]}
           >
-            <View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
-                <Text style={[styles.txt_title, { fontSize: 16 }]}>Địa chỉ giao hàng</Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('EditAddress', { index: index, item: item })}
+            Chưa có địa chỉ giao hàng được lưu
+          </Text>
+        ) : (
+          shippingList &&
+          shippingList.map((item, index) => (
+            <View
+              key={index}
+              style={{
+                padding: 24,
+                margin: 16,
+                backgroundColor: Colors.white
+              }}
+            >
+              <View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}
                 >
-                  <Text style={[styles.txt_description, { borderBottomWidth: 1 }]}>Sửa</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={{ height: 32 }} />
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <View>
-                  <Text style={styles.txt_title}>{item.name}</Text>
-                  <Text style={styles.txt_title}>{item.ward}</Text>
-                  <Text style={styles.txt_title}>{item.city}</Text>
-                  <Text style={styles.txt_title}>{item.district}</Text>
-                  <Text style={styles.txt_title}>{item.zipCode}</Text>
+                  <Text style={[styles.txt_title, { fontSize: 16 }]}>Địa chỉ giao hàng</Text>
                   <TouchableOpacity
-                    onPress={() => handleSelected(index, item)}
-                    style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center' }}
+                    onPress={() => navigation.navigate('EditAddress', { index: index, item: item })}
                   >
-                    {item.selected === false ? (
-                      <Icons.Ionicons name="radio-button-off-outline" size={24} />
-                    ) : (
-                      <Icons.Ionicons name="radio-button-on-outline" size={24} />
-                    )}
-                    <Text style={[styles.txt_description, { marginStart: 8, fontSize: 14 }]}>
-                      Địa chỉ mặc định
-                    </Text>
+                    <Text style={[styles.txt_description, { borderBottomWidth: 1 }]}>Sửa</Text>
                   </TouchableOpacity>
                 </View>
+                <View style={{ height: 32 }} />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <View>
+                    <Text style={[styles.txt_title, { fontSize: 14 }]}>
+                      Người nhận: {item.name}
+                    </Text>
+                    <Text style={[styles.txt_title, { marginTop: 8 }]}>{item.address}</Text>
+                    <View style={{ flexDirection: 'row', marginTop: 4 }}>
+                      <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.ward}</Text>
+                      <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.district}</Text>
+                      <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.city}</Text>
+                    </View>
+                    <Text style={styles.txt_title}>{item.zipCode}</Text>
+                    <TouchableOpacity
+                      onPress={() => handleSelected(index, item)}
+                      style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center' }}
+                    >
+                      {item.selected === false ? (
+                        <Icons.Ionicons name="radio-button-off-outline" size={24} />
+                      ) : (
+                        <Icons.Ionicons name="radio-button-on-outline" size={24} />
+                      )}
+                      <Text style={[styles.txt_description, { marginStart: 8, fontSize: 14 }]}>
+                        Địa chỉ mặc định
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
 
-                <TouchableOpacity onPress={() => handleDeleteShipping(index)}>
-                  <Text style={[styles.txt_description, { borderBottomWidth: 1 }]}>Xóa</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDeleteShipping(index)}>
+                    <Text style={[styles.txt_description, { borderBottomWidth: 1 }]}>Xóa</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        ))
-      )}
-      {showViewEdit ? viewEditAddress() : null}
+          ))
+        )}
+        {showViewEdit ? viewEditAddress() : null}
 
-      {!showViewEdit ? (
-        <TouchableOpacity
-          onPress={() => setShowViewEdit(!showViewEdit)}
-          style={{ borderWidth: 1, padding: 16, marginHorizontal: 16 }}
-        >
-          <Text style={[styles.txt_title, { textAlign: 'center' }]}>Thêm địa chỉ mới</Text>
-        </TouchableOpacity>
-      ) : null}
-    </ScrollView>
+        {!showViewEdit ? (
+          <TouchableOpacity
+            onPress={() => setShowViewEdit(!showViewEdit)}
+            style={{ borderWidth: 1, padding: 16, marginHorizontal: 16 }}
+          >
+            <Text style={[styles.txt_title, { textAlign: 'center' }]}>Thêm địa chỉ mới</Text>
+          </TouchableOpacity>
+        ) : null}
+      </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -326,7 +491,7 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   txt_title: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Montserrat-SemiBold',
     color: Colors.black2
   },
@@ -336,7 +501,8 @@ const styles = StyleSheet.create({
     color: Colors.black2
   },
   container: {
-    flex: 1,
+    width: '100%',
+    height: '100%',
     backgroundColor: Colors.grayBg
   },
 

@@ -2,6 +2,8 @@ import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
+import Colors from 'src/constants/Colors'
+import MyText from 'src/constants/FontFamily'
 import UserHTTP from 'src/utils/http/UserHTTP'
 
 const ForgotPass = ({ navigation: { goBack } }) => {
@@ -17,72 +19,51 @@ const ForgotPass = ({ navigation: { goBack } }) => {
   }
 
   return (
-    <View
-      style={{
-        margin: 5,
-        flexDirection: 'column',
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#F9F9F9'
-      }}
-    >
+    <View style={styles.container}>
       <View style={styles.view_search}>
         <TouchableOpacity onPress={() => goBack()}>
           <Icons.Ionicons name={'chevron-back'} size={24} />
         </TouchableOpacity>
       </View>
-      <View style={{ margin: 10 }}>
-        <Text
+      <View style={{ marginHorizontal: 24, paddingHorizontal: 24 }}>
+        <MyText
+          fontFamily={'Montserrat-SemiBold'}
           style={{
-            width: 375,
-            height: 140,
-            fontSize: 34,
-            fontWeight: '700',
-            fontStyle: 'normal',
-            lineHeight: 34,
-            color: '#222222'
+            textAlign: 'center',
+            fontSize: 24
           }}
         >
-          Forgot password
-        </Text>
-        <Text
+          Quên mật khẩu ?
+        </MyText>
+        <MyText
           style={{
-            width: 343,
-            height: 40,
-            fontSize: 14,
-            fontWeight: '500',
-            fontStyle: 'normal',
-            lineHeight: 20,
-            color: '#222222'
+            textAlign: 'left',
+            fontSize: 12,
+            marginTop: 16
           }}
         >
-          Please, enter your email address. You will receive a link to create a new password via
-          email.
-        </Text>
+          Vui lòng nhập địa chỉ email bạn đã sử dụng để tạo tài khoản, chúng tôi sẽ gửi cho bạn
+          hướng dẫn đặt lại mật khẩu Email
+        </MyText>
 
         <View
           style={{
-            marginHorizontal: 16,
-            marginTop: 35,
-            width: 343,
-            height: 64,
-            borderRadius: 4,
-            backgroundColor: '#FFFFFF',
-            shadowColor: 'rgba(0, 0, 0, 0.05)',
-            shadowOffset: {
-              width: 0,
-              height: 1
-            },
-            shadowRadius: 8,
-            shadowOpacity: 1
+            paddingVertical: 12,
+            borderWidth: 1,
+            marginVertical: 16,
+            paddingHorizontal: 8
           }}
         >
-          <TextInput placeholder="Email" value={email} onChange={e => handleEmail(e)} />
+          <TextInput
+            style={{ fontSize: 14, color: Colors.black2, fontFamily: 'Montserrat-SemiBold' }}
+            value={email}
+            onChange={e => handleEmail(e)}
+          />
         </View>
 
-        <View style={styles.btnLogin}>
+        <View style={styles.btn_forgotPass}>
           <TouchableOpacity onPress={() => handleSend(email)} style={{ alignItems: 'center' }}>
-            <Text style={styles.txtbtn}>SEND</Text>
+            <Text style={styles.txt_btn}>Gửi</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -93,57 +74,24 @@ const ForgotPass = ({ navigation: { goBack } }) => {
 export default ForgotPass
 
 const styles = StyleSheet.create({
-  txtSignWith: {
-    marginLeft: 86,
-    marginTop: 182,
-    width: 200,
-    height: 20,
-    fontSize: 14,
-    fontWeight: '500',
-    fontStyle: 'normal',
-    lineHeight: 20,
-    textAlign: 'center',
-    color: '#222222'
-  },
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 8,
-    marginTop: 44
+    padding: 16
   },
-  txtforgot: {
-    marginLeft: 174,
-    width: 158,
-    height: 20,
+
+  btn_forgotPass: {
+    backgroundColor: Colors.black2,
+    paddingVertical: 16,
+    marginVertical: 8
+  },
+  txt_btn: {
+    color: Colors.white,
     fontSize: 14,
-    fontWeight: '500',
-    fontStyle: 'normal',
-    lineHeight: 20,
-    textAlign: 'right',
-    color: '#222222'
+    fontFamily: 'Montserrat-SemiBold'
   },
-  btnLogin: {
-    marginTop: 32,
-    width: 343,
-    height: 48,
-    borderRadius: 25,
-    backgroundColor: '#DB3022',
-    shadowColor: 'rgba(211, 38, 38, 0.25)',
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 1
-  },
-  txtbtn: {
-    marginVertical: 14,
-    width: 44,
-    height: 20,
-    fontSize: 14,
-    fontWeight: '500',
-    fontStyle: 'normal',
-    lineHeight: 20,
-    color: '#FFFFFF'
+  container: {
+    flex: 1,
+    backgroundColor: Colors.grayBg
   }
 })
