@@ -1,5 +1,4 @@
-import { useIsFocused } from '@react-navigation/native'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -9,55 +8,69 @@ import {
   Text,
   TouchableOpacity,
   View
-} from 'react-native'
-import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
-import { FilterContext } from 'src/contexts/FilterProvider'
-import { getFilter } from 'src/utils/http/NewHTTP'
-import Icons from '../icons/Icon'
-const windowWith = Dimensions.get('window').width
-const windowHeight = Dimensions.get('window').height
+} from 'react-native';
+import Colors from 'src/constants/Colors';
+import MyText from 'src/constants/FontsStyle';
+import { FilterContext } from 'src/contexts/FilterProvider';
+import NewHTTP from 'src/utils/http/NewHTTP';
+import Icons from '../icons/Icon';
+import { useIsFocused } from '@react-navigation/native';
+import qs from 'qs';
+
+const windowWith = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
 const Filter = props => {
   const {
     navigation,
     route: {
-      params: { category_id, quantityPr }
+      params: { category_id }
     }
-  } = props
+  } = props;
 
-  const [Filter, setFilter] = useState([])
-  const { filterState, setFilterState } = useContext(FilterContext)
-  const { _category_id, set_category_id } = useContext(FilterContext)
-  const [_products, set_products] = useState(null)
-  const isFocusScreen = useIsFocused()
+  const [filterData, setFilterData] = useState([]); // Renamed to avoid confusion with Filter component
+  const { filterState, setFilterState } = useContext(FilterContext);
+  const { _category_id, set_category_id } = useContext(FilterContext);
+  const [products, setProducts] = useState([]); // Initialize with an empty array
+
+  const isFocusScreen = useIsFocused();
 
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const fetchData = async () => {
       try {
         if (category_id) {
-          set_category_id(category_id)
+          set_category_id(category_id);
         }
-        const query = {}
-        query['category_id'] = _category_id
 
+        const attributes = [];
         for (const [key, value] of filterState.entries()) {
-          if (value.length > 0) {
-            query[key] = value.join(',')
+          if (filterState.get(key).length > 0) {
+            attributes.push({ key, value });
           }
         }
-        const response = await getFilter(query)
-        const { products, table } = response
-        set_products(products)
-        setFilter(table)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchData()
-  }, [filterState, isFocusScreen, _category_id])
 
-  // set Bottom navigation on
+        console.log('attr', attributes);
+
+        const query = {};
+        if (attributes.length > 0) query.attributes = attributes;
+        query.category_id = _category_id;
+
+        const queryString = qs.stringify(query);
+
+        const response = await NewHTTP.getFilter(queryString);
+        const { _attributes, _products } = response;
+
+        setFilterData(_attributes);
+        setProducts(_products); // Ensure products are set here
+        console.log('kk', _products);
+      } catch (error) {
+        console.log('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [filterState, isFocusScreen, _category_id]);
+
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -65,31 +78,25 @@ const Filter = props => {
         bottom: 0,
         paddingVertical: 16,
         height: 68
-        // position: 'absolute'
       }
-    })
-  }
+    });
+  };
 
-  // const handlePressFilter = async () => {
-  //   console.log('ccccccc', _category_id)
-  //   const query = { category_id: _category_id, version: 2 }
-  //   const response = await NewHTTP.getProducts(query)
-  //   console.log('res', JSON.stringify(response))
-  //   navigation.navigate('ItemCategories', { params: category_id, _products: response })
-  //   setBottomBar()
-  // }
+  const handleBack = async () => {
+    setBottomBar();
+    setFilterState([]);
+    const query = { category_id: _category_id, version: 2 };
+    const response = await NewHTTP.getProducts(query);
+    navigation.navigate("ItemCategoryWomen", { params: category_id, _products: response });
+  };
 
-  const handlePressFilter = () => {
-    navigation.navigate('ItemCategories', { params: category_id, _products: _products })
-  }
-
-  const renderItem = ({ item, index }) => {
-    const { key } = item
-
+  const renderItem = ({ item }) => {
+    const { key, child } = item;
+    
     return (
       <Pressable
         onPress={() => {
-          navigation.navigate('DetailFilter', { child: item.child, keySelected: key })
+          props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key });
         }}
         style={{
           flexDirection: 'row',
@@ -100,23 +107,17 @@ const Filter = props => {
       >
         <MyText>{key}</MyText>
 
-        <View key={index} style={{ flexDirection: 'row' }}>
-          {filterState instanceof Map && filterState.has(key)
-            ? filterState.get(key).map((item, index) => (
-                <Text
-                  key={index}
-                  numberOfLines={1}
-                  style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
-                >
-                  {item}
-                </Text>
-              ))
-            : null}
+        <View style={{ flexDirection: 'row' }}>
+          {(filterState instanceof Map && filterState.has(key)) ? filterState.get(key).map((item, index) => (
+            <Text key={index} numberOfLines={1} style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}>
+              {item}
+            </Text>
+          )) : null}
           <Icons.AntDesign name="arrowright" size={20} />
         </View>
       </Pressable>
-    )
-  }
+    );
+  };
 
   return (
     <KeyboardAvoidingView>
@@ -124,7 +125,7 @@ const Filter = props => {
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
         >
-          <TouchableOpacity onPress={() => handlePressFilter()}>
+          <TouchableOpacity onPress={handleBack}>
             <Icons.Feather name="x" size={30} />
           </TouchableOpacity>
           <MyText
@@ -158,7 +159,7 @@ const Filter = props => {
           <Icons.AntDesign name="plus" size={20} />
         </Pressable>
 
-        <FlatList data={Filter} renderItem={renderItem} keyExtractor={item => item.key} />
+        <FlatList data={filterData} renderItem={renderItem} keyExtractor={item => item.key} />
       </View>
       <View
         style={{
@@ -176,7 +177,12 @@ const Filter = props => {
             padding: 16
           }}
           onPress={() => {
-            handlePressFilter()
+            if (Array.isArray(products) && products.length > 0) {
+              item={products:products}
+              navigation.navigate("ItemCategoryWomen", { item });
+            } else {
+              console.log('No products to display');
+            }
           }}
         >
           <Text
@@ -187,15 +193,15 @@ const Filter = props => {
               fontFamily: 'Montserrat-SemiBold'
             }}
           >
-            Hiện thị {quantityPr} sản phẩm
+            Hiện thị  sản phẩm
           </Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
-  )
-}
+  );
+};
 
-export default Filter
+export default Filter;
 
 const styles = StyleSheet.create({
   container: {
@@ -204,4 +210,4 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     paddingHorizontal: 16
   }
-})
+});

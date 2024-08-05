@@ -6,7 +6,6 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontsStyle'
 import { getCategory } from 'src/utils/http/NewHTTP'
-
 const ShopPage = props => {
   const PicassoImage = createPicassoComponent(Image)
   const navigation = useNavigation()
@@ -29,7 +28,7 @@ const ShopPage = props => {
     return (
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate('Categories', {
+          navigation.navigate('CategoryWomen', {
             categoryId: _id
           })
         }
@@ -37,21 +36,21 @@ const ShopPage = props => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           paddingHorizontal: 16,
-          marginBottom: 16,
+          marginTop: 16,
           alignItems: 'center'
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <PicassoImage
-            style={{ height: 36, width: 36, borderRadius: 50 }}
-            source={{ uri: image }}
+            style={{ height: 48, width: 48, borderRadius: 50 }}
+            source={{ uri: image?image:'' }}
           />
 
-          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 12, marginLeft: 16 }}>
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16, marginLeft: 16 }}>
             {name}
           </MyText>
         </View>
-        <Icons.AntDesign name={'arrowright'} size={16} />
+        <Icons.AntDesign name={'arrowright'} size={20} />
       </TouchableOpacity>
     )
   }
@@ -84,13 +83,13 @@ const styles = StyleSheet.create({
   txt_search: {
     color: Colors.black,
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '400'
   },
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 16
+    paddingVertical: 8
   }
 })

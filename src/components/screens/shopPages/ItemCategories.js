@@ -1,6 +1,4 @@
-import BottomSheet from '@devvie/bottom-sheet'
-import { useIsFocused } from '@react-navigation/native'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useContext } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -10,23 +8,27 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+
 } from 'react-native'
+import { FilterContext } from 'src/contexts/FilterProvider'
+import BottomSheet from '@devvie/bottom-sheet'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import { FilterContext } from 'src/contexts/FilterProvider'
+import { useIsFocused } from '@react-navigation/native'
 
 import MyText from 'src/constants/FontsStyle'
 import { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
-const ItemCategories = props => {
+const ItemCategoryWomen = props => {
   const sheetRef = useRef(null)
   const {
     navigation,
     route: {
-      params: { categoryById, _products }
+      params: { categoryById, _products, item }
+
     }
   } = props
 
@@ -49,33 +51,51 @@ const ItemCategories = props => {
       tabBarStyle: {
         backgroundColor: Colors.white,
         bottom: 0,
-        paddingVertical: 8,
-        height: 54
+        paddingVertical: 16,
+        height: 68
         // position: 'absolute'
       }
     })
   }
   useEffect(() => {
+    const fetchData = () => {
+      console.log('show item')
+      setproducts(item)
+    }
+    fetchData()
+  }, [item])
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         if (isFocusScreen) {
+
           if (_products) {
             setproducts(_products)
-            console.log(_products)
-          } else {
-            setproducts(products)
-            console.log(products)
-            const response = await getCategoryById(categoryById)
-            setnameCategoryById(response.name)
-            const { _id, name, parentID, image } = response
-            const arr = response.child
-            setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
-            setwindowWith(width / 2)
-            setwindowHeight(height / 2.4)
           }
+          else {
+            setproducts(products)
+
+          }
+
+
         }
+
+
+        const response = await getCategoryById(categoryById)
+        if (response) {
+          setnameCategoryById(response.name)
+          const { _id, name, parentID, image } = response
+          const arr = response.child
+
+          setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
+        }
+
+
+        setwindowWith(width / 2)
+        setwindowHeight(height / 2.4)
       } catch (error) {
-        console.log(error)
+        console.log('errorne', error)
         throw error
       }
     }
@@ -88,7 +108,7 @@ const ItemCategories = props => {
   const [isShowProducts, setIsShowProducts] = useState(false)
   const handlePressModel = () => {
     if (isShowProducts == false) {
-      // console.log(JSON.stringify(imagesModel, null, 2))
+      console.log(JSON.stringify(imagesModel, null, 2))
       const newData = products.map((item, index) => {
         ;[item.images[1], item.images[0]] = [item.images[0], item.images[1]]
         return item
@@ -99,7 +119,7 @@ const ItemCategories = props => {
   }
   const handlePressProduct = () => {
     if (isShowProducts == true) {
-      // console.log(JSON.stringify(imagesModel, null, 2))
+      console.log(JSON.stringify(imagesModel, null, 2))
       const newData = products.map((item, index) => {
         ;[item.images[0], item.images[1]] = [item.images[1], item.images[0]]
         return item
@@ -148,25 +168,31 @@ const ItemCategories = props => {
   const [productsParent, setproductsParent] = useState([])
 
   // Logic: onclick set product by category Id
-  const handlePressedCategoryId = async _id => {
-    ;(async () => {
-      const version = 2
-      const category_id = _id
-      try {
-        setFilterState([])
-        const products = await getProducts({ version, category_id })
-        const productsParent = await getProducts({ version: 1, category_id })
-        // setproductsParent(productsParent[0])
-        setproductsParent(productsParent[0].category_id)
-        setproducts(products)
-        setselectedProductId(_id)
+  const handlePressedCategoryId = async (_id) => {
 
-        // console.log(JSON.stringify(products, null, 2))
-      } catch (error) {
-        console.error('Error:', error)
-        // Handle errors appropriately in your application
+    const version = 2
+    const category_id = _id
+    console.log('cate', category_id)
+    try {
+      setFilterState([])
+      const products = await getProducts({ version: version, category_id: category_id })
+      const productsParent = await getProducts({ version: 1, category_id: category_id })
+      if (products.length == 0 || productsParent.length == 0) {
+        setproducts([])
+        setproductsParent([])
+        return
       }
-    })()
+      setproductsParent(productsParent[0])
+      setproductsParent(productsParent[0].category_id)
+      setproducts(products)
+      setselectedProductId(_id)
+
+      // console.log(JSON.stringify(products, null, 2))
+    } catch (error) {
+      console.error('Error 1:', error)
+      // Handle errors appropriately in your application
+    }
+
   }
 
   // Slide show image
@@ -226,7 +252,7 @@ const ItemCategories = props => {
       code
     } = item
 
-    // format base_price
+    console.log('render')
     function formatCurrency(amount, options = {}) {
       const { currency = 'VND', locale = 'vi-VN' } = options
 
@@ -259,15 +285,17 @@ const ItemCategories = props => {
             horizontal
           >
             {images.map((image, index) => (
-              <Image
-                resizeMode={numColumns ? 'contain' : 'cover'}
-                key={index}
-                style={{
-                  width: windowWith - 20,
-                  height: windowHeight
-                }}
-                source={{ uri: image.url }}
-              />
+              image && image.url ? ( // Kiểm tra image và image.url
+                <Image
+                  resizeMode={numColumns ? 'contain' : 'cover'}
+                  key={index}
+                  style={{
+                    width: windowWith - 20,
+                    height: windowHeight
+                  }}
+                  source={{ uri: image.url }}
+                />
+              ) : null // Không render nếu image.url không hợp lệ
             ))}
           </ScrollView>
 
@@ -291,7 +319,7 @@ const ItemCategories = props => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
-              props.navigation.navigate('ProductDetail', {
+              props.navigation.navigate('ProductWomen', {
                 _id: _id,
                 product_id: product_id,
                 product_Name: name,
@@ -516,7 +544,7 @@ const ItemCategories = props => {
   )
 }
 
-export default ItemCategories
+export default ItemCategoryWomen
 
 const styles = StyleSheet.create({
   btn_model_active: {
@@ -597,7 +625,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16
+    padding: 8
   }
 })
 
