@@ -127,7 +127,9 @@ const Filter = props => {
         >
           <TouchableOpacity
             style={{ flex: 1 }}
-            onPress={() => navigation.goBack()}>
+            onPress={() => navigation.goBack({categoryById
+              :category_id}
+            )}>
             <Icons.Feather name="x" size={30} />
           </TouchableOpacity>
           <MyText
