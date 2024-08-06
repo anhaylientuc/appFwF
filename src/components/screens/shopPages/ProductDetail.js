@@ -90,16 +90,18 @@ const ProductDetail = props => {
     const fetchData = async () => {
       const version = 2
       const product_id = props.route.params.product_id
+      console.log(product_id)
 
       try {
         const thumb = await getProducts({ version, product_id })
         setthumbs(thumb)
+
         thumb.map(item => {
           if (item._id == _id) {
             var newAttrColor = item.attributes
-            newAttrColor = newAttrColor.filter(attr => attr.key === 'Color')
+            newAttrColor = newAttrColor.filter(attr => attr.key === 'Màu sắc')
             var newAttrSize = item.attributes
-            newAttrSize = newAttrSize.filter(attr => attr.key === 'Size')
+            newAttrSize = newAttrSize.filter(attr => attr.key === 'Kích cỡ')
             setSelected(newAttrSize)
             setselectedName(newAttrColor[0].value)
             setbase_price(item.base_price)
@@ -274,9 +276,9 @@ const ProductDetail = props => {
 
   const handelPresenProductId = item => {
     ;(async () => {
-      const filteredData = item.attributes.filter(item => item.key === 'Size')
+      const filteredData = item.attributes.filter(item => item.key === 'Kích cỡ')
       const filteredImages = item.images
-      const filterName = item.attributes.filter(item => item.key === 'Color')
+      const filterName = item.attributes.filter(item => item.key === 'Màu sắc')
       try {
         setselectedId(item._id)
         setSelected(filteredData)
@@ -546,16 +548,18 @@ const ProductDetail = props => {
             horizontal
             style={{ width: windowWith, height: windowHeight / 1.2 }}
             data={wallPaper}
-            renderItem={({ item, index }) => (
-              <Pressable>
-                <Image
-                  resizeMode="cover"
-                  key={index}
-                  style={{ width: windowWith, height: windowHeight / 1.2 }}
-                  source={{ uri: item.url }}
-                />
-              </Pressable>
-            )}
+            renderItem={({ item, index }) =>
+              item.url != '' && (
+                <Pressable>
+                  <Image
+                    resizeMode="cover"
+                    key={index}
+                    style={{ width: windowWith, height: windowHeight / 1.2 }}
+                    source={{ uri: item.url }}
+                  />
+                </Pressable>
+              )
+            }
           />
           {thumbs ? showModalAddToCart() : null}
 
@@ -729,87 +733,87 @@ const ProductDetail = props => {
            * image product
            */}
           <View>
-            {wallPaper[0] && (
+            {wallPaper[0] && wallPaper[0].url ? (
               <Image
                 style={{ width: '100%', height: 600 }}
                 source={{
                   uri: wallPaper[0].url
                 }}
               />
-            )}
+            ) : null}
 
             <View style={{ flexDirection: 'row', marginTop: 4, height: 300 }}>
-              {wallPaper[1] && (
+              {wallPaper[1] && wallPaper[1].url ? (
                 <Image
                   style={{ width: '100%', height: 300, flex: 1 }}
                   source={{
                     uri: wallPaper[1].url
                   }}
                 />
-              )}
+              ) : null}
               <View style={{ width: 4 }} />
-              {wallPaper[2] && (
+              {wallPaper[2] && wallPaper[2].url ? (
                 <Image
                   style={{ width: '100%', height: 300, flex: 1 }}
                   source={{
                     uri: wallPaper[2].url
                   }}
                 />
-              )}
+              ) : null}
             </View>
-            {wallPaper[3] && (
+            {wallPaper[3] && wallPaper[3].url ? (
               <Image
                 style={{ width: '100%', height: 600, marginTop: 4 }}
                 source={{
                   uri: wallPaper[3].url
                 }}
               />
-            )}
+            ) : null}
             <View style={{ flexDirection: 'row', marginTop: 4 }}>
-              {wallPaper[4] && (
+              {wallPaper[4] && wallPaper[4].url ? (
                 <Image
                   style={{ width: '100%', height: 300, flex: 1 }}
                   source={{
                     uri: wallPaper[4].url
                   }}
                 />
-              )}
+              ) : null}
               <View style={{ width: 4 }} />
-              {wallPaper[5] && (
+              {wallPaper[5] && wallPaper[5].url ? (
                 <Image
                   style={{ width: '100%', height: 300, flex: 1 }}
                   source={{
                     uri: wallPaper[5].url
                   }}
                 />
-              )}
+              ) : null}
             </View>
-            {wallPaper[6] && (
+            {wallPaper[6] && wallPaper[6].url ? (
               <Image
                 style={{ width: '100%', height: 600, marginTop: 4 }}
                 source={{
                   uri: wallPaper[6].url
                 }}
               />
-            )}
+            ) : null}
             <View style={{ flexDirection: 'row', marginTop: 4 }}>
-              {wallPaper[7] && (
+              {wallPaper[7] && wallPaper[7].url ? (
                 <Image
                   style={{ width: '100%', height: 300, flex: 1 }}
                   source={{
                     uri: wallPaper[7].url
                   }}
                 />
-              )}
+              ) : null}
               <View style={{ width: 4 }} />
-              {wallPaper[8] && (
+              {wallPaper[8] && wallPaper[8].url ? (
                 <Image
                   style={{ width: '100%', height: 300, flex: 1 }}
                   source={{
                     uri: wallPaper[8].url
                   }}
                 />
-              )}
+              ) : null}
             </View>
           </View>
 

@@ -131,7 +131,7 @@ const ItemCategories = props => {
       code
     } = item
 
-    const name_filter = attributes.filter(params => params.key === 'Color')
+    const name_filter = attributes.filter(params => params.key === 'Màu sắc')
     const newFavoritesProduct = {
       _id: _id,
       image: images[0].url,
@@ -179,21 +179,19 @@ const ItemCategories = props => {
 
   // Logic: onclick set product by category Id
   const handlePressedCategoryId = async _id => {
-    ;(async () => {
-      const version = 2
-      const category_id = _id
-      try {
-        setFilterState([])
-        const products = await getProducts({ version, category_id })
-        const productsParent = await getProducts({ version: 1, category_id })
-        // setproductsParent(productsParent[0])
-        setproductsParent(productsParent[0].category_id)
-        setproducts(products)
-        setselectedProductId(_id)
-      } catch (error) {
-        console.error('Error:', error)
-      }
-    })()
+    const version = 2
+    const category_id = _id
+    try {
+      setFilterState([])
+      const products = await getProducts({ version, category_id })
+      const productsParent = await getProducts({ version: 1, category_id })
+      // setproductsParent(productsParent[0])
+      setproductsParent(productsParent[0].category_id)
+      setproducts(products)
+      setselectedProductId(_id)
+    } catch (error) {
+      console.error('Error:', error)
+    }
   }
 
   // danh sách loại sản phẩm
@@ -249,17 +247,20 @@ const ItemCategories = props => {
             }}
             horizontal
           >
-            {images.map((image, index) => (
-              <Image
-                resizeMode={numColumns ? 'contain' : 'cover'}
-                key={index}
-                style={{
-                  width: windowWith - 20,
-                  height: windowHeight
-                }}
-                source={{ uri: image.url }}
-              />
-            ))}
+            {images.map(
+              (image, index) =>
+                image.url != '' && (
+                  <Image
+                    resizeMode={numColumns ? 'contain' : 'cover'}
+                    key={index}
+                    style={{
+                      width: windowWith - 20,
+                      height: windowHeight
+                    }}
+                    source={{ uri: image.url }}
+                  />
+                )
+            )}
           </ScrollView>
 
           <TouchableOpacity

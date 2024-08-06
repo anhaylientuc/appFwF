@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native'
+import qs from 'qs'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -8,17 +10,15 @@ import {
   Text,
   TouchableOpacity,
   View
-} from 'react-native';
-import Colors from 'src/constants/Colors';
-import MyText from 'src/constants/FontFamily';
-import { FilterContext } from 'src/contexts/FilterProvider';
-import NewHTTP from 'src/utils/http/NewHTTP';
-import Icons from 'src/components/icons/Icon';
-import { useIsFocused } from '@react-navigation/native';
-import qs from 'qs';
+} from 'react-native'
+import Icons from 'src/components/icons/Icon'
+import Colors from 'src/constants/Colors'
+import MyText from 'src/constants/FontFamily'
+import { FilterContext } from 'src/contexts/FilterProvider'
+import NewHTTP from 'src/utils/http/NewHTTP'
 
-const windowWith = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+const windowWith = Dimensions.get('window').width
+const windowHeight = Dimensions.get('window').height
 
 const Filter = props => {
   const {
@@ -26,50 +26,47 @@ const Filter = props => {
     route: {
       params: { category_id }
     }
-  } = props;
+  } = props
 
-  const [filterData, setFilterData] = useState([]); // Renamed to avoid confusion with Filter component
-  const { filterState, setFilterState } = useContext(FilterContext);
-  const { _category_id, set_category_id } = useContext(FilterContext);
-  const [products, setProducts] = useState([]); // Initialize with an empty array
+  const [filterData, setFilterData] = useState([]) // Renamed to avoid confusion with Filter component
+  const { filterState, setFilterState } = useContext(FilterContext)
+  const { _category_id, set_category_id } = useContext(FilterContext)
+  const [products, setProducts] = useState([]) // Initialize with an empty array
 
-  const isFocusScreen = useIsFocused();
-
+  const isFocusScreen = useIsFocused()
   useEffect(() => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const fetchData = async () => {
       try {
         if (category_id) {
-          set_category_id(category_id);
+          set_category_id(category_id)
         }
 
-        const attributes = [];
+        const attributes = []
         for (const [key, value] of filterState.entries()) {
           if (filterState.get(key).length > 0) {
-            attributes.push({ key, value });
+            attributes.push({ key, value })
           }
         }
 
-        console.log('attr', attributes);
+        const query = {}
+        if (attributes.length > 0) query.attributes = attributes
+        query.category_id = category_id
 
-        const query = {};
-        if (attributes.length > 0) query.attributes = attributes;
-        query.category_id = _category_id;
+        const queryString = qs.stringify(query)
 
-        const queryString = qs.stringify(query);
+        const response = await NewHTTP.getFilter(queryString)
+        const { _attributes, _products } = response
 
-        const response = await NewHTTP.getFilter(queryString);
-        const { _attributes, _products } = response;
-
-        setFilterData(_attributes);
-        setProducts(_products); // Ensure products are set here
-        console.log('kk', _products);
+        setFilterData(_attributes)
+        setProducts(_products) // Ensure products are set here
       } catch (error) {
-        console.log('Error fetching data:', error);
+        console.log('Error fetching data:', error)
       }
-    };
+    }
 
-    fetchData();
-  }, [filterState, isFocusScreen, _category_id]);
+    fetchData()
+  }, [filterState, isFocusScreen, _category_id])
 
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -79,24 +76,16 @@ const Filter = props => {
         paddingVertical: 16,
         height: 68
       }
-    });
-  };
-
-  const handleBack = async () => {
-    setBottomBar();
-    setFilterState([]);
-    const query = { category_id: _category_id, version: 2 };
-    const response = await NewHTTP.getProducts(query);
-    navigation.navigate("ItemCategories", { params: category_id, _products: response });
-  };
+    })
+  }
 
   const renderItem = ({ item }) => {
-    const { key, child } = item;
-    
+    const { key, child } = item
+
     return (
       <Pressable
         onPress={() => {
-          props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key });
+          props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key })
         }}
         style={{
           flexDirection: 'row',
@@ -108,16 +97,22 @@ const Filter = props => {
         <MyText>{key}</MyText>
 
         <View style={{ flexDirection: 'row' }}>
-          {(filterState instanceof Map && filterState.has(key)) ? filterState.get(key).map((item, index) => (
-            <Text key={index} numberOfLines={1} style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}>
-              {item}
-            </Text>
-          )) : null}
+          {filterState instanceof Map && filterState.has(key)
+            ? filterState.get(key).map((item, index) => (
+                <Text
+                  key={index}
+                  numberOfLines={1}
+                  style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
+                >
+                  {item}
+                </Text>
+              ))
+            : null}
           <Icons.AntDesign name="arrowright" size={20} />
         </View>
       </Pressable>
-    );
-  };
+    )
+  }
 
   return (
     <KeyboardAvoidingView>
@@ -125,7 +120,7 @@ const Filter = props => {
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
         >
-          <TouchableOpacity onPress={handleBack}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icons.Feather name="x" size={30} />
           </TouchableOpacity>
           <MyText
@@ -178,10 +173,10 @@ const Filter = props => {
           }}
           onPress={() => {
             if (Array.isArray(products) && products.length > 0) {
-              item={products:products}
-              navigation.navigate("ItemCategoryWomen", { item });
+              // item = { products: products }
+              navigation.navigate('ItemCategories', { _products: products })
             } else {
-              console.log('No products to display');
+              console.log('No products to display')
             }
           }}
         >
@@ -193,15 +188,15 @@ const Filter = props => {
               fontFamily: 'Montserrat-SemiBold'
             }}
           >
-            Hiện thị  sản phẩm
+            Hiện thị sản phẩm
           </Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
-export default Filter;
+export default Filter
 
 const styles = StyleSheet.create({
   container: {
@@ -210,4 +205,4 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     paddingHorizontal: 16
   }
-});
+})

@@ -42,8 +42,9 @@ export const getProducts = async query => {
     const axiosInstance = AxiosInstance()
     const url = `/products`
     const params = query
-    console.log('kk',query)
+
     const response = await axiosInstance.get(url, { params: params })
+
     return response
   } catch (error) {
     console.log(error)
@@ -66,7 +67,7 @@ export const getProductById = async query => {
 
 //serverfwf.onrender.com/filters?product_id=6673e40596ac1564a3099996&array=M,L
 
-export const getFilter = async (query) => {
+export const getFilter = async query => {
   try {
     const axiosInstance = AxiosInstance()
     const url = `/filters?${query}`
@@ -89,4 +90,4 @@ export const getFilter = async (query) => {
 //       console.log('key',error)
 //   }
 // }
-export default { getProducts, getFilter}
+export default { getProducts, getFilter }
