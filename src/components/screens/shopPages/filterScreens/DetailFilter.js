@@ -105,7 +105,7 @@ const DetailFilter = props => {
       const { selected } = obj
 
       if (index == i) {
-        
+
         return { ...obj, selected: !selected }
       }
       return obj
@@ -122,10 +122,12 @@ const DetailFilter = props => {
       })
       setListItem(newCompanies)
       myHashMap.set(keySelected, newCompanies)
+      if (newCompanies.length == 0)
+        myHashMap.delete(keySelected)
     }
 
     setFilterState(myHashMap)
-    console.log('filter',filterState)
+    console.log('filter', filterState)
     await fetchAttr()
   }
   const fetchAttr = async () => {
@@ -139,9 +141,9 @@ const DetailFilter = props => {
       setattr(newAttr)
       console.log('newAttr: ', newAttr)
       const res = await NewHTTP.getFilter(newAttr)
-      console.log('res',res)
+      console.log('res', res)
     } catch (error) {
-      console.log('haha',error)
+      console.log('haha', error)
     }
 
   }
@@ -152,6 +154,16 @@ const DetailFilter = props => {
   const handleSubmit = async () => {
     console.log(attr)
     await fetchProducts()
+  }
+  const handleDeleteAllFilter = () => {
+    if (filterState instanceof Map) {
+      filterState.delete(keySelected)
+      setFilterState(filterState)
+    }
+    const newValues = values.map((item) => {
+      return { ...item, selected: false }
+    })
+    setvalues(newValues)
   }
   return (
     <KeyboardAvoidingView>
@@ -168,6 +180,7 @@ const DetailFilter = props => {
             style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
           >
             <TouchableOpacity
+              style={{ flex: 1 }}
               onPress={() => {
                 navigation.navigate('Filter', {
                   map: map,
@@ -182,10 +195,15 @@ const DetailFilter = props => {
             </TouchableOpacity>
             <MyText
               fontFamily={'Montserrat-SemiBold'}
-              style={{ fontSize: 20, flex: 1, marginStart: 32 }}
+              style={{ fontSize: 20, flex: 2, textAlign: 'center' }}
             >
               Detail
             </MyText>
+            <View style={{ flex: 1 }}>
+              <TouchableOpacity onPress={() => handleDeleteAllFilter()}>
+                <Text>Xóa các bộ lọc</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <View />
           {values.map((item, index) => (

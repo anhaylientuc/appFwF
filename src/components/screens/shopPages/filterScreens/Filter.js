@@ -51,7 +51,7 @@ const Filter = props => {
 
         const query = {}
         if (attributes.length > 0) query.attributes = attributes
-        query.category_id = category_id
+        query.category_id = category_id ? category_id : _category_id
 
         const queryString = qs.stringify(query)
 
@@ -99,36 +99,56 @@ const Filter = props => {
         <View style={{ flexDirection: 'row' }}>
           {filterState instanceof Map && filterState.has(key)
             ? filterState.get(key).map((item, index) => (
-                <Text
-                  key={index}
-                  numberOfLines={1}
-                  style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
-                >
-                  {item}
-                </Text>
-              ))
+              <Text
+                key={index}
+                numberOfLines={1}
+                style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
+              >
+                {item}
+              </Text>
+            ))
             : null}
           <Icons.AntDesign name="arrowright" size={20} />
         </View>
       </Pressable>
     )
   }
-
+  const handleDeleteAllFilter = () => {
+    if (filterState instanceof Map) {
+      setFilterState(new Map())
+    }
+  }
   return (
     <KeyboardAvoidingView>
       <View style={styles.container}>
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
         >
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            onPress={() => navigation.goBack()}>
             <Icons.Feather name="x" size={30} />
           </TouchableOpacity>
           <MyText
             fontFamily={'Montserrat-SemiBold'}
-            style={{ fontSize: 20, flex: 1, marginStart: 32 }}
+            style={{ fontSize: 20, textAlign: 'center', flex: 2 }}
           >
             Bộ lọc & sắp xếp
           </MyText>
+          <View style={{flex:1}}>
+            {
+              filterState instanceof Map && filterState.size > 0 ? (
+                <TouchableOpacity onPress={handleDeleteAllFilter}>
+                  <Text style={{ marginStart: 10 }}>
+                    Xóa bộ lọc
+                  </Text>
+                </TouchableOpacity>
+              ) : null
+            }
+          </View>
+
+
+
         </View>
 
         <Pressable
