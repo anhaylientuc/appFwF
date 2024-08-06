@@ -2,6 +2,7 @@ import { useIsFocused } from '@react-navigation/native'
 import qs from 'qs'
 import React, { useContext, useEffect, useState } from 'react'
 import {
+  ActivityIndicator, // Import ActivityIndicator
   Dimensions,
   FlatList,
   KeyboardAvoidingView,
@@ -16,7 +17,7 @@ import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import NewHTTP from 'src/utils/http/NewHTTP'
-
+import Spinner from 'react-native-loading-spinner-overlay';
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
@@ -34,10 +35,14 @@ const Filter = props => {
   const [products, setProducts] = useState([]) // Initialize with an empty array
   const [queryStringState, setqueryStringState] = useState(null)
   const isFocusScreen = useIsFocused()
+  const [loading, setLoading] = useState(false) // Add loading state
+
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const fetchData = async () => {
       try {
+        setLoading(true) // Start loading
+        navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+
         if (category_id) {
           set_category_id(category_id)
         }
@@ -62,6 +67,8 @@ const Filter = props => {
         setProducts(_products) // Ensure products are set here
       } catch (error) {
         console.log('Error fetching data:', error)
+      } finally {
+        setLoading(false) // Stop loading
       }
     }
 
@@ -85,8 +92,8 @@ const Filter = props => {
     return (
       <Pressable
         onPress={() => {
-          console.log('navigate',queryStringState)
-          props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key,queryString:queryStringState })
+          console.log('navigate', queryStringState)
+          props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key, queryString: queryStringState })
         }}
         style={{
           flexDirection: 'row',
@@ -95,6 +102,11 @@ const Filter = props => {
           paddingVertical: 16
         }}
       >
+        <Spinner
+          visible={loading}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
         <MyText>{key}</MyText>
 
         <View style={{ flexDirection: 'row' }}>
@@ -114,11 +126,13 @@ const Filter = props => {
       </Pressable>
     )
   }
+
   const handleDeleteAllFilter = () => {
     if (filterState instanceof Map) {
       setFilterState(new Map())
     }
   }
+
   return (
     <KeyboardAvoidingView>
       <View style={styles.container}>
@@ -127,9 +141,8 @@ const Filter = props => {
         >
           <TouchableOpacity
             style={{ flex: 1 }}
-            onPress={() => navigation.goBack({categoryById
-              :category_id}
-            )}>
+            onPress={() => navigation.goBack({ categoryById: category_id })}
+          >
             <Icons.Feather name="x" size={30} />
           </TouchableOpacity>
           <MyText
@@ -149,35 +162,40 @@ const Filter = props => {
               ) : null
             }
           </View>
-
-
-
         </View>
 
-        <Pressable
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingVertical: 16
-          }}
-        >
-          <MyText>Sắp xếp theo</MyText>
-          <Icons.AntDesign name="arrowright" size={20} />
-        </Pressable>
-        <Pressable
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingVertical: 16
-          }}
-        >
-          <MyText>Giá</MyText>
-          <Icons.AntDesign name="plus" size={20} />
-        </Pressable>
+        {loading ? ( // Display loading indicator
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.black} />
+          </View>
+        ) : (
+          <>
+            <Pressable
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingVertical: 16
+              }}
+            >
+              <MyText>Sắp xếp theo</MyText>
+              <Icons.AntDesign name="arrowright" size={20} />
+            </Pressable>
+            <Pressable
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingVertical: 16
+              }}
+            >
+              <MyText>Giá</MyText>
+              <Icons.AntDesign name="plus" size={20} />
+            </Pressable>
 
-        <FlatList data={filterData} renderItem={renderItem} keyExtractor={item => item.key} />
+            <FlatList data={filterData} renderItem={renderItem} keyExtractor={item => item.key} />
+          </>
+        )}
       </View>
       <View
         style={{
@@ -196,7 +214,6 @@ const Filter = props => {
           }}
           onPress={() => {
             if (Array.isArray(products) && products.length > 0) {
-              // item = { products: products }
               navigation.navigate('ItemCategories', { _products: products })
             } else {
               console.log('No products to display')
@@ -227,5 +244,10 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: Colors.white,
     paddingHorizontal: 16
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
