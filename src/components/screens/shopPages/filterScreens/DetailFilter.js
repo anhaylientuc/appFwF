@@ -93,7 +93,6 @@ const DetailFilter = props => {
 
       });
       if (newValues.length > 0) {
-        console.log(newValues)
         setvalues(newValues)
 
       }
@@ -141,14 +140,12 @@ const DetailFilter = props => {
 
       var newQs = qs.parse(queryString)
       newQs = { ...newQs, attributes: attr }
-      console.log('newQs', newQs)
 
       newQs = qs.stringify(newQs)
       const res = await NewHTTP.getFilter(newQs)
       const { _attributes, _products } = res
-      
+
       setproducts(_products)
-      console.log(products.length)
     } catch (error) {
       console.log('haha', error)
     }
