@@ -10,10 +10,10 @@ import {
   View
 } from 'react-native';
 import Colors from 'src/constants/Colors';
-import MyText from 'src/constants/FontsStyle';
+import MyText from 'src/constants/FontFamily';
 import { FilterContext } from 'src/contexts/FilterProvider';
 import NewHTTP from 'src/utils/http/NewHTTP';
-import Icons from '../icons/Icon';
+import Icons from 'src/components/icons/Icon';
 import { useIsFocused } from '@react-navigation/native';
 import qs from 'qs';
 
@@ -87,7 +87,7 @@ const Filter = props => {
     setFilterState([]);
     const query = { category_id: _category_id, version: 2 };
     const response = await NewHTTP.getProducts(query);
-    navigation.navigate("ItemCategoryWomen", { params: category_id, _products: response });
+    navigation.navigate("ItemCategories", { params: category_id, _products: response });
   };
 
   const renderItem = ({ item }) => {

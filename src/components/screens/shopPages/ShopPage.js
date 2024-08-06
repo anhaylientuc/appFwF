@@ -29,7 +29,7 @@ const ShopPage = () => {
     return (
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate('CategoryWomen', {
+          navigation.navigate('Categories', {
             categoryId: _id
           })
         }

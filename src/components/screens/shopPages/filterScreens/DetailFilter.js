@@ -8,10 +8,10 @@ import {
   TouchableOpacity,
   View
 } from 'react-native'
-import Colors from 'src/constants/Colors'
-import MyText from 'src/constants/FontsStyle'
+import Colors from 'src/constants/Colors';
+import MyText from 'src/constants/FontFamily';
 import { FilterContext } from 'src/contexts/FilterProvider'
-import Icons from '../icons/Icon'
+import Icons from 'src/components/icons/Icon';
 import NewHTTP from 'src/utils/http/NewHTTP'
 
 const windowWidth = Dimensions.get('window').width
