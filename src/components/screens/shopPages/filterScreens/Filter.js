@@ -32,7 +32,7 @@ const Filter = props => {
   const { filterState, setFilterState } = useContext(FilterContext)
   const { _category_id, set_category_id } = useContext(FilterContext)
   const [products, setProducts] = useState([]) // Initialize with an empty array
-
+  const [queryStringState, setqueryStringState] = useState(null)
   const isFocusScreen = useIsFocused()
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
@@ -54,7 +54,7 @@ const Filter = props => {
         query.category_id = category_id ? category_id : _category_id
 
         const queryString = qs.stringify(query)
-
+        setqueryStringState(queryString)
         const response = await NewHTTP.getFilter(queryString)
         const { _attributes, _products } = response
 
@@ -85,7 +85,8 @@ const Filter = props => {
     return (
       <Pressable
         onPress={() => {
-          props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key })
+          console.log('navigate',queryStringState)
+          props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key,queryString:queryStringState })
         }}
         style={{
           flexDirection: 'row',
@@ -122,7 +123,7 @@ const Filter = props => {
     <KeyboardAvoidingView>
       <View style={styles.container}>
         <View
-          style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
+          style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16, alignItems: 'center' }}
         >
           <TouchableOpacity
             style={{ flex: 1 }}
@@ -135,11 +136,11 @@ const Filter = props => {
           >
             Bộ lọc & sắp xếp
           </MyText>
-          <View style={{flex:1}}>
+          <View style={{ flex: 1 }}>
             {
               filterState instanceof Map && filterState.size > 0 ? (
                 <TouchableOpacity onPress={handleDeleteAllFilter}>
-                  <Text style={{ marginStart: 10 }}>
+                  <Text style={{ textAlign: 'right' }}>
                     Xóa bộ lọc
                   </Text>
                 </TouchableOpacity>
@@ -208,7 +209,7 @@ const Filter = props => {
               fontFamily: 'Montserrat-SemiBold'
             }}
           >
-            Hiện thị sản phẩm
+            Hiện thị {products ? products.length : ''} sản phẩm
           </Text>
         </TouchableOpacity>
       </View>
