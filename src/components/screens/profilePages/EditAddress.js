@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
+  FlatList,
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
@@ -9,7 +10,9 @@ import {
   TouchableOpacity,
   View
 } from 'react-native'
+import Modal from 'react-native-modal'
 import Toast from 'react-native-toast-message'
+import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import UserContext from 'src/contexts/UserContext'
 import UserHTTP from 'src/utils/http/UserHTTP'
@@ -19,14 +22,24 @@ const EditAddress = props => {
       params: { index, item }
     }
   } = props
-  const navigation = useNavigation()
+
   const { user, setUser } = useContext(UserContext)
+  const navigation = useNavigation()
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
   const [city, setCity] = useState('')
   const [district, setDistrict] = useState('')
   const [ward, setWard] = useState('')
   const [zipCode, setZipCode] = useState('')
+  const [shippingList, setShippingList] = useState(user.shipping)
+  const [dataTinhThanh, setdataTinhThanh] = useState([])
+  const [isShowTinhThanh, setisShowTinhThanh] = useState(false)
+  const [idTinhThanh, setidTinhThanh] = useState(null)
+  const [dataQuanHuyen, setdataQuanHuyen] = useState([])
+  const [isShowQuanHuyen, setisShowQuanHuyen] = useState(false)
+  const [idQuanHuyen, setidQuanHuyen] = useState(null)
+  const [dataPhuongXa, setdataPhuongXa] = useState([])
+  const [isShowPhuongXa, setisShowPhuongXa] = useState(false)
 
   useEffect(() => {
     const shipping = user.shipping[index]
@@ -36,7 +49,27 @@ const EditAddress = props => {
     setDistrict(shipping.district)
     setWard(shipping.ward)
     setZipCode(shipping.zipCode)
-  }, [user])
+  }, [])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
+        const responesQuan = await fetch(`https://esgoo.net/api-tinhthanh/2/${idTinhThanh}.htm`)
+        const responesPhuong = await fetch(`https://esgoo.net/api-tinhthanh/3/${idQuanHuyen}.htm`)
+        const json = await response.json()
+        const jsonQuan = await responesQuan.json()
+        const jsonPhuong = await responesPhuong.json()
+        setdataTinhThanh(json.data)
+        setdataQuanHuyen(jsonQuan.data)
+        setdataPhuongXa(jsonPhuong.data)
+      } catch (error) {
+        console.log('Error fetching data:', error)
+      }
+    }
+
+    fetchData()
+  }, [user, idTinhThanh, idQuanHuyen])
 
   const showToastSuccess = title => {
     setTimeout(() => {
@@ -75,6 +108,129 @@ const EditAddress = props => {
     navigation.goBack()
   }
 
+  const showTinhThanh = () => {
+    return (
+      <Modal isVisible={isShowTinhThanh}>
+        <View style={{ flex: 1, backgroundColor: Colors.white }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 16,
+              paddingTop: 8
+            }}
+          >
+            <Text style={[styles.txt_title, { fontSize: 14 }]}>Tỉnh/Thành Phố</Text>
+            <TouchableOpacity onPress={() => setisShowTinhThanh(!isShowTinhThanh)}>
+              <Icons.Feather name="x" size={24} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={true}
+            style={{ width: '100%' }}
+            data={dataTinhThanh}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  setCity(item.full_name)
+                  setisShowTinhThanh(false)
+                  setidTinhThanh(item.id)
+                  setDistrict('')
+                  setWard('')
+                }}
+                style={{ padding: 16, borderBottomWidth: 0.5, borderColor: Colors.gray }}
+              >
+                <Text style={styles.txt_description}>{item.full_name}</Text>
+              </TouchableOpacity>
+            )}
+            keyExtractor={item => item.id.toString()}
+          />
+        </View>
+      </Modal>
+    )
+  }
+
+  const showQuanHuyen = () => {
+    return (
+      <Modal isVisible={isShowQuanHuyen}>
+        <View style={{ flex: 1, backgroundColor: Colors.white }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 16,
+              paddingTop: 8
+            }}
+          >
+            <Text style={[styles.txt_title, { fontSize: 14 }]}>Quận/Huyện</Text>
+            <TouchableOpacity onPress={() => setisShowQuanHuyen(!isShowQuanHuyen)}>
+              <Icons.Feather name="x" size={24} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={true}
+            style={{ width: '100%' }}
+            data={dataQuanHuyen}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() =>
+                  setDistrict(item.full_name) &
+                  setisShowQuanHuyen(!isShowQuanHuyen) &
+                  setidQuanHuyen(item.id) &
+                  setWard('')
+                }
+                style={{ padding: 16, borderBottomWidth: 0.5, borderColor: Colors.gray }}
+              >
+                <Text style={styles.txt_description}>{item.full_name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      </Modal>
+    )
+  }
+
+  const showPhuongXa = () => {
+    return (
+      <Modal isVisible={isShowPhuongXa}>
+        <View style={{ flex: 1, backgroundColor: Colors.white }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 16,
+              paddingTop: 8
+            }}
+          >
+            <Text style={[styles.txt_title, { fontSize: 14 }]}>Phường/Xã</Text>
+            <TouchableOpacity onPress={() => setisShowPhuongXa(!isShowPhuongXa)}>
+              <Icons.Feather name="x" size={24} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={true}
+            style={{ width: '100%' }}
+            data={dataPhuongXa}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => setWard(item.full_name) & setisShowPhuongXa(!isShowPhuongXa)}
+                style={{ padding: 16, borderBottomWidth: 0.5, borderColor: Colors.gray }}
+              >
+                <Text style={styles.txt_description}>{item.full_name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      </Modal>
+    )
+  }
+
   return (
     <KeyboardAvoidingView>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -111,23 +267,23 @@ const EditAddress = props => {
           </View>
           <View style={styles.container_title}>
             <Text style={styles.txtTitleProfile}>*Tỉnh/Thành phố</Text>
-            <View style={styles.container_textInput}>
-              <TextInput
-                value={city}
-                onChange={handleInputChange(setCity)}
-                style={styles.txtTextInput}
-              />
-            </View>
+            <TouchableOpacity
+              onPress={() => setisShowTinhThanh(!isShowTinhThanh)}
+              style={styles.container_textInput}
+            >
+              <Text style={styles.txtTextInput}>{city}</Text>
+            </TouchableOpacity>
+            {isShowTinhThanh ? showTinhThanh() : null}
           </View>
           <View style={styles.container_title}>
             <Text style={styles.txtTitleProfile}>*Quận/Huyện</Text>
-            <View style={styles.container_textInput}>
-              <TextInput
-                value={district}
-                onChange={handleInputChange(setDistrict)}
-                style={styles.txtTextInput}
-              />
-            </View>
+            <TouchableOpacity
+              onPress={() => setisShowQuanHuyen(!isShowQuanHuyen)}
+              style={styles.container_textInput}
+            >
+              <Text style={styles.txtTextInput}>{district}</Text>
+            </TouchableOpacity>
+            {isShowQuanHuyen ? showQuanHuyen() : null}
             <Text
               style={[
                 styles.txt_description,
@@ -139,13 +295,13 @@ const EditAddress = props => {
           </View>
           <View style={styles.container_title}>
             <Text style={styles.txtTitleProfile}>*Phường/Xã</Text>
-            <View style={styles.container_textInput}>
-              <TextInput
-                value={ward}
-                onChange={handleInputChange(setWard)}
-                style={styles.txtTextInput}
-              />
-            </View>
+            <TouchableOpacity
+              onPress={() => setisShowPhuongXa(!isShowPhuongXa)}
+              style={styles.container_textInput}
+            >
+              <Text style={styles.txtTextInput}>{ward}</Text>
+            </TouchableOpacity>
+            {isShowPhuongXa ? showPhuongXa() : null}
             <Text
               style={[
                 styles.txt_description,

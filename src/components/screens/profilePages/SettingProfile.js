@@ -7,7 +7,7 @@ import UserContext from '../../../contexts/UserContext'
 const SettingProfile = () => {
   const navigation = useNavigation()
   const { user, setUser } = useContext(UserContext)
-  const [shipping, setshipping] = useState({})
+  const [shipping, setshipping] = useState([])
 
   useEffect(() => {
     user.shipping.map(item => {
@@ -15,7 +15,8 @@ const SettingProfile = () => {
         setshipping(item)
       }
     })
-  }, [user])
+    console.log(shipping)
+  }, [user, shipping])
 
   useFocusEffect(
     useCallback(() => {
@@ -92,9 +93,15 @@ const SettingProfile = () => {
             </Text>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('MyAddress')}>
-            <Text style={{ fontSize: 12, fontFamily: 'Montserrat-Medium', borderBottomWidth: 1 }}>
-              Sửa
-            </Text>
+            {shipping.length != [] ? (
+              <Text style={{ fontSize: 12, fontFamily: 'Montserrat-Medium', borderBottomWidth: 1 }}>
+                Sửa
+              </Text>
+            ) : (
+              <Text style={{ fontSize: 12, fontFamily: 'Montserrat-Medium', borderBottomWidth: 1 }}>
+                Thêm
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
         <View>
@@ -103,23 +110,27 @@ const SettingProfile = () => {
           </Text>
         </View>
         <Text style={[styles.txt_title, { marginTop: 8 }]}>Địa chỉ giao hàng</Text>
-        <View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
-            <Text style={styles.txt_description}>{shipping.name}</Text>
-            <Text style={[styles.txt_description, { marginStart: 8 }]}>
-              (84+) {user.phoneNumber}
-            </Text>
-          </View>
-          {/* <Text style={styles.txt_description}>Người nhận: {shipping.name}</Text> */}
-          <View style={{ marginTop: 4 }}>
-            <Text style={styles.txt_description}>{shipping.address}</Text>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={[styles.txt_description, { marginEnd: 4 }]}>{shipping.ward}</Text>
-              <Text style={[styles.txt_description, { marginEnd: 4 }]}>{shipping.district}</Text>
-              <Text style={[styles.txt_description, { marginEnd: 4 }]}>{shipping.city}</Text>
+        {shipping.length != [] ? (
+          <View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+              <Text style={styles.txt_description}>{shipping.name}</Text>
+              <Text style={[styles.txt_description, { marginStart: 8 }]}>
+                (84+) {user.phoneNumber}
+              </Text>
+            </View>
+            {/* <Text style={styles.txt_description}>Người nhận: {shipping.name}</Text> */}
+            <View style={{ marginTop: 4 }}>
+              <Text style={styles.txt_description}>{shipping.address}</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={[styles.txt_description, { marginEnd: 4 }]}>{shipping.ward}</Text>
+                <Text style={[styles.txt_description, { marginEnd: 4 }]}>{shipping.district}</Text>
+                <Text style={[styles.txt_description, { marginEnd: 4 }]}>{shipping.city}</Text>
+              </View>
             </View>
           </View>
-        </View>
+        ) : (
+          <Text style={styles.txt_description}>Bạn chưa có địa chỉ giao hàng nào</Text>
+        )}
       </View>
     </ScrollView>
   )
