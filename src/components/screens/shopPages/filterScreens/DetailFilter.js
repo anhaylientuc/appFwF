@@ -13,14 +13,14 @@ import MyText from 'src/constants/FontFamily';
 import { FilterContext } from 'src/contexts/FilterProvider'
 import Icons from 'src/components/icons/Icon';
 import NewHTTP from 'src/utils/http/NewHTTP'
-
+import qs from 'qs'
 const windowWidth = Dimensions.get('window').width
 
 const DetailFilter = props => {
   const {
     navigation,
     route: {
-      params: { child, keySelected },
+      params: { child, keySelected, queryString },
     }
   } = props
 
@@ -71,6 +71,9 @@ const DetailFilter = props => {
     }
     fetchData()
   }, [])
+  useEffect(() => {
+    setproducts(products)
+  }, [products])
   const [values, setvalues] = useState([])
   const fetchValues = () => {
     try {
@@ -90,7 +93,6 @@ const DetailFilter = props => {
 
       });
       if (newValues.length > 0) {
-        console.log(newValues)
         setvalues(newValues)
 
       }
@@ -103,9 +105,7 @@ const DetailFilter = props => {
   const handleChecked = async (item, index) => {
     const newValues = values.map((obj, i) => {
       const { selected } = obj
-
       if (index == i) {
-        
         return { ...obj, selected: !selected }
       }
       return obj
@@ -122,26 +122,32 @@ const DetailFilter = props => {
       })
       setListItem(newCompanies)
       myHashMap.set(keySelected, newCompanies)
+      if (newCompanies.length == 0)
+        myHashMap.delete(keySelected)
     }
-
     setFilterState(myHashMap)
-    console.log('filter',filterState)
     await fetchAttr()
   }
   const fetchAttr = async () => {
     try {
-      const newAttr = {}
+      const attr = []
       for (const [key, value] of filterState.entries()) {
-        if (key != keySelected) {
-          newAttr[key] = value.join(',');
-        }
+        attr.push({
+          key: key,
+          value: value
+        })
       }
-      setattr(newAttr)
-      console.log('newAttr: ', newAttr)
-      const res = await NewHTTP.getFilter(newAttr)
-      console.log('res',res)
+
+      var newQs = qs.parse(queryString)
+      newQs = { ...newQs, attributes: attr }
+
+      newQs = qs.stringify(newQs)
+      const res = await NewHTTP.getFilter(newQs)
+      const { _attributes, _products } = res
+
+      setproducts(_products)
     } catch (error) {
-      console.log('haha',error)
+      console.log('haha', error)
     }
 
   }
@@ -152,6 +158,16 @@ const DetailFilter = props => {
   const handleSubmit = async () => {
     console.log(attr)
     await fetchProducts()
+  }
+  const handleDeleteAllFilter = () => {
+    if (filterState instanceof Map) {
+      filterState.delete(keySelected)
+      setFilterState(filterState)
+    }
+    const newValues = values.map((item) => {
+      return { ...item, selected: false }
+    })
+    setvalues(newValues)
   }
   return (
     <KeyboardAvoidingView>
@@ -165,14 +181,13 @@ const DetailFilter = props => {
       >
         <View style={{ paddingHorizontal: 16 }}>
           <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
+            style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16, alignItems: 'center' }}
           >
             <TouchableOpacity
+              style={{ flex: 1 }}
               onPress={() => {
                 navigation.navigate('Filter', {
                   map: map,
-
-
                 })
               }
               }
@@ -182,10 +197,19 @@ const DetailFilter = props => {
             </TouchableOpacity>
             <MyText
               fontFamily={'Montserrat-SemiBold'}
-              style={{ fontSize: 20, flex: 1, marginStart: 32 }}
+              style={{ fontSize: 20, flex: 2, textAlign: 'center' }}
             >
               Detail
             </MyText>
+            <View style={{ flex: 1 }}>
+              {
+                myHashMap instanceof Map && myHashMap.has(keySelected) &&
+                <TouchableOpacity onPress={() => handleDeleteAllFilter()}>
+                  <Text>Xóa các bộ lọc</Text>
+                </TouchableOpacity>
+              }
+
+            </View>
           </View>
           <View />
           {values.map((item, index) => (
@@ -216,7 +240,10 @@ const DetailFilter = props => {
         }}
       >
         <TouchableOpacity
-          onPress={handleSubmit}
+          onPress={() => {
+            navigation.navigate('ItemCategories', { _products: products })
+
+          }}
           style={{
             backgroundColor: Colors.black,
             padding: 16
@@ -230,7 +257,7 @@ const DetailFilter = props => {
               fontFamily: 'Montserrat-SemiBold'
             }}
           >
-            Hiện thị {quantity} sản phẩm
+            Hiện thị {products && products.length} sản phẩm
           </Text>
         </TouchableOpacity>
       </View>
