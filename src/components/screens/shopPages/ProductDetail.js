@@ -275,7 +275,7 @@ const ProductDetail = props => {
   }
 
   const handelPresenProductId = item => {
-    ;(async () => {
+    ; (async () => {
       const filteredData = item.attributes.filter(item => item.key === 'Kích cỡ')
       const filteredImages = item.images
       const filterName = item.attributes.filter(item => item.key === 'Màu sắc')
@@ -623,11 +623,11 @@ const ProductDetail = props => {
                     style={
                       selectedId === item._id
                         ? {
-                            width: 57,
-                            height: 86,
-                            borderColor: Colors.black,
-                            borderWidth: 1.4
-                          }
+                          width: 57,
+                          height: 86,
+                          borderColor: Colors.black,
+                          borderWidth: 1.4
+                        }
                         : { width: 57, height: 86 }
                     }
                     source={{ uri: item.images[0].url }}
@@ -977,8 +977,12 @@ const ProductDetail = props => {
               data={selected}
               numColumns={3}
               renderItem={({ item, index }) => {
+                console.log('sheet', item)
+                const { cnt } = item
                 return (
                   <TouchableOpacity
+                    disabled={cnt == 0 ? true : false}
+                  
                     style={{
                       borderWidth: 1,
                       justifyContent: 'center',
@@ -989,7 +993,8 @@ const ProductDetail = props => {
                       marginEnd: 16,
                       marginBottom: 16,
                       borderColor: item._id === attributes_id ? Colors.red : Colors.gray,
-                      backgroundColor: item._id === attributes_id ? Colors.red : Colors.white
+                      backgroundColor: item._id === attributes_id ? Colors.red : Colors.white,
+                      opacity:cnt==0?0.3:1
                     }}
                     onPress={() => {
                       handleSelect(item, index)
