@@ -99,9 +99,9 @@ const ProductDetail = props => {
         thumb.map(item => {
           if (item._id == _id) {
             var newAttrColor = item.attributes
-            newAttrColor = newAttrColor.filter(attr => attr.key === 'Màu sắc')
+            newAttrColor = newAttrColor.filter(attr => attr.key == 'Màu sắc')
             var newAttrSize = item.attributes
-            newAttrSize = newAttrSize.filter(attr => attr.key === 'Kích cỡ')
+            newAttrSize = newAttrSize.filter(attr => attr.key == 'Kích cỡ')
             setSelected(newAttrSize)
             setselectedName(newAttrColor[0].value)
             setbase_price(item.base_price)
@@ -116,7 +116,7 @@ const ProductDetail = props => {
           }
         })
       } catch (error) {
-        console.error('Error:', error)
+        console.error('Error1:', error)
       }
     }
 
@@ -275,23 +275,24 @@ const ProductDetail = props => {
   }
 
   const handelPresenProductId = item => {
-    ; (async () => {
+
+    try {
       const filteredData = item.attributes.filter(item => item.key === 'Kích cỡ')
       const filteredImages = item.images
       const filterName = item.attributes.filter(item => item.key === 'Màu sắc')
-      try {
-        setselectedId(item._id)
-        setSelected(filteredData)
-        setwallPaper(filteredImages)
-        setselectedName(filterName[0].value)
-        setVaLueSelectSize(null)
-        setQuantity(1)
-        // console.log('id sản phẩm: ', selectedId)
-      } catch (error) {
-        console.error('Error:', error)
-        // Handle errors appropriately in your application
-      }
-    })()
+      console.log('ok')
+      setselectedId(item._id)
+      setSelected(filteredData)
+      setwallPaper(filteredImages)
+      setselectedName(filterName[0].value)
+      setVaLueSelectSize(null)
+      setQuantity(1)
+      // console.log('id sản phẩm: ', selectedId)
+    } catch (error) {
+      console.error('Error:', error)
+      // Handle errors appropriately in your application
+    }
+
   }
 
   const handleGoBag = () => {
@@ -542,23 +543,29 @@ const ProductDetail = props => {
       >
         <View>
           <FlatList
+            keyExtractor={item => item.url}
             pagingEnabled
             onScroll={this.change}
             showsHorizontalScrollIndicator={false}
             horizontal
             style={{ width: windowWith, height: windowHeight / 1.2 }}
             data={wallPaper}
-            renderItem={({ item, index }) =>
-              item.url != '' && (
-                <Pressable>
-                  <Image
-                    resizeMode="cover"
-                    key={index}
-                    style={{ width: windowWith, height: windowHeight / 1.2 }}
-                    source={{ uri: item.url }}
-                  />
-                </Pressable>
+            renderItem={({ item, index }) => {
+
+              return (
+                item.url != '' && (
+                  <Pressable  >
+                    <Image
+                      resizeMode="cover"
+
+                      style={{ width: windowWith, height: windowHeight / 1.2 }}
+                      source={{ uri: item.url }}
+                    />
+                  </Pressable>
+                )
               )
+            }
+
             }
           />
           {thumbs ? showModalAddToCart() : null}
@@ -611,29 +618,37 @@ const ProductDetail = props => {
             <MyText style={styles.product.txt_size}>{selectedName}</MyText>
 
             <FlatList
+              keyExtractor={item => item._id}
               horizontal
               showsHorizontalScrollIndicator={false}
               data={thumbs}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  onPress={() => handelPresenProductId(item)}
-                  style={{ marginHorizontal: 4 }}
-                >
-                  <Image
-                    style={
-                      selectedId === item._id
-                        ? {
-                          width: 57,
-                          height: 86,
-                          borderColor: Colors.black,
-                          borderWidth: 1.4
-                        }
-                        : { width: 57, height: 86 }
-                    }
-                    source={{ uri: item.images[0].url }}
-                  />
-                </TouchableOpacity>
-              )}
+              renderItem={({ item, index }) => {
+
+                return (
+
+                  <TouchableOpacity
+
+                    onPress={() => handelPresenProductId(item)}
+                    style={{ marginHorizontal: 4 }}
+                  >
+                    <Image
+                      style={
+                        selectedId === item._id
+                          ? {
+                            width: 57,
+                            height: 86,
+                            borderColor: Colors.black,
+                            borderWidth: 1.4
+                          }
+                          : { width: 57, height: 86 }
+                      }
+                      source={{ uri: item.images[0].url }}
+                    />
+                  </TouchableOpacity>
+                )
+              }
+
+              }
             />
           </View>
 
@@ -971,17 +986,17 @@ const ProductDetail = props => {
             }}
           >
             <FlatList
-              // render Item Data Sort by
+              keyExtractor={item => item.value}
               scrollEnabled={false}
               style={{ marginTop: 16 }}
               data={selected}
               numColumns={3}
               renderItem={({ item, index }) => {
-                const { cnt } = item
+                const { cnt, value } = item
                 return (
                   <TouchableOpacity
                     disabled={cnt == 0 ? true : false}
-                  
+
                     style={{
                       borderWidth: 1,
                       justifyContent: 'center',
@@ -993,7 +1008,7 @@ const ProductDetail = props => {
                       marginBottom: 16,
                       borderColor: item._id === attributes_id ? Colors.red : Colors.gray,
                       backgroundColor: item._id === attributes_id ? Colors.red : Colors.white,
-                      opacity:cnt==0?0.3:1
+                      opacity: cnt == 0 ? 0.3 : 1
                     }}
                     onPress={() => {
                       handleSelect(item, index)
