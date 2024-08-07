@@ -977,7 +977,6 @@ const ProductDetail = props => {
               data={selected}
               numColumns={3}
               renderItem={({ item, index }) => {
-                console.log('sheet', item)
                 const { cnt } = item
                 return (
                   <TouchableOpacity
