@@ -14,6 +14,8 @@ import { FilterContext } from 'src/contexts/FilterProvider'
 import Icons from 'src/components/icons/Icon';
 import NewHTTP from 'src/utils/http/NewHTTP'
 import qs from 'qs'
+import Spinner from 'react-native-loading-spinner-overlay';
+
 const windowWidth = Dimensions.get('window').width
 
 const DetailFilter = props => {
@@ -33,6 +35,7 @@ const DetailFilter = props => {
   const [products, setproducts] = useState([])
   const [myHashMap, setmyHashMap] = useState(null)
   const [attr, setattr] = useState(null)
+  const [loading, setloading] = useState(false)
   useEffect(() => {
     Animated.timing(position, {
       toValue: { x: 0, y: 0 },
@@ -40,7 +43,11 @@ const DetailFilter = props => {
       useNativeDriver: true
     }).start()
   }, [position])
-
+  useEffect(() => {
+    setTimeout(() => {
+      setloading(false)
+    }, 2000)
+  })
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -74,6 +81,8 @@ const DetailFilter = props => {
   useEffect(() => {
     setproducts(products)
   }, [products])
+
+
   const [values, setvalues] = useState([])
   const fetchValues = () => {
     try {
@@ -103,33 +112,41 @@ const DetailFilter = props => {
   }
 
   const handleChecked = async (item, index) => {
-    const newValues = values.map((obj, i) => {
-      const { selected } = obj
-      if (index == i) {
-        return { ...obj, selected: !selected }
-      }
-      return obj
-    })
-    setvalues(newValues)
-    const isDuplicate = isListItem.some(listItemValue => listItemValue === item.value)
-    if (!isDuplicate) {
-      const newList = [...isListItem, item.value]
-      setListItem(newList)
-      myHashMap.set(keySelected, newList)
-    } else {
-      const newCompanies = isListItem.filter(listItem => {
-        if (listItem !== item.value) return listItem
+    try {
+      setloading(true)
+      let newValues = values.map((obj, i) => {
+        const { selected } = obj
+        if (index == i) {
+          return { ...obj, selected: !selected }
+        }
+        return obj
       })
-      setListItem(newCompanies)
-      myHashMap.set(keySelected, newCompanies)
-      if (newCompanies.length == 0)
-        myHashMap.delete(keySelected)
+      setvalues(newValues)
+      newValues = newValues.filter(item => item.selected == true).map(item => {
+        return item.value
+      })
+      const updatedHashmap = new Map(myHashMap)
+      updatedHashmap.set(keySelected, newValues)
+      if (newValues.length == 0)
+        updatedHashmap.delete(keySelected)
+      setmyHashMap(updatedHashmap)
+      setFilterState(updatedHashmap)
+    } catch (error) {
+      console.log(error)
     }
-    setFilterState(myHashMap)
-    await fetchAttr()
+    finally {
+      setloading(false)
+    }
   }
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchAttr()
+    }
+    fetchData()
+  }, [filterState])
   const fetchAttr = async () => {
     try {
+      setloading(true)
       const attr = []
       for (const [key, value] of filterState.entries()) {
         attr.push({
@@ -137,24 +154,22 @@ const DetailFilter = props => {
           value: value
         })
       }
-
+      console.log(attr)
       var newQs = qs.parse(queryString)
       newQs = { ...newQs, attributes: attr }
-
       newQs = qs.stringify(newQs)
       const res = await NewHTTP.getFilter(newQs)
       const { _attributes, _products } = res
-
+      console.log(_products.length)
       setproducts(_products)
     } catch (error) {
       console.log('haha', error)
     }
-
+    finally{
+      setloading(false)
+    }
   }
-  const fetchProducts = async () => {
 
-    //console.log(attr)
-  }
   const handleSubmit = async () => {
     console.log(attr)
     await fetchProducts()
@@ -179,6 +194,11 @@ const DetailFilter = props => {
           transform: [{ translateX: position.x }, { translateY: position.y }]
         }}
       >
+        <Spinner
+          visible={loading}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
         <View style={{ paddingHorizontal: 16 }}>
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16, alignItems: 'center' }}
