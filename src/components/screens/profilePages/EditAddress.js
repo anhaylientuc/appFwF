@@ -40,7 +40,14 @@ const EditAddress = props => {
   const [idQuanHuyen, setidQuanHuyen] = useState(null)
   const [dataPhuongXa, setdataPhuongXa] = useState([])
   const [isShowPhuongXa, setisShowPhuongXa] = useState(false)
+  const [nameError, setnameError] = useState(false)
+  const [addressError, setaddressError] = useState(false)
+  const [cityError, setcityError] = useState(false)
+  const [districtError, setdistrictError] = useState(false)
+  const [wardError, setwardError] = useState(false)
+  const [zipCodeError, setzipCodeError] = useState(false)
 
+  // set các giá trị mặc định ban đầu
   useEffect(() => {
     const shipping = user.shipping[index]
     setName(shipping.name)
@@ -49,8 +56,12 @@ const EditAddress = props => {
     setDistrict(shipping.district)
     setWard(shipping.ward)
     setZipCode(shipping.zipCode)
+    setidTinhThanh(shipping.idTinhThanh)
+    setidQuanHuyen(shipping.idQuanHuyen)
+    console.log(shipping)
   }, [])
 
+  // set các giá trị khi id tỉnh thành hoặc id quận huyện thay đổi
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -81,33 +92,82 @@ const EditAddress = props => {
     }, 500)
   }
 
-  const handleInputChange = setter => e => {
-    setter(e.nativeEvent.text)
+  function handleName(e) {
+    const nameVar = e.nativeEvent.text
+    setName(nameVar)
+  }
+
+  function handleAddress(e) {
+    const addressVar = e.nativeEvent.text
+    setAddress(addressVar)
+  }
+
+  function handleZipCode(e) {
+    const numericText = e.replace(/[^0-9]/g, '') // Remove any non-numeric characters
+    setZipCode(numericText)
+    if (numericText.length !== 6) {
+      setzipCodeError(true)
+    } else {
+      setzipCodeError(false)
+    }
   }
 
   const handleSave = async () => {
     const newShipping = {
-      name,
-      address,
-      city,
-      district,
-      ward,
-      zipCode,
-      selected: item.selected
+      name: name,
+      address: address,
+      city: city,
+      district: district,
+      ward: ward,
+      zipCode: zipCode,
+      selected: item.selected,
+      idTinhThanh: idTinhThanh,
+      idQuanHuyen: idQuanHuyen
     }
+    if (
+      !nameError &&
+      !addressError &&
+      !cityError &&
+      !districtError &&
+      !wardError &&
+      name != '' &&
+      address != '' &&
+      city != '' &&
+      district != '' &&
+      ward != '' &&
+      zipCodeError == false
+    ) {
+      var updatedShipping = [...user.shipping]
+      updatedShipping[index] = newShipping
 
-    var updatedShipping = [...user.shipping]
-    updatedShipping[index] = newShipping
-
-    const data = {
-      shipping: updatedShipping
+      const data = {
+        shipping: updatedShipping
+      }
+      const newUser = await UserHTTP.updateUser(user._id, data)
+      setUser(newUser)
+      showToastSuccess()
+      navigation.goBack()
+      console.log(newUser)
+    } else {
+      if (!name) {
+        setnameError(true)
+      }
+      if (!address) {
+        setaddressError(true)
+      }
+      if (!city) {
+        setcityError(true)
+      }
+      if (!district) {
+        setdistrictError(true)
+      }
+      if (!ward) {
+        setwardError(true)
+      }
     }
-    const newUser = await UserHTTP.updateUser(user._id, data)
-    setUser(newUser)
-    showToastSuccess()
-    navigation.goBack()
   }
 
+  // modal tỉnh thành
   const showTinhThanh = () => {
     return (
       <Modal isVisible={isShowTinhThanh}>
@@ -152,6 +212,7 @@ const EditAddress = props => {
     )
   }
 
+  // modal quận huyện
   const showQuanHuyen = () => {
     return (
       <Modal isVisible={isShowQuanHuyen}>
@@ -194,6 +255,7 @@ const EditAddress = props => {
     )
   }
 
+  // modal Phường xã
   const showPhuongXa = () => {
     return (
       <Modal isVisible={isShowPhuongXa}>
@@ -239,55 +301,95 @@ const EditAddress = props => {
           <Text style={[styles.txt_title, { marginBottom: 16 }]}>Địa chỉ giao hàng</Text>
           <View style={styles.container_title}>
             <Text style={styles.txtTitleProfile}>*Họ và tên</Text>
-            <View style={styles.container_textInput}>
-              <TextInput
-                value={name}
-                onChange={handleInputChange(setName)}
-                style={styles.txtTextInput}
-              />
+            <View
+              style={[
+                nameError && !name ? styles.container_textInput_error : styles.container_textInput
+              ]}
+            >
+              <TextInput value={name} onChange={e => handleName(e)} style={styles.txtTextInput} />
             </View>
+            {nameError && !name ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng nhập tên
+              </Text>
+            ) : null}
           </View>
           <View style={styles.container_title}>
             <Text style={styles.txtTitleProfile}>*Địa chỉ</Text>
-            <View style={styles.container_textInput}>
+            <View
+              style={[
+                addressError && !address
+                  ? styles.container_textInput_error
+                  : styles.container_textInput
+              ]}
+            >
               <TextInput
                 value={address}
-                onChange={handleInputChange(setAddress)}
+                onChange={e => handleAddress(e)}
                 style={styles.txtTextInput}
               />
             </View>
+            {addressError && !address ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng nhập địa chỉ
+              </Text>
+            ) : null}
             <Text
               style={[
                 styles.txt_description,
-                { color: Colors.darkGray2, marginTop: 4, fontSize: 10 }
+                { color: Colors.darkGray2, marginTop: 8, fontSize: 10 }
               ]}
             >
-              Số nhà, tên đường, khu phố, phường
+              Số nhà, tên đường, khu phố, thôn xóm
             </Text>
           </View>
           <View style={styles.container_title}>
             <Text style={styles.txtTitleProfile}>*Tỉnh/Thành phố</Text>
             <TouchableOpacity
               onPress={() => setisShowTinhThanh(!isShowTinhThanh)}
-              style={styles.container_textInput}
+              style={[
+                cityError && !city ? styles.container_textInput_error : styles.container_textInput
+              ]}
             >
               <Text style={styles.txtTextInput}>{city}</Text>
             </TouchableOpacity>
             {isShowTinhThanh ? showTinhThanh() : null}
+            {cityError && !city ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng chọn Tỉnh/Tp
+              </Text>
+            ) : null}
           </View>
           <View style={styles.container_title}>
             <Text style={styles.txtTitleProfile}>*Quận/Huyện</Text>
             <TouchableOpacity
               onPress={() => setisShowQuanHuyen(!isShowQuanHuyen)}
-              style={styles.container_textInput}
+              style={[
+                districtError && !district
+                  ? styles.container_textInput_error
+                  : styles.container_textInput
+              ]}
             >
               <Text style={styles.txtTextInput}>{district}</Text>
             </TouchableOpacity>
             {isShowQuanHuyen ? showQuanHuyen() : null}
+            {districtError && !district ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng chọn Quận/Huyện
+              </Text>
+            ) : null}
             <Text
               style={[
                 styles.txt_description,
-                { color: Colors.darkGray2, marginTop: 4, fontSize: 10 }
+                { color: Colors.darkGray2, marginTop: 4, fontSize: 10, marginTop: 8 }
               ]}
             >
               Quận/Huyện
@@ -295,13 +397,24 @@ const EditAddress = props => {
           </View>
           <View style={styles.container_title}>
             <Text style={styles.txtTitleProfile}>*Phường/Xã</Text>
+
             <TouchableOpacity
               onPress={() => setisShowPhuongXa(!isShowPhuongXa)}
-              style={styles.container_textInput}
+              style={[
+                wardError && !ward ? styles.container_textInput_error : styles.container_textInput
+              ]}
             >
               <Text style={styles.txtTextInput}>{ward}</Text>
             </TouchableOpacity>
             {isShowPhuongXa ? showPhuongXa() : null}
+            {wardError && !ward ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng chọn Phường/Xã
+              </Text>
+            ) : null}
+
             <Text
               style={[
                 styles.txt_description,
@@ -313,13 +426,24 @@ const EditAddress = props => {
           </View>
           <View style={styles.container_title}>
             <Text style={styles.txtTitleProfile}>Mã bưu điện</Text>
-            <View style={styles.container_textInput}>
+            <View
+              style={[zipCodeError ? styles.container_textInput_error : styles.container_textInput]}
+            >
               <TextInput
                 value={zipCode}
-                onChange={handleInputChange(setZipCode)}
+                onChangeText={handleZipCode} // Changed to onChangeText for better handling
                 style={styles.txtTextInput}
+                keyboardType="numeric" // Sets the keyboard to numeric
+                maxLength={6} // Optional: Limit the number of digits
               />
             </View>
+            {zipCodeError ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng nhập đúng mã bưu điện (880000)
+              </Text>
+            ) : null}
             <Text
               style={[
                 styles.txt_description,
@@ -386,6 +510,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginTop: 8,
     borderColor: Colors.gray,
+    padding: 8,
+    height: 44,
+    justifyContent: 'center'
+  },
+  container_textInput_error: {
+    borderWidth: 1,
+    marginTop: 8,
+    borderColor: Colors.red,
     padding: 8,
     height: 44,
     justifyContent: 'center'

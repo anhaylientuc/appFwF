@@ -110,20 +110,22 @@ const MyAddress = () => {
       district: district,
       ward: ward,
       zipCode: zipCode,
-      selected: false
+      selected: false,
+      idTinhThanh: idTinhThanh,
+      idQuanHuyen: idQuanHuyen
     }
     if (
-      nameError &&
-      addressError &&
-      cityError &&
-      districtError &&
-      wardError &&
+      !nameError &&
+      !addressError &&
+      !cityError &&
+      !districtError &&
+      !wardError &&
       name &&
       address &&
       city &&
       district &&
       ward &&
-      zipCodeError == false 
+      zipCodeError == false
     ) {
       var arrShipping = shippingList
       arrShipping.push(newShipping)
@@ -352,7 +354,7 @@ const MyAddress = () => {
               { color: Colors.darkGray2, marginTop: 8, fontSize: 10 }
             ]}
           >
-            Số nhà, tên đường, khu phố, phường
+            Số nhà, tên đường, khu phố, thôn xóm
           </Text>
         </View>
         <View style={styles.container_title}>
@@ -523,7 +525,12 @@ const MyAddress = () => {
                 >
                   <Text style={[styles.txt_title, { fontSize: 16 }]}>Địa chỉ giao hàng</Text>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('EditAddress', { index: index, item: item })}
+                    onPress={() =>
+                      navigation.navigate('EditAddress', {
+                        index: index,
+                        item: item
+                      })
+                    }
                   >
                     <Text style={[styles.txt_description, { borderBottomWidth: 1 }]}>Sửa</Text>
                   </TouchableOpacity>
