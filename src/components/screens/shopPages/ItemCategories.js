@@ -75,39 +75,37 @@ const ItemCategories = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (isFocusScreen) {
-          if (_products) {
-            setproducts(_products);
-          } else {
-            setproducts(products);
-            const response = await getCategoryById(categoryById);
-            setnameCategoryById(response.name);
-            const { _id, name, parentID, image } = response;
-            const arr = response.child;
-            set_id(response._id);
-            setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr]);
-            setwindowWith(width / 2);
-            setwindowHeight(height / 2.4);
-          }
-        }
-      } catch (error) {
+
+        setproducts(products);
+        const response = await getCategoryById(categoryById);
+        setnameCategoryById(response.name);
+        const { _id, name, parentID, image } = response;
+        const arr = response.child;
+        set_id(response._id);
+        setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr]);
+        setwindowWith(width / 2);
+        setwindowHeight(height / 2.4);
+
+      }
+      catch (error) {
         console.log(error);
       }
     };
     fetchData();
-  }, [isFocusScreen]);
+  }, []);
 
   useEffect(() => {
-    const fetchData =async () => {
+    const fetchData = async () => {
       const newMap = new Map(filterState);
-      const newArr=[]
-      for(const [key,value] of newMap.entries()){
-        value.map(item=>{
-            newArr.push({key:key,value:item})
+      const newArr = []
+      for (const [key, value] of newMap.entries()) {
+        value.map(item => {
+          newArr.push({ key: key, value: item })
         })
       }
-      
+
       setattributesArr(newArr)
+      console.log('fetch products')
       await fetchProducts()
     };
     fetchData();
@@ -327,31 +325,31 @@ const ItemCategories = (props) => {
 
   // Xóa một thuộc tính khỏi attributesArr
   const removeAttribute = (attribute, index) => {
-    const newArr=attributesArr.filter(item=>item.key!=attribute.key||item.value!=attribute.value)
-    const newMap=new Map();
-    newArr.map((item)=>{
-        const {key,value}=item;
-        if(!newMap.has(key)){
-            newMap.set(key,[]);
-        }
-        newMap.get(key).push(value)
+    const newArr = attributesArr.filter(item => item.key != attribute.key || item.value != attribute.value)
+    const newMap = new Map();
+    newArr.map((item) => {
+      const { key, value } = item;
+      if (!newMap.has(key)) {
+        newMap.set(key, []);
+      }
+      newMap.get(key).push(value)
     })
     setFilterState(newMap)
   };
-  const fetchProducts=async()=>{
-      const query={}
-      query.category_id=productsParent
-      const attributes=[];
-      for(const [key,value] of filterState.entries()){
-          attributes.push({key,value})
-      }
-      if(attributes.length>0)
-        query.attributes=attributes
-      const queryString=qs.stringify(query)
-      const res=await NewHTTP.getFilter(queryString)
-      const {_attributes,_products}=res
-      setproducts(_products)
-    
+  const fetchProducts = async () => {
+    const query = {}
+    query.category_id = productsParent
+    const attributes = [];
+    for (const [key, value] of filterState.entries()) {
+      attributes.push({ key, value })
+    }
+    if (attributes.length > 0)
+      query.attributes = attributes
+    const queryString = qs.stringify(query)
+    const res = await NewHTTP.getFilter(queryString)
+    const { _attributes, _products } = res
+    setproducts(_products)
+
   }
   return (
     <View
@@ -402,7 +400,7 @@ const ItemCategories = (props) => {
           onPress={() =>
             navigation.navigate('Filter', {
               category_id: productsParent,
-            
+
             })
           }
           style={{
@@ -482,7 +480,7 @@ const ItemCategories = (props) => {
           </View>
 
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <MyText style={{ fontSize: 12 }}>{products&&products.length} Sản phẩm</MyText>
+            <MyText style={{ fontSize: 12 }}>{products && products.length} Sản phẩm</MyText>
             <TouchableOpacity onPress={() => handleColum()} style={{ marginStart: 16 }}>
               <Icons.MaterialCommunityIcons
                 name={!numColumns ? 'view-module' : 'view-list'}
