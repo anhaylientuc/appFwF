@@ -71,6 +71,7 @@ export const getFilter = async query => {
   try {
     const axiosInstance = AxiosInstance()
     const url = `/filters?${query}`
+    console.log(url)
     const response = await axiosInstance.get(url)
     return response
   } catch (error) {
@@ -78,15 +79,5 @@ export const getFilter = async query => {
     throw error
   }
 }
-// const getKey = async (query) => {
-//   try {
-//     const axiosInstance=AxiosInstance()
-//     console.log('quey',query)
-//     const url='/filters/key'
-//     const response=await axiosInstance.get(url,{params:query})
-//     return response
-//   } catch (error) {
-//       console.log('key',error)
-//   }
-// }
+
 export default { getProducts, getFilter }
