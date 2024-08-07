@@ -105,7 +105,6 @@ const ItemCategories = (props) => {
       }
 
       setattributesArr(newArr)
-      console.log('fetch products')
       await fetchProducts()
     };
     fetchData();
@@ -428,7 +427,6 @@ const ItemCategories = (props) => {
           >
             {attributesArr &&
               attributesArr.map((item, index) => {
-                console.log(item)
                 return (
                   <View
                     key={item.value} // Sử dụng giá trị item làm key cho mỗi View
