@@ -58,7 +58,6 @@ const EditAddress = props => {
     setZipCode(shipping.zipCode)
     setidTinhThanh(shipping.idTinhThanh)
     setidQuanHuyen(shipping.idQuanHuyen)
-    console.log(shipping)
   }, [])
 
   // set các giá trị khi id tỉnh thành hoặc id quận huyện thay đổi
@@ -125,11 +124,11 @@ const EditAddress = props => {
       idQuanHuyen: idQuanHuyen
     }
     if (
-      !nameError &&
-      !addressError &&
-      !cityError &&
-      !districtError &&
-      !wardError &&
+      nameError == false &&
+      addressError == false &&
+      cityError == false &&
+      districtError == false &&
+      wardError == false &&
       name != '' &&
       address != '' &&
       city != '' &&
@@ -430,6 +429,7 @@ const EditAddress = props => {
               style={[zipCodeError ? styles.container_textInput_error : styles.container_textInput]}
             >
               <TextInput
+                placeholder="Có thể bỏ qua bước này"
                 value={zipCode}
                 onChangeText={handleZipCode} // Changed to onChangeText for better handling
                 style={styles.txtTextInput}
@@ -534,6 +534,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.black
   },
+  txt_description: {
+    marginTop: 4,
+    color: Colors.black,
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 12
+  },
   txtTitleProfile: {
     color: Colors.black,
     fontFamily: 'Montserrat-Medium',
@@ -566,5 +572,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-SemiBold',
     fontSize: 14,
     color: Colors.black
+  },
+  txt_title: {
+    fontSize: 16,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.black2
   }
 })

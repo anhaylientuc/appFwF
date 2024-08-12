@@ -75,7 +75,7 @@ const MyOder = props => {
       </View>
       <TouchableOpacity
         style={{ backgroundColor: Colors.black, margin: 24 }}
-        onPress={() => navigation.navigate('HomePage')}
+        onPress={() => navigation.navigate('HomeStack')}
       >
         <Text
           style={{

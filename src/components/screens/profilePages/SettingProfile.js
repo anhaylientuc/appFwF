@@ -1,6 +1,7 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import UserContext from '../../../contexts/UserContext'
@@ -28,7 +29,21 @@ const SettingProfile = () => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <Text style={styles.txtHeader}>Cài đặt của tôi</Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 12,
+          paddingVertical: 16
+        }}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{ flex: 1 }}>
+          <Icons.AntDesign name="arrowleft" size={24} />
+        </TouchableOpacity>
+        <Text style={styles.txtHeader}>Cài đặt của tôi</Text>
+        <View style={{ flex: 1 }} />
+      </View>
       <MyText style={{ textAlign: 'center', fontSize: 12, marginVertical: 8 }}>
         Bạn có thể quản lý tài khoản và các đăng ký khác tại đây
       </MyText>
@@ -164,9 +179,9 @@ const styles = StyleSheet.create({
   },
   txtHeader: {
     textAlign: 'center',
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: 'Montserrat-SemiBold',
-    marginTop: 16
+    flex: 2
   },
   container: {
     backgroundColor: Colors.grayBg

@@ -226,9 +226,9 @@ const PayPage = props => {
                     </Text>
                   </View>
                   <Text>{shipping.name}</Text>
-                  <View style={{ flexDirection: 'row', gap: 8 }}>
-                    <Text>{shipping.address}</Text>
-                    <Text>P. {shipping.ward}</Text>
+                  <Text>{shipping.address}</Text>
+                  <View style={{ flexDirection: 'row', gap: 4 }}>
+                    <Text>{shipping.ward}</Text>
                     <Text>{shipping.district}</Text>
                     <Text>{shipping.city}</Text>
                   </View>

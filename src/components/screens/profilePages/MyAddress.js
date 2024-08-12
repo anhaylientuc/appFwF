@@ -441,6 +441,7 @@ const MyAddress = () => {
           >
             <TextInput
               value={zipCode}
+              placeholder="Có thể bỏ qua bước này"
               onChangeText={handleZipCode} // Changed to onChangeText for better handling
               style={styles.txtTextInput}
               keyboardType="numeric" // Sets the keyboard to numeric
@@ -494,7 +495,22 @@ const MyAddress = () => {
   return (
     <KeyboardAvoidingView>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <Text style={styles.txtHeader}>Địa chỉ của tôi</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingTop: 16
+          }}
+        >
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ flex: 1 }}>
+            <Icons.AntDesign name="arrowleft" size={24} />
+          </TouchableOpacity>
+          <Text style={styles.txtHeader}>Địa chỉ của tôi</Text>
+          <View style={{ flex: 1 }} />
+        </View>
+
         {shippingList.length == [] ? (
           <Text
             style={[
@@ -640,10 +656,9 @@ const styles = StyleSheet.create({
 
   txtHeader: {
     textAlign: 'center',
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: 'Montserrat-SemiBold',
-    marginTop: 5,
-    marginBottom: 11
+    flex: 2
   },
   txtTextInput: {
     marginStart: 8,
@@ -655,11 +670,5 @@ const styles = StyleSheet.create({
     color: Colors.black,
     fontFamily: 'Montserrat-Medium',
     fontSize: 14
-  },
-  txtHeader: {
-    textAlign: 'center',
-    fontSize: 20,
-    fontFamily: 'Montserrat-SemiBold',
-    marginTop: 16
   }
 })

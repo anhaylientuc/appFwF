@@ -108,7 +108,7 @@ const Profile = () => {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <TouchableOpacity
             style={styles.container_setting}
-            onPress={() => props.navigation.navigate('MyOder')}
+            onPress={() => navigation.navigate('MyOder')}
           >
             <Icons.AntDesign name="inbox" size={24} />
             <Text style={styles.txtSetting}>Đơn hàng</Text>
