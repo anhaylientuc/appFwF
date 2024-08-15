@@ -39,7 +39,7 @@ export default {
   darkGray2: '#718096',
   white: '#FFF',
   light: '#fcfcfc',
-
+  cream:'#fffdd0',
   darkOverlayColor: 'rgba(0, 0, 0, 0.4)',
   darkOverlayColor2: 'rgba(0, 0, 0, 0.8)',
   lightOverlayColor: 'rgba(255, 255, 255, 0.6)',

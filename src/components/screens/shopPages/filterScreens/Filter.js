@@ -92,7 +92,6 @@ const Filter = props => {
     return (
       <Pressable
         onPress={() => {
-          console.log('navigate', queryStringState)
           props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key, queryString: queryStringState })
         }}
         style={{
@@ -142,7 +141,6 @@ const Filter = props => {
           <TouchableOpacity
             style={{ flex: 1 }}
             onPress={() => {
-              console.log(filterState)
               navigation.goBack({ categoryById: category_id })
             }}
           >
