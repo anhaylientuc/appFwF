@@ -7,7 +7,6 @@ const WebViewPayment = ({ route, navigation }) => {
   const { res } = route.params
   return (
     <SafeAreaView style={{ flex: 1 }}>
-   
       <WebView
         source={{ uri: res.url }}
         onError={syntheticEvent => {

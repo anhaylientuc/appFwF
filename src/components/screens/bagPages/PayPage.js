@@ -58,24 +58,28 @@ const PayPage = props => {
   const formattedTotalPrices = formatCurrency(totalPrices)
 
   useEffect(() => {
-    user.shipping.map(item => {
-      if (item.selected == true) {
-        setshipping(item)
-      }
-    })
-    if (storageData.length === 0) {
-      goBack()
-    } else {
-      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-    }
+    if (user) {
+      console.log(storageData)
 
-    setOrder({
-      ...order,
-      amount: totalPrices,
-      carts: storageData,
-      user: user
-      // shipping: { shippingAddress }
-    })
+      user.shipping.map(item => {
+        if (item.selected == true) {
+          setshipping(item)
+        }
+      })
+      if (storageData.length === 0) {
+        goBack()
+      } else {
+        navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+      }
+
+      setOrder({
+        ...order,
+        amount: totalPrices,
+        carts: storageData,
+        user: user
+        // shipping: { shippingAddress }
+      })
+    }
   }, [storageData])
 
   const showToastDeleted = title => {
@@ -138,7 +142,7 @@ const PayPage = props => {
               style={{
                 width: 104,
                 height: 104,
-                resizeMode: 'cover'
+                resizeMode: 'center'
               }}
               source={{ uri: image }}
             />
@@ -225,14 +229,18 @@ const PayPage = props => {
                       (84+) {user.phoneNumber}
                     </Text>
                   </View>
-                  <Text>{shipping.name}</Text>
-                  <Text>{shipping.address}</Text>
+                  <View style={{ height: 4 }} />
+                  <Text style={styles.txt_description}>{shipping.name}</Text>
+                  <View style={{ height: 4 }} />
+                  <Text style={styles.txt_description}>{shipping.address}</Text>
+                  <View style={{ height: 4 }} />
                   <View style={{ flexDirection: 'row', gap: 4 }}>
-                    <Text>{shipping.ward}</Text>
-                    <Text>{shipping.district}</Text>
-                    <Text>{shipping.city}</Text>
+                    <Text style={styles.txt_description}>{shipping.ward}</Text>
+
+                    <Text style={styles.txt_description}>{shipping.district}</Text>
+                    <Text style={styles.txt_description}>{shipping.city}</Text>
                   </View>
-                  <Text>{shipping.zipCode}</Text>
+                  <Text style={styles.txt_description}>{shipping.zipCode}</Text>
                 </View>
               </View>
               <TouchableOpacity onPress={() => navigation.navigate('MyAddress')}>
@@ -269,6 +277,9 @@ const PayPage = props => {
             </View>
             {shortlist()}
           </View>
+        </View>
+        <View>
+          <Text>Thanh toán</Text>
         </View>
 
         <View style={{ padding: 16, backgroundColor: Colors.white }}>
@@ -436,7 +447,8 @@ const PayPage = props => {
           style={{
             flexDirection: 'row',
             backgroundColor: Colors.white,
-            borderRadius: 8
+            borderRadius: 8,
+            justifyContent: 'space-between'
           }}
         >
           <TouchableWithoutFeedback onPress={() => handlePressProductItem(item)}>
@@ -454,7 +466,7 @@ const PayPage = props => {
           <View
             style={{
               width: windowWith / 2,
-              paddingHorizontal: 16,
+              paddingHorizontal: 8,
               paddingVertical: 12,
               backgroundColor: Colors.white
             }}
@@ -512,7 +524,6 @@ const PayPage = props => {
               // onPress={() => handleDeleteFromList(attributes, product_Name)}
               onPress={() => handleDeleteFromList(attributes_id, product_Name)}
               style={{
-                flexDirection: 'row',
                 alignItems: 'center',
                 width: '100%',
                 padding: 16
@@ -528,31 +539,17 @@ const PayPage = props => {
   // render List product
   const ListItemCart = () => {
     return (
-      <View>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={false}
-          data={storageData}
-          renderItem={ItemCarts}
-        />
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            backgroundColor: Colors.white,
-            marginTop: 24,
-            padding: 12,
-            elevation: 2,
-            shadowColor: Colors.gray
-          }}
-        ></View>
-      </View>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
+        data={storageData}
+        renderItem={ItemCarts}
+      />
     )
   }
   const orderDetails = () => {
     return (
-      <View style={{ flex: 1, paddingHorizontal: 16 }}>
+      <View style={{ width: '100%', height: '100%', paddingHorizontal: 16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}>
           <TouchableOpacity onPress={() => setShowOrderDetails(!showOrderDetails)}>
             <Icons.Feather name="x" size={32} />
@@ -598,7 +595,8 @@ const PayPage = props => {
           {user ? hasUser() : noUser()}
         </View>
       ) : (
-        orderDetails()
+        // orderDetails()
+        <View>{orderDetails()}</View>
       )}
     </ScrollView>
   )

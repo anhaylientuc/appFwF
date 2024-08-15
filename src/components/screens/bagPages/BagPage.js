@@ -277,6 +277,12 @@ const BagPage = props => {
     )
   }
 
+  const handlePayPage = () => {
+    navigation.navigate('PayPage', {
+      shippingFee: transportFee
+    })
+  }
+
   // No cart to Bag
   const noCart = () => {
     return (
@@ -823,11 +829,7 @@ const BagPage = props => {
         </View>
         {cart ? (
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('PayPage', {
-                shippingFee: transportFee
-              })
-            }
+            onPress={() => handlePayPage()}
             style={{
               paddingVertical: 16,
               backgroundColor: Colors.black2,

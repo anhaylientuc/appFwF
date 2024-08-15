@@ -64,7 +64,7 @@ const MyChecks = props => {
       <View style={[styles.container_method, { marginTop: 16 }]}>
         <View />
         <TouchableOpacity
-          onPress={() => check()}
+          onPress={() => navigation.navigate('SendOrders', { order: order })}
           style={{ flexDirection: 'row', alignItems: 'center' }}
         >
           <Text style={styles.txt_description}>Thanh toán khi nhận hàng</Text>

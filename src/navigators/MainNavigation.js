@@ -8,6 +8,7 @@ import BagPage from 'src/components/screens/bagPages/BagPage'
 import MyChecks from 'src/components/screens/bagPages/MyChecks'
 import PayPage from 'src/components/screens/bagPages/PayPage'
 import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
+import SendOrders from 'src/components/screens/bagPages/SendOrders'
 import WebViewPayment from 'src/components/screens/bagPages/WebViewPayment'
 import Favorites from 'src/components/screens/favoritesPage/Favorites'
 import HomePage from 'src/components/screens/homePages/HomePage'
@@ -120,6 +121,7 @@ function MainNavigator() {
           options={{ title: 'WebViewPayment' }}
         />
         <Stack.Screen name="MyAddress" component={MyAddress} />
+        <Stack.Screen name="SendOrders" component={SendOrders} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
       </Stack.Navigator>
     )
