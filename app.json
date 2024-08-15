@@ -1,6 +1,6 @@
 {
   "expo": {
-    "scheme": "your-custom-scheme",
+    "scheme": "myapp",
     "name": "MyReactNative",
     "slug": "MyReactNative",
     "version": "1.0.0",
@@ -8,7 +8,25 @@
     "permissions": ["LOCATION"],
     "plugins": ["expo-font", "expo-router"],
     "android": {
-      "package": "com.thevysport.MyReactNative"
+      "package": "com.thevysport.MyReactNative",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "example.com"
+            },
+            {
+              "scheme": "myapp",
+              "host": "app",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+      
     }
   },
   "name": "MyReactNative"

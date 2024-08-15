@@ -4,6 +4,8 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import PaymentHTTP from 'src/utils/http/PaymentHTTP'
+import * as Linking from 'expo-linking';
+
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
@@ -76,6 +78,18 @@ const MyChecks = props => {
           />
         </TouchableOpacity>
       </View>
+      <TouchableOpacity onPress={() => {
+        try {
+          console.log('ok2')
+          Linking.openURL('myapp://app/PaymentResult')
+        } catch (error) {
+          console.log(error)
+        }
+
+      }
+      }>
+        <Text>ok</Text>
+      </TouchableOpacity>
       <View
         style={{
           flexDirection: 'row',
