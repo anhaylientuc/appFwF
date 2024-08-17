@@ -5,7 +5,7 @@ import { WebView } from 'react-native-webview';
 import * as Linking from 'expo-linking';
 
 const WebViewPayment = ({ route, navigation }) => {
-  const { res } = route.params;
+  const { res, orderId } = route.params
 
   const handleNavigationChange = (navState) => {
     try {

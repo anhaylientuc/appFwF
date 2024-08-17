@@ -59,8 +59,6 @@ const PayPage = props => {
 
   useEffect(() => {
     if (user) {
-      console.log(storageData)
-
       user.shipping.map(item => {
         if (item.selected == true) {
           setshipping(item)
@@ -117,7 +115,7 @@ const PayPage = props => {
       }
       const res = await OrderHTTP.insert(body)
       setOrder(res)
-      navigation.navigate('MyChecks', { order: order })
+      navigation.navigate('MyChecks', { order: order, orderId: res._id })
       return res
     } catch (error) {
       // Kiểm tra phản hồi lỗi từ server
@@ -607,7 +605,8 @@ export default PayPage
 const styles = StyleSheet.create({
   txt_description: {
     fontSize: 12,
-    fontFamily: 'Montserrat-Medium'
+    fontFamily: 'Montserrat-Medium',
+    flexWrap: 'wrap'
   },
   txt_description_items: {
     fontSize: 12,

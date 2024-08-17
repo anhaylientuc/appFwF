@@ -12,41 +12,89 @@ import { View } from 'react-native-picasso'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
+import Names from 'src/constants/Names'
 import { formatCurrency } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
-
+import OrderHTTP from 'src/utils/http/OrderHTTP'
 const SendOrders = props => {
-  const {
-    navigation,
-    route: {
-      params: { order }
-    }
-  } = props
+  const { navigation, route } = props
+  const { order } = route.params
   const { user, setUser } = useContext(UserContext)
   const [openOder, setopenOder] = useState(false)
   const [shipping, setshipping] = useState({})
   const [oderCarts, setoderCarts] = useState([])
+  const [vnp_CardType, setvnp_CardType] = useState('')
+  const [vnp_PayDate, setvnp_PayDate] = useState('')
+  const [vnp_OrderInfo, setvnp_OrderInfo] = useState('')
 
   useEffect(() => {
-    user.shipping.map(item => {
-      if (item.selected == true) {
-        setshipping(item)
-      }
-    })
-    if (order) {
-      setoderCarts(order.carts)
-    }
-  }, [user, shipping])
-  console.log('order>>>: ', JSON.stringify(oderCarts, null, 2))
-  const renderItem = ({ item, index }) => {
-    const { image, product_Name, base_price, color, size, code, newPrice, quantity } = item
-    const formattedBase_price = formatCurrency(base_price)
-    const formattedNewPrice = formatCurrency(newPrice)
-    return (
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Image source={{ uri: image }} style={{ width: 100, height: 100, flex: 1 }} />
+    const fetchData = async () => {
+      const {
+        vnp_Amount,
+        vnp_BankCode,
+        vnp_BankTranNo,
+        vnp_CardType,
+        vnp_OrderInfo,
+        vnp_PayDate,
+        vnp_ResponseCode,
+        vnp_SecureHash,
+        vnp_TmnCode,
+        vnp_TransactionNo,
+        vnp_TransactionStatus,
+        vnp_TxnRef
+      } = route.params
 
-        <View style={{ flex: 3 }}>
+      const payment = {
+        amount: vnp_Amount,
+        bankCode: vnp_BankCode,
+        bankTranNo: vnp_BankTranNo,
+        cardType: vnp_CardType,
+        orderInfo: vnp_OrderInfo,
+        payDate: vnp_PayDate,
+        responseCode: vnp_ResponseCode,
+        secureHash: vnp_SecureHash,
+        tmnCode: vnp_TmnCode,
+        transactionNo: vnp_TransactionNo,
+        transactionStatus: vnp_TransactionStatus,
+        txnRef: vnp_TxnRef
+      }
+      const res = await OrderHTTP.update(payment.orderInfo, { payment })
+      setvnp_CardType(payment.cardType)
+      setoderCarts(res.carts)
+      // console.log(JSON.stringify(res, null, 2))
+      user.shipping.map(item => {
+        if (item.selected == true) {
+          setshipping(item)
+        }
+      })
+      if (order) {
+        setoderCarts(order.carts)
+        console.log('====================================')
+        console.log(order.carts)
+      }
+    }
+    fetchData()
+  }, [user, shipping])
+
+  const renderItem = ({ item, index }) => {
+    const { image, product_Name, base_price, color, size, code, quantity } = item
+    const formattedBase_price = formatCurrency(base_price)
+    const formattedNewPrice = formatCurrency(base_price * quantity)
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginVertical: 16
+        }}
+      >
+        <Image
+          source={{ uri: image }}
+          style={{ width: '100%', height: 134, flex: 1, resizeMode: 'center' }}
+        />
+
+        <View style={{ flex: 2 }}>
           <Text style={[styles.txt_title, { fontSize: 14 }]}>{product_Name}</Text>
           <Text style={[styles.txt_title, { fontSize: 14 }]}>{formattedBase_price}</Text>
           <View style={{ height: 16 }} />
@@ -61,7 +109,7 @@ const SendOrders = props => {
             </View>
             <View style={{ flexDirection: 'row', marginTop: 2 }}>
               <Text style={styles.txt_description_carts}>Màu sắc:</Text>
-              <Text style={styles.txt_description_carts}>{color}</Text>
+              <Text style={styles.txt_description_carts}>{Names[color]}</Text>
             </View>
             <View style={{ flexDirection: 'row', marginTop: 2 }}>
               <Text style={styles.txt_description_carts}>Kích cỡ:</Text>
@@ -73,7 +121,6 @@ const SendOrders = props => {
             </View>
           </View>
         </View>
-        {/* <View style={{ flex: 1 }} /> */}
       </View>
     )
   }
@@ -86,9 +133,17 @@ const SendOrders = props => {
           <Text style={styles.txtTitleProfile}>Email</Text>
           <Text style={styles.txtUserName}>{user.email}</Text>
           <Text style={styles.txtTitleProfile}>Phương thức thanh toán</Text>
-          <Text style={styles.txtUserName}>okok</Text>
+          {vnp_CardType ? (
+            <Text style={styles.txtUserName}>Thanh toán bằng thẻ {vnp_CardType}</Text>
+          ) : (
+            <Text style={styles.txtUserName}>Thanh toán bằng tiền mặt</Text>
+          )}
           <Text style={styles.txtTitleProfile}>Ngày đặt hàng</Text>
-          <Text style={styles.txtUserName}>20/08/2024</Text>
+          {vnp_PayDate ? (
+            <Text style={styles.txtUserName}>{vnp_PayDate}</Text>
+          ) : (
+            <Text style={styles.txtUserName}>20/08/2024</Text>
+          )}
           <View>
             <Text style={styles.txtTitleProfile}>Số điện thoại liên hệ</Text>
             <Text style={styles.txtUserName}>84+ {user.phoneNumber}</Text>
@@ -177,8 +232,8 @@ const SendOrders = props => {
         <TouchableOpacity
           style={{ backgroundColor: Colors.black2, paddingVertical: 16, marginTop: 16 }}
         >
-          {openOder ? (
-            <TouchableOpacity onPress={() => setopenOder(false)}>
+          <TouchableOpacity onPress={() => setopenOder(!openOder)}>
+            {openOder ? (
               <Text
                 style={[
                   styles.txt_title,
@@ -187,9 +242,7 @@ const SendOrders = props => {
               >
                 Ẩn xác nhận đơn hàng
               </Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={() => setopenOder(true)}>
+            ) : (
               <Text
                 style={[
                   styles.txt_title,
@@ -198,8 +251,8 @@ const SendOrders = props => {
               >
                 Xem xác nhận đơn hàng
               </Text>
-            </TouchableOpacity>
-          )}
+            )}
+          </TouchableOpacity>
         </TouchableOpacity>
         <Pressable style={{ marginTop: 16, alignItems: 'center' }}>
           <Text
