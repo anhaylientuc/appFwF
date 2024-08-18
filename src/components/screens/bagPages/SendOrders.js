@@ -12,20 +12,22 @@ import { View } from 'react-native-picasso'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
-import Names from 'src/constants/Names'
-import { formatCurrency } from 'src/contexts/StorageProvider'
+import { formatCurrency, formatDate, useStorage } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import OrderHTTP from 'src/utils/http/OrderHTTP'
 const SendOrders = props => {
   const { navigation, route } = props
   const { order } = route.params
   const { user, setUser } = useContext(UserContext)
+  const { storageData, setStorageData } = useStorage()
   const [openOder, setopenOder] = useState(false)
   const [shipping, setshipping] = useState({})
   const [oderCarts, setoderCarts] = useState([])
   const [vnp_CardType, setvnp_CardType] = useState('')
   const [vnp_PayDate, setvnp_PayDate] = useState('')
   const [vnp_OrderInfo, setvnp_OrderInfo] = useState('')
+  const [vnp_TransactionNo, setvnp_TransactionNo] = useState('')
+  const [amount, setamount] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,21 +62,30 @@ const SendOrders = props => {
       }
       const res = await OrderHTTP.update(payment.orderInfo, { payment })
       setvnp_CardType(payment.cardType)
+      setvnp_OrderInfo(payment.orderInfo)
+      setvnp_TransactionNo(payment.tmnCode)
+      setvnp_PayDate(payment.payDate)
+      setamount(res.amount)
       setoderCarts(res.carts)
-      // console.log(JSON.stringify(res, null, 2))
       user.shipping.map(item => {
         if (item.selected == true) {
           setshipping(item)
         }
       })
       if (order) {
-        setoderCarts(order.carts)
-        console.log('====================================')
-        console.log(order.carts)
+        setoderCarts(res.carts)
       }
     }
     fetchData()
   }, [user, shipping])
+
+  const formattedDate = formatDate(vnp_PayDate)
+  const formattedAmount = formatCurrency(amount)
+  const calculateTotalBasePrice = oderCarts => {
+    return oderCarts.reduce((total, product) => total + product.base_price, 0)
+  }
+  const totalBasePrice = calculateTotalBasePrice(oderCarts)
+  const formattedBase_price = formatCurrency(totalBasePrice)
 
   const renderItem = ({ item, index }) => {
     const { image, product_Name, base_price, color, size, code, quantity } = item
@@ -109,7 +120,7 @@ const SendOrders = props => {
             </View>
             <View style={{ flexDirection: 'row', marginTop: 2 }}>
               <Text style={styles.txt_description_carts}>Màu sắc:</Text>
-              <Text style={styles.txt_description_carts}>{Names[color]}</Text>
+              <Text style={styles.txt_description_carts}>{color}</Text>
             </View>
             <View style={{ flexDirection: 'row', marginTop: 2 }}>
               <Text style={styles.txt_description_carts}>Kích cỡ:</Text>
@@ -129,7 +140,9 @@ const SendOrders = props => {
     return (
       <View>
         <View style={{ backgroundColor: Colors.white, padding: 16, marginTop: 32 }}>
-          <Text style={[styles.txt_title, { textAlign: 'center' }]}>Chi tiết đơn hàng - Code</Text>
+          <Text style={[styles.txt_title, { textAlign: 'center' }]}>
+            Chi tiết đơn hàng - {vnp_TransactionNo}
+          </Text>
           <Text style={styles.txtTitleProfile}>Email</Text>
           <Text style={styles.txtUserName}>{user.email}</Text>
           <Text style={styles.txtTitleProfile}>Phương thức thanh toán</Text>
@@ -139,11 +152,7 @@ const SendOrders = props => {
             <Text style={styles.txtUserName}>Thanh toán bằng tiền mặt</Text>
           )}
           <Text style={styles.txtTitleProfile}>Ngày đặt hàng</Text>
-          {vnp_PayDate ? (
-            <Text style={styles.txtUserName}>{vnp_PayDate}</Text>
-          ) : (
-            <Text style={styles.txtUserName}>20/08/2024</Text>
-          )}
+          <Text style={styles.txtUserName}>{formattedDate}</Text>
           <View>
             <Text style={styles.txtTitleProfile}>Số điện thoại liên hệ</Text>
             <Text style={styles.txtUserName}>84+ {user.phoneNumber}</Text>
@@ -162,7 +171,9 @@ const SendOrders = props => {
           </View>
         </View>
         <View style={{ marginTop: 32, backgroundColor: Colors.grayBg }}>
-          <Text style={[styles.txt_title, { textAlign: 'center' }]}>Tóm tắt đơn hàng - Code</Text>
+          <Text style={[styles.txt_title, { textAlign: 'center' }]}>
+            Tóm tắt đơn hàng - {vnp_TransactionNo}
+          </Text>
           <Text style={[styles.txt_description, { textAlign: 'center', marginTop: 4 }]}>
             Thời gian giao hàng: 3-7 NGÀY LÀM VIỆC
           </Text>
@@ -173,7 +184,7 @@ const SendOrders = props => {
         <View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={styles.txt_title}>Giá trị sản phẩm</Text>
-            <Text style={styles.txt_title}>Giá trị sản phẩm</Text>
+            <Text style={styles.txt_title}>{formattedBase_price}</Text>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={styles.txt_title}>Phí giao hàng</Text>
@@ -182,7 +193,7 @@ const SendOrders = props => {
           <View style={{ borderBottomWidth: 1, borderColor: Colors.black2, marginVertical: 16 }} />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
             <Text style={styles.txt_title}>Tổng</Text>
-            <Text style={styles.txt_title}>Phờ ri</Text>
+            <Text style={styles.txt_title}>{formattedAmount}</Text>
           </View>
           <View style={{ marginVertical: 32 }}>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -304,7 +315,7 @@ export default SendOrders
 const styles = StyleSheet.create({
   txtSetting: {
     marginTop: 8,
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Montserrat-SemiBold',
     width: '100%',
     textAlign: 'center'
@@ -327,7 +338,7 @@ const styles = StyleSheet.create({
   txtUserName: {
     color: Colors.black,
     fontFamily: 'Montserrat-Medium',
-    fontSize: 12,
+    fontSize: 10,
     marginTop: 4
   },
   container_oder: {
@@ -337,7 +348,7 @@ const styles = StyleSheet.create({
   txt_description_carts: {
     color: Colors.black2,
     fontFamily: 'Montserrat-Medium',
-    fontSize: 12,
+    fontSize: 10,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     flex: 1
@@ -345,10 +356,10 @@ const styles = StyleSheet.create({
   txt_description: {
     color: Colors.black2,
     fontFamily: 'Montserrat-Medium',
-    fontSize: 12
+    fontSize: 10
   },
   txt_title: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Montserrat-SemiBold',
     color: Colors.black2
   },

@@ -184,9 +184,6 @@ const BagPage = props => {
       console.log('Error response:', error)
     }
   }
-  // if (myOrder) {
-  //   console.log('order', JSON.stringify(myOrder, null, 2))
-  // }
 
   // Logic: onclick Open Bottom Sheet Modal
   const handlePresentModal = () => {
@@ -764,14 +761,14 @@ const BagPage = props => {
         >
           <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
             <MyText style={{ fontSize: 12 }}>Giá trị đơn hàng</MyText>
-            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 12 }}>
+            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 10 }}>
               {formattedCurrency}
             </MyText>
           </View>
           <View style={{ height: 8 }} />
           <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
             <MyText style={{ fontSize: 12 }}>Phí giao hàng</MyText>
-            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 12 }}>
+            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 10 }}>
               {formattedTransportfee}
             </MyText>
           </View>
@@ -889,7 +886,7 @@ const BagPage = props => {
                 color: Colors.white,
                 textAlign: 'center',
                 fontWeight: '500',
-                fontSize: 14
+                fontSize: 12
               }}
             >
               Tiếp tục thanh toán
@@ -1053,7 +1050,7 @@ const styles = StyleSheet.create({
   txt_header: {
     marginStart: 32,
     fontWeight: '600',
-    fontSize: 20
+    fontSize: 16
   },
   header: {
     backgroundColor: Colors.white,
@@ -1062,7 +1059,7 @@ const styles = StyleSheet.create({
   btn_apply_txt: {
     color: Colors.white,
     textAlign: 'center',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '500'
   },
   btn_apply: {

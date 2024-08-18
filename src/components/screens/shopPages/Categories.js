@@ -23,7 +23,6 @@ const Categories = props => {
         setnameCategories(response.name)
       } catch (error) {
         console.log(error)
-        throw error
       }
     }
     fetchData()

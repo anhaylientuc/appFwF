@@ -74,8 +74,7 @@ export const getFilter = async query => {
     const response = await axiosInstance.get(url)
     return response
   } catch (error) {
-    console.log('cc', error)
-    throw error
+    console.log('error', error)
   }
 }
 

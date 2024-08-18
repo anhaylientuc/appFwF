@@ -135,7 +135,7 @@ const PayPage = props => {
             borderRadius: 8
           }}
         >
-          <View style={{ backgroundColor: Colors.grayBg }}>
+          <View style={{ backgroundColor: Colors.white }}>
             <Image
               style={{
                 width: 104,
@@ -179,7 +179,7 @@ const PayPage = props => {
     return (
       <View>
         <View style={{ backgroundColor: Colors.white, padding: 16 }}>
-          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>Thông tin của tôi</Text>
+          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 14 }}>Thông tin của tôi</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ marginTop: 16 }}>
               <Text style={styles.txt_description}>{user.username}</Text>
@@ -190,7 +190,7 @@ const PayPage = props => {
         </View>
 
         <View style={{ backgroundColor: Colors.white, padding: 16, marginTop: 16 }}>
-          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>Địa chỉ giao hàng</Text>
+          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 14 }}>Địa chỉ giao hàng</Text>
           {!user ? (
             <TouchableOpacity
               style={{ backgroundColor: Colors.black, padding: 16, marginVertical: 16 }}
@@ -227,18 +227,25 @@ const PayPage = props => {
                       (84+) {user.phoneNumber}
                     </Text>
                   </View>
-                  <View style={{ height: 4 }} />
-                  <Text style={styles.txt_description}>{shipping.name}</Text>
-                  <View style={{ height: 4 }} />
-                  <Text style={styles.txt_description}>{shipping.address}</Text>
-                  <View style={{ height: 4 }} />
-                  <View style={{ flexDirection: 'row', gap: 4 }}>
-                    <Text style={styles.txt_description}>{shipping.ward}</Text>
-
-                    <Text style={styles.txt_description}>{shipping.district}</Text>
-                    <Text style={styles.txt_description}>{shipping.city}</Text>
+                  <View>
+                    <View style={{ height: 4 }} />
+                    <Text style={styles.txt_description}>{shipping.name}</Text>
+                    <View style={{ height: 4 }} />
+                    <Text style={styles.txt_description}>{shipping.address}</Text>
+                    <View style={{ height: 4 }} />
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                      <Text style={[styles.txt_description, { marginEnd: 4 }]}>
+                        {shipping.ward}
+                      </Text>
+                      <Text style={[styles.txt_description, { marginEnd: 4 }]}>
+                        {shipping.district}
+                      </Text>
+                      <Text style={[styles.txt_description, { marginEnd: 4 }]}>
+                        {shipping.city}
+                      </Text>
+                    </View>
+                    <Text style={styles.txt_description}>{shipping.zipCode}</Text>
                   </View>
-                  <Text style={styles.txt_description}>{shipping.zipCode}</Text>
                 </View>
               </View>
               <TouchableOpacity onPress={() => navigation.navigate('MyAddress')}>
@@ -259,7 +266,7 @@ const PayPage = props => {
               <View style={{ flexDirection: 'row' }}>
                 <Icons.Feather name={'box'} size={24} />
                 <View style={{ marginStart: 16 }}>
-                  <Text style={[styles.txt_title, { fontSize: 16 }]}>Bưu kiện</Text>
+                  <Text style={[styles.txt_title, { fontSize: 14 }]}>Bưu kiện</Text>
                   <Text style={[styles.txt_description, { fontSize: 12, marginTop: 8 }]}>
                     {storageData.length} sản phẩm
                   </Text>
@@ -269,15 +276,12 @@ const PayPage = props => {
                 onPress={() => setShowOrderDetails(!showOrderDetails)}
                 style={{ flexDirection: 'row' }}
               >
-                <Text style={[styles.txt_description, { fontSize: 14 }]}>Chi tiết đơn hàng</Text>
+                <Text style={[styles.txt_description, { fontSize: 12 }]}>Chi tiết đơn hàng</Text>
                 <Icons.MaterialIcons name={'navigate-next'} size={20} style={{ marginStart: 8 }} />
               </TouchableOpacity>
             </View>
             {shortlist()}
           </View>
-        </View>
-        <View>
-          <Text>Thanh toán</Text>
         </View>
 
         <View style={{ padding: 16, backgroundColor: Colors.white }}>
@@ -352,7 +356,7 @@ const PayPage = props => {
             style={{ padding: 16, backgroundColor: Colors.black, marginTop: 28 }}
           >
             <Text
-              style={[styles.txt_title, { fontSize: 16, textAlign: 'center', color: Colors.white }]}
+              style={[styles.txt_title, { fontSize: 12, textAlign: 'center', color: Colors.white }]}
             >
               Hoàn tất thanh toán
             </Text>
@@ -604,18 +608,17 @@ export default PayPage
 
 const styles = StyleSheet.create({
   txt_description: {
-    fontSize: 12,
-    fontFamily: 'Montserrat-Medium',
-    flexWrap: 'wrap'
+    fontSize: 10,
+    fontFamily: 'Montserrat-Medium'
   },
   txt_description_items: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Montserrat-Medium',
     color: Colors.black,
     flex: 1
   },
   txt_title: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Montserrat-SemiBold'
   },
 
