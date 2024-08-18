@@ -60,16 +60,18 @@ const DetailFilter = (props) => {
         if (!Array.isArray(child))
           return;
         console.log('>>>', child)
-
-        // const newChild = child.map(item => {
-        //   if (keySelected == 'Màu sắc') {
-        //     const newVal = item.value.split(',')
-        //     return { ...item, value: newVal[0], color: newVal[1]}
-        //   }
-        //   return {...item}
-        // })
-        // console.log(newChild)
-        setvalues(child);
+        if (filterState instanceof Map && filterState.has(keySelected)) {
+          const filter = filterState.get(keySelected)
+          console.log('filter', filter)
+          const newChild = child.map(item => {
+            const result = filter.includes(item.value)
+            return { ...item, selected: result }
+          })
+          console.log(newChild)
+          setvalues(newChild)
+        }
+        else
+          setvalues(child);
 
         // fetchValues()
         // const newHashMap = new Map();
@@ -138,7 +140,8 @@ const DetailFilter = (props) => {
 
       const updatedHashmap = new Map(filterState);
       updatedHashmap.set(keySelected, newValues);
-      if (newValues.length == 0) updatedHashmap.delete(keySelected);
+      if (newValues.length == 0)
+        updatedHashmap.delete(keySelected);
       console.log(updatedHashmap)
       setFilterState(updatedHashmap);
       console.log(filterState)
@@ -162,17 +165,25 @@ const DetailFilter = (props) => {
       setloading(true);
 
       const attr = [];
-      for (const [key, value] of filterState.entries()) {
-        attr.push({
-          key: key,
-          value: value,
-        });
-      }
       var newQs = qs.parse(queryString);
+      for (const [key, value] of filterState.entries()) {
+        if (key == 'Giá') {
+          newQs.minPrice = value[0]
+          newQs.maxPrice = value[1]
+        }
+        else {
+          attr.push({
+            key: key,
+            value: value,
+          });
+        }
+
+      }
+
       newQs = { ...newQs, attributes: attr };
       newQs = qs.stringify(newQs);
       const res = await NewHTTP.getFilter(newQs);
-      console.log(newQs)
+
       const { _attributes, _products } = res;
       setproducts(_products);
     } catch (error) {
@@ -231,7 +242,7 @@ const DetailFilter = (props) => {
               fontFamily={'Montserrat-SemiBold'}
               style={{ fontSize: 20, flex: 2, textAlign: 'center' }}
             >
-              Detail
+              {keySelected}
             </MyText>
             <View style={{ flex: 1 }}>
               {myHashMap instanceof Map && myHashMap.has(keySelected) && (
@@ -245,7 +256,10 @@ const DetailFilter = (props) => {
           {values.map((item, index) => {
             const { value } = item
             return (
-              <View key={index} style={styles.section}>
+              <View key={index} style={[styles.section,
+              { backgroundColor: values[index].selected ? Colors.lightgoldenrodyellow : 'white', width: '100%', },
+              values[index].quantity==0?{ opacity: 0.3, pointerEvents: 'none' }:null
+              ]} >
                 <TouchableOpacity
 
                   style={styles.checkboxContainer}
@@ -258,7 +272,15 @@ const DetailFilter = (props) => {
                   <Text style={{ marginStart: 16 }}>{Names[value] ? Names[value] : value}</Text>
                   {
                     keySelected == 'Màu sắc' ?
-                      <View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: Colors[value] ? Colors[value] : 'white', alignItems: 'center', marginLeft: 5 }}>
+                      <View style={{
+                        width: 14,
+                        height: 14,
+                        borderRadius: 7,
+                        borderColor: 'black',
+                        borderWidth: 1,
+                        backgroundColor: Colors[value] ? Colors[value] : 'white',
+                        alignItems: 'center', marginLeft: 5
+                      }}>
 
                       </View> : null
                   }
@@ -311,6 +333,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+
   },
   paragraph: {
     fontSize: 15,
