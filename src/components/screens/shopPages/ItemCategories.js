@@ -339,7 +339,7 @@ const ItemCategories = (props) => {
         newMap.set(key, []);
       }
       if(key=='Giá')
-        newMap.set(key,value)
+        newMap.set(key,price)
       else
         newMap.get(key).push(value)
     })
