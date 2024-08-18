@@ -28,7 +28,7 @@ const SendOrders = props => {
   const [vnp_OrderInfo, setvnp_OrderInfo] = useState('')
   const [vnp_TransactionNo, setvnp_TransactionNo] = useState('')
   const [amount, setamount] = useState('')
-
+  const [transportFee, setTransportFee] = useState('')
   useEffect(() => {
     const fetchData = async () => {
       const {
@@ -61,12 +61,19 @@ const SendOrders = props => {
         txnRef: vnp_TxnRef
       }
       const res = await OrderHTTP.update(payment.orderInfo, { payment })
+      console.log(JSON.stringify(res, null, 2))
       setvnp_CardType(payment.cardType)
       setvnp_OrderInfo(payment.orderInfo)
-      setvnp_TransactionNo(payment.tmnCode)
+      setvnp_TransactionNo(payment.transactionNo)
       setvnp_PayDate(payment.payDate)
       setamount(res.amount)
+      if (res.amount <= 499000) {
+        setTransportFee(49000)
+      } else {
+        setTransportFee(0)
+      }
       setoderCarts(res.carts)
+
       user.shipping.map(item => {
         if (item.selected == true) {
           setshipping(item)
@@ -81,6 +88,7 @@ const SendOrders = props => {
 
   const formattedDate = formatDate(vnp_PayDate)
   const formattedAmount = formatCurrency(amount)
+  const formattedTransportfee = formatCurrency(transportFee)
   const calculateTotalBasePrice = oderCarts => {
     return oderCarts.reduce((total, product) => total + product.base_price, 0)
   }
@@ -186,9 +194,13 @@ const SendOrders = props => {
             <Text style={styles.txt_title}>Giá trị sản phẩm</Text>
             <Text style={styles.txt_title}>{formattedBase_price}</Text>
           </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
             <Text style={styles.txt_title}>Phí giao hàng</Text>
-            <Text style={styles.txt_title}>Phờ ri</Text>
+            {transportFee === 0 ? (
+              <Text style={styles.txt_title}>Miễn Phí</Text>
+            ) : (
+              <Text style={styles.txt_title}>{formattedTransportfee}</Text>
+            )}
           </View>
           <View style={{ borderBottomWidth: 1, borderColor: Colors.black2, marginVertical: 16 }} />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>

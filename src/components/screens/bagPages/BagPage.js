@@ -82,13 +82,17 @@ const BagPage = props => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     setCart(...storageData)
     setPrice(totalBasePrice)
-    setTransportFee(49000)
+    if (allBasePrices <= 499000) {
+      setTransportFee(49000)
+    } else {
+      setTransportFee(0)
+    }
+
     setMyOrder({
       ...myOrder,
       user: user,
       carts: storageData,
       amount: totalPrices
-      // shipping: { shippingAddress }
     })
   }, [storageData])
   // set sate Bottom sheet to useRef
@@ -158,7 +162,6 @@ const BagPage = props => {
 
     return total
   }
-  console.log('storageData', JSON.stringify(storageData, null, 2))
 
   const handlePayPage = async () => {
     try {
@@ -768,9 +771,15 @@ const BagPage = props => {
           <View style={{ height: 8 }} />
           <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
             <MyText style={{ fontSize: 12 }}>Phí giao hàng</MyText>
-            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 10 }}>
-              {formattedTransportfee}
-            </MyText>
+            {transportFee === 0 ? (
+              <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 10 }}>
+                Miễn Phí
+              </MyText>
+            ) : (
+              <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 10 }}>
+                {formattedTransportfee}
+              </MyText>
+            )}
           </View>
         </View>
 

@@ -332,7 +332,11 @@ const PayPage = props => {
             >
               <Text style={styles.txt_description}>Phí vận chuyển</Text>
               <View>
-                <Text style={[styles.txt_description]}>{formattedShippingFee}</Text>
+                {shippingFee === 0 ? (
+                  <Text style={[styles.txt_description]}>Miễn Phí</Text>
+                ) : (
+                  <Text style={[styles.txt_description]}>{formattedShippingFee}</Text>
+                )}
               </View>
             </View>
           </View>
