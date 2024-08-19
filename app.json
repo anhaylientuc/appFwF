@@ -4,9 +4,17 @@
     "name": "MyReactNative",
     "slug": "MyReactNative",
     "version": "1.0.0",
-    "platforms": ["ios", "android"],
-    "permissions": ["LOCATION"],
-    "plugins": ["expo-font", "expo-router"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "permissions": [
+      "LOCATION"
+    ],
+    "plugins": [
+      "expo-font",
+      "expo-router"
+    ],
     "android": {
       "package": "com.thevysport.MyReactNative",
       "intentFilters": [
@@ -23,10 +31,20 @@
               "pathPrefix": "/"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
-      
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "3b1c36c7-cb25-4684-8299-f109588aab56"
+      }
     }
   },
   "name": "MyReactNative"
