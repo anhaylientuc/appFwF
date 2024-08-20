@@ -34,8 +34,7 @@ const SettingProfile = () => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          paddingHorizontal: 12,
-          paddingVertical: 16
+          padding: 16
         }}
       >
         <TouchableOpacity onPress={() => navigation.goBack()} style={{ flex: 1 }}>
@@ -44,12 +43,19 @@ const SettingProfile = () => {
         <Text style={styles.txtHeader}>Cài đặt của tôi</Text>
         <View style={{ flex: 1 }} />
       </View>
-      <MyText style={{ textAlign: 'center', fontSize: 12, marginVertical: 8 }}>
-        Bạn có thể quản lý tài khoản và các đăng ký khác tại đây
-      </MyText>
 
-      <View style={{ padding: 16 }}>
-        <Text style={{ textAlign: 'left', fontSize: 14, fontFamily: 'Montserrat-SemiBold' }}>
+      <View style={{ paddingHorizontal: 20 }}>
+        <Text
+          style={{
+            textAlign: 'center',
+            fontSize: 12,
+            marginVertical: 16,
+            fontFamily: 'Montserrat-Medium'
+          }}
+        >
+          Bạn có thể quản lý tài khoản và các đăng ký khác tại đây
+        </Text>
+        <Text style={{ textAlign: 'left', fontSize: 12, fontFamily: 'Montserrat-SemiBold' }}>
           SUỴT! Đừng quyên hoàn tất đăng ký của bạn
         </Text>
         <MyText style={{ textAlign: 'left', fontSize: 12, marginVertical: 8 }}>
@@ -62,7 +68,7 @@ const SettingProfile = () => {
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ fontSize: 14, fontFamily: 'Montserrat-SemiBold' }}>
+            <Text style={{ fontSize: 12, fontFamily: 'Montserrat-SemiBold' }}>
               Thông tin cá nhân
             </Text>
             <View
@@ -103,7 +109,7 @@ const SettingProfile = () => {
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ fontSize: 14, fontFamily: 'Montserrat-SemiBold' }}>
+            <Text style={{ fontSize: 12, fontFamily: 'Montserrat-SemiBold' }}>
               Danh sách địa chỉ
             </Text>
           </View>
@@ -136,7 +142,7 @@ const SettingProfile = () => {
             {/* <Text style={styles.txt_description}>Người nhận: {shipping.name}</Text> */}
             <View style={{ marginTop: 4 }}>
               <Text style={styles.txt_description}>{shipping.address}</Text>
-              <View style={{ flexDirection: 'row' }}>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                 <Text style={[styles.txt_description, { marginEnd: 4 }]}>{shipping.ward}</Text>
                 <Text style={[styles.txt_description, { marginEnd: 4 }]}>{shipping.district}</Text>
                 <Text style={[styles.txt_description, { marginEnd: 4 }]}>{shipping.city}</Text>
@@ -158,24 +164,24 @@ const styles = StyleSheet.create({
   txtUserName: {
     color: Colors.black,
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 12,
+    fontSize: 10,
     marginTop: 8
   },
   txt_title: {
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 14
+    fontSize: 12
   },
   txt_description: {
     marginTop: 4,
     color: Colors.black,
     fontFamily: 'Montserrat-Medium',
-    fontSize: 12
+    fontSize: 10
   },
   txtTitleProfile: {
     marginTop: 16,
     color: Colors.black,
     fontFamily: 'Montserrat-Medium',
-    fontSize: 12
+    fontSize: 10
   },
   txtHeader: {
     textAlign: 'center',

@@ -58,24 +58,26 @@ const PayPage = props => {
   const formattedTotalPrices = formatCurrency(totalPrices)
 
   useEffect(() => {
-    user.shipping.map(item => {
-      if (item.selected == true) {
-        setshipping(item)
+    if (user) {
+      user.shipping.map(item => {
+        if (item.selected == true) {
+          setshipping(item)
+        }
+      })
+      if (storageData.length === 0) {
+        goBack()
+      } else {
+        navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
       }
-    })
-    if (storageData.length === 0) {
-      goBack()
-    } else {
-      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-    }
 
-    setOrder({
-      ...order,
-      amount: totalPrices,
-      carts: storageData,
-      user: user
-      // shipping: { shippingAddress }
-    })
+      setOrder({
+        ...order,
+        amount: totalPrices,
+        carts: storageData,
+        user: user
+        // shipping: { shippingAddress }
+      })
+    }
   }, [storageData])
 
   const showToastDeleted = title => {
@@ -113,7 +115,7 @@ const PayPage = props => {
       }
       const res = await OrderHTTP.insert(body)
       setOrder(res)
-      navigation.navigate('MyChecks', { order: order })
+      navigation.navigate('MyChecks', { order: order, orderId: res._id })
       return res
     } catch (error) {
       // Kiểm tra phản hồi lỗi từ server
@@ -133,12 +135,12 @@ const PayPage = props => {
             borderRadius: 8
           }}
         >
-          <View style={{ backgroundColor: Colors.grayBg }}>
+          <View style={{ backgroundColor: Colors.white }}>
             <Image
               style={{
                 width: 104,
                 height: 104,
-                resizeMode: 'cover'
+                resizeMode: 'center'
               }}
               source={{ uri: image }}
             />
@@ -177,7 +179,7 @@ const PayPage = props => {
     return (
       <View>
         <View style={{ backgroundColor: Colors.white, padding: 16 }}>
-          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>Thông tin của tôi</Text>
+          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 14 }}>Thông tin của tôi</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ marginTop: 16 }}>
               <Text style={styles.txt_description}>{user.username}</Text>
@@ -188,7 +190,7 @@ const PayPage = props => {
         </View>
 
         <View style={{ backgroundColor: Colors.white, padding: 16, marginTop: 16 }}>
-          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>Địa chỉ giao hàng</Text>
+          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 14 }}>Địa chỉ giao hàng</Text>
           {!user ? (
             <TouchableOpacity
               style={{ backgroundColor: Colors.black, padding: 16, marginVertical: 16 }}
@@ -225,14 +227,25 @@ const PayPage = props => {
                       (84+) {user.phoneNumber}
                     </Text>
                   </View>
-                  <Text>{shipping.name}</Text>
-                  <Text>{shipping.address}</Text>
-                  <View style={{ flexDirection: 'row', gap: 4 }}>
-                    <Text>{shipping.ward}</Text>
-                    <Text>{shipping.district}</Text>
-                    <Text>{shipping.city}</Text>
+                  <View>
+                    <View style={{ height: 4 }} />
+                    <Text style={styles.txt_description}>{shipping.name}</Text>
+                    <View style={{ height: 4 }} />
+                    <Text style={styles.txt_description}>{shipping.address}</Text>
+                    <View style={{ height: 4 }} />
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                      <Text style={[styles.txt_description, { marginEnd: 4 }]}>
+                        {shipping.ward}
+                      </Text>
+                      <Text style={[styles.txt_description, { marginEnd: 4 }]}>
+                        {shipping.district}
+                      </Text>
+                      <Text style={[styles.txt_description, { marginEnd: 4 }]}>
+                        {shipping.city}
+                      </Text>
+                    </View>
+                    <Text style={styles.txt_description}>{shipping.zipCode}</Text>
                   </View>
-                  <Text>{shipping.zipCode}</Text>
                 </View>
               </View>
               <TouchableOpacity onPress={() => navigation.navigate('MyAddress')}>
@@ -253,7 +266,7 @@ const PayPage = props => {
               <View style={{ flexDirection: 'row' }}>
                 <Icons.Feather name={'box'} size={24} />
                 <View style={{ marginStart: 16 }}>
-                  <Text style={[styles.txt_title, { fontSize: 16 }]}>Bưu kiện</Text>
+                  <Text style={[styles.txt_title, { fontSize: 14 }]}>Bưu kiện</Text>
                   <Text style={[styles.txt_description, { fontSize: 12, marginTop: 8 }]}>
                     {storageData.length} sản phẩm
                   </Text>
@@ -263,7 +276,7 @@ const PayPage = props => {
                 onPress={() => setShowOrderDetails(!showOrderDetails)}
                 style={{ flexDirection: 'row' }}
               >
-                <Text style={[styles.txt_description, { fontSize: 14 }]}>Chi tiết đơn hàng</Text>
+                <Text style={[styles.txt_description, { fontSize: 12 }]}>Chi tiết đơn hàng</Text>
                 <Icons.MaterialIcons name={'navigate-next'} size={20} style={{ marginStart: 8 }} />
               </TouchableOpacity>
             </View>
@@ -319,7 +332,11 @@ const PayPage = props => {
             >
               <Text style={styles.txt_description}>Phí vận chuyển</Text>
               <View>
-                <Text style={[styles.txt_description]}>{formattedShippingFee}</Text>
+                {shippingFee === 0 ? (
+                  <Text style={[styles.txt_description]}>Miễn Phí</Text>
+                ) : (
+                  <Text style={[styles.txt_description]}>{formattedShippingFee}</Text>
+                )}
               </View>
             </View>
           </View>
@@ -343,7 +360,7 @@ const PayPage = props => {
             style={{ padding: 16, backgroundColor: Colors.black, marginTop: 28 }}
           >
             <Text
-              style={[styles.txt_title, { fontSize: 16, textAlign: 'center', color: Colors.white }]}
+              style={[styles.txt_title, { fontSize: 12, textAlign: 'center', color: Colors.white }]}
             >
               Hoàn tất thanh toán
             </Text>
@@ -436,7 +453,8 @@ const PayPage = props => {
           style={{
             flexDirection: 'row',
             backgroundColor: Colors.white,
-            borderRadius: 8
+            borderRadius: 8,
+            justifyContent: 'space-between'
           }}
         >
           <TouchableWithoutFeedback onPress={() => handlePressProductItem(item)}>
@@ -454,7 +472,7 @@ const PayPage = props => {
           <View
             style={{
               width: windowWith / 2,
-              paddingHorizontal: 16,
+              paddingHorizontal: 8,
               paddingVertical: 12,
               backgroundColor: Colors.white
             }}
@@ -512,7 +530,6 @@ const PayPage = props => {
               // onPress={() => handleDeleteFromList(attributes, product_Name)}
               onPress={() => handleDeleteFromList(attributes_id, product_Name)}
               style={{
-                flexDirection: 'row',
                 alignItems: 'center',
                 width: '100%',
                 padding: 16
@@ -528,31 +545,17 @@ const PayPage = props => {
   // render List product
   const ListItemCart = () => {
     return (
-      <View>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={false}
-          data={storageData}
-          renderItem={ItemCarts}
-        />
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            backgroundColor: Colors.white,
-            marginTop: 24,
-            padding: 12,
-            elevation: 2,
-            shadowColor: Colors.gray
-          }}
-        ></View>
-      </View>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
+        data={storageData}
+        renderItem={ItemCarts}
+      />
     )
   }
   const orderDetails = () => {
     return (
-      <View style={{ flex: 1, paddingHorizontal: 16 }}>
+      <View style={{ width: '100%', height: '100%', paddingHorizontal: 16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}>
           <TouchableOpacity onPress={() => setShowOrderDetails(!showOrderDetails)}>
             <Icons.Feather name="x" size={32} />
@@ -598,7 +601,8 @@ const PayPage = props => {
           {user ? hasUser() : noUser()}
         </View>
       ) : (
-        orderDetails()
+        // orderDetails()
+        <View>{orderDetails()}</View>
       )}
     </ScrollView>
   )
@@ -608,17 +612,17 @@ export default PayPage
 
 const styles = StyleSheet.create({
   txt_description: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Montserrat-Medium'
   },
   txt_description_items: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Montserrat-Medium',
     color: Colors.black,
     flex: 1
   },
   txt_title: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Montserrat-SemiBold'
   },
 

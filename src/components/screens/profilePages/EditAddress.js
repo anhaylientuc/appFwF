@@ -531,7 +531,7 @@ const styles = StyleSheet.create({
   txtTextInput: {
     marginStart: 8,
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 14,
+    fontSize: 12,
     color: Colors.black
   },
   txt_description: {
@@ -543,11 +543,11 @@ const styles = StyleSheet.create({
   txtTitleProfile: {
     color: Colors.black,
     fontFamily: 'Montserrat-Medium',
-    fontSize: 14
+    fontSize: 12
   },
   txtHeader: {
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'Montserrat-SemiBold',
     marginTop: 16
   },
@@ -570,7 +570,7 @@ const styles = StyleSheet.create({
   },
   genderOptionText: {
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 14,
+    fontSize: 12,
     color: Colors.black
   },
   txt_title: {

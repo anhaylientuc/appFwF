@@ -158,7 +158,7 @@ const Favorites = () => {
     // Xử lý khi mở BottomSheet
     if (index === null) {
       // Xử lý khi mở BottomSheet lần đầu
-      const filteredDataSize = item.attributes.filter(attr => attr.key === 'Size')
+      const filteredDataSize = item.attributes.filter(attr => attr.key === 'Kích cỡ')
       setTimeout(() => {
         sheetRef.current?.open()
       }, 50) // Adjust the delay as needed
@@ -547,6 +547,7 @@ const Favorites = () => {
               renderItem={renderItemFavorite}
               data={storageFavorites}
             />
+            <View style={{ height: windowHeight / 4 }} />
           </View>
         </ScrollView>
       ) : (

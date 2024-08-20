@@ -19,7 +19,7 @@ const AxiosInstance = (contentType = 'application/json') => {
 
   axiosInstance.interceptors.response.use(
     res => res.data,
-    err => Promise.reject(err)
+    // err => Promise.reject(err)
   )
   return axiosInstance
 }

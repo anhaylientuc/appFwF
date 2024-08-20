@@ -217,7 +217,7 @@ export default Profile
 const styles = StyleSheet.create({
   txtOption: {
     marginStart: 16,
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Montserrat-SemiBold',
     color: Colors.black2
   },

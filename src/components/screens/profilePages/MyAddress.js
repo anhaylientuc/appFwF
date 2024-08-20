@@ -47,7 +47,7 @@ const MyAddress = () => {
       Toast.show({
         type: 'success',
         text1: 'Địa chỉ giao hàng của bạn đã được lưu ✔',
-        text1Style: { fontSize: 14, fontFamily: 'Montserrat-SemiBold', color: Colors.green }
+        text1Style: { fontSize: 12, fontFamily: 'Montserrat-SemiBold', color: Colors.green }
       })
     }, 500)
   }
@@ -57,7 +57,7 @@ const MyAddress = () => {
       Toast.show({
         type: 'success',
         text1: 'Xóa địa chỉ thành công ✔',
-        text1Style: { fontSize: 14, fontFamily: 'Montserrat-SemiBold', color: Colors.green }
+        text1Style: { fontSize: 12, fontFamily: 'Montserrat-SemiBold', color: Colors.green }
       })
     }, 500)
   }
@@ -189,7 +189,7 @@ const MyAddress = () => {
               paddingTop: 8
             }}
           >
-            <Text style={[styles.txt_title, { fontSize: 14 }]}>Tỉnh/Thành Phố</Text>
+            <Text style={[styles.txt_title, { fontSize: 12 }]}>Tỉnh/Thành Phố</Text>
             <TouchableOpacity onPress={() => setisShowTinhThanh(!isShowTinhThanh)}>
               <Icons.Feather name="x" size={24} />
             </TouchableOpacity>
@@ -233,7 +233,7 @@ const MyAddress = () => {
               paddingTop: 8
             }}
           >
-            <Text style={[styles.txt_title, { fontSize: 14 }]}>Quận/Huyện</Text>
+            <Text style={[styles.txt_title, { fontSize: 12 }]}>Quận/Huyện</Text>
             <TouchableOpacity onPress={() => setisShowQuanHuyen(!isShowQuanHuyen)}>
               <Icons.Feather name="x" size={24} />
             </TouchableOpacity>
@@ -275,7 +275,7 @@ const MyAddress = () => {
               paddingTop: 8
             }}
           >
-            <Text style={[styles.txt_title, { fontSize: 14 }]}>Phường/Xã</Text>
+            <Text style={[styles.txt_title, { fontSize: 12 }]}>Phường/Xã</Text>
             <TouchableOpacity onPress={() => setisShowPhuongXa(!isShowPhuongXa)}>
               <Icons.Feather name="x" size={24} />
             </TouchableOpacity>
@@ -561,7 +561,7 @@ const MyAddress = () => {
                       alignItems: 'center'
                     }}
                   >
-                    <Text style={[styles.txt_title, { fontSize: 14 }]}>
+                    <Text style={[styles.txt_title, { fontSize: 12 }]}>
                       Người nhận: {item.name}
                     </Text>
                     <TouchableOpacity onPress={() => handleDeleteShipping(index)}>
@@ -569,7 +569,7 @@ const MyAddress = () => {
                     </TouchableOpacity>
                   </View>
                   <Text style={[styles.txt_title, { marginTop: 8 }]}>{item.address}</Text>
-                  <View style={{ flexDirection: 'row', marginTop: 4 }}>
+                  <View style={{ flexDirection: 'row', marginTop: 4, flexWrap: 'wrap' }}>
                     <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.ward}</Text>
                     <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.district}</Text>
                     <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.city}</Text>
@@ -584,7 +584,7 @@ const MyAddress = () => {
                     ) : (
                       <Icons.Ionicons name="radio-button-on-outline" size={24} />
                     )}
-                    <Text style={[styles.txt_description, { marginStart: 8, fontSize: 14 }]}>
+                    <Text style={[styles.txt_description, { marginStart: 8, fontSize: 12 }]}>
                       Địa chỉ mặc định
                     </Text>
                   </TouchableOpacity>
@@ -644,7 +644,7 @@ const styles = StyleSheet.create({
     color: Colors.black2
   },
   txt_description: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Montserrat-Medium',
     color: Colors.black2
   },
@@ -656,19 +656,19 @@ const styles = StyleSheet.create({
 
   txtHeader: {
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'Montserrat-SemiBold',
     flex: 2
   },
   txtTextInput: {
     marginStart: 8,
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 14,
+    fontSize: 12,
     color: Colors.black
   },
   txtTitleProfile: {
     color: Colors.black,
     fontFamily: 'Montserrat-Medium',
-    fontSize: 14
+    fontSize: 12
   }
 })
