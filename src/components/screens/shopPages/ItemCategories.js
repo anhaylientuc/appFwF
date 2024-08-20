@@ -44,7 +44,7 @@ const ItemCategories = (props) => {
   const [favoritesIds, setFavoritesIds] = useState([]);
   const [_id, set_id] = useState(null);
   const [attributesArr, setattributesArr] = useState([]);
-
+  const [price, setprice] = useState([])
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -99,13 +99,19 @@ const ItemCategories = (props) => {
       const newMap = new Map(filterState);
       const newArr = []
       for (const [key, value] of newMap.entries()) {
-        value.map(item => {
-          newArr.push({ key: key, value: item })
-        })
+        if (key == 'Giá') {
+          setprice(value)
+          newArr.push({ key: 'Giá', value:'Giá' })
+          continue
+        }
+        else {
+          value.map(item => {
+            newArr.push({ key: key, value: item })
+          })
+        }
       }
-
+      console.log(newArr)
       setattributesArr(newArr)
-      console.log('fetch products')
       await fetchProducts()
     };
     fetchData();
@@ -332,8 +338,12 @@ const ItemCategories = (props) => {
       if (!newMap.has(key)) {
         newMap.set(key, []);
       }
-      newMap.get(key).push(value)
+      if(key=='Giá')
+        newMap.set(key,price)
+      else
+        newMap.get(key).push(value)
     })
+    console.log(newMap)
     setFilterState(newMap)
   };
   const fetchProducts = async () => {
@@ -341,8 +351,15 @@ const ItemCategories = (props) => {
     query.category_id = productsParent
     const attributes = [];
     for (const [key, value] of filterState.entries()) {
+      if (key == 'Giá') {
+        const listPrice = filterState.get(key)
+        query.minPrice = listPrice[0]
+        query.maxPrice = listPrice[1]
+        continue;
+      }
       attributes.push({ key, value })
     }
+    console.log(attributes)
     if (attributes.length > 0)
       query.attributes = attributes
     const queryString = qs.stringify(query)
@@ -428,7 +445,6 @@ const ItemCategories = (props) => {
           >
             {attributesArr &&
               attributesArr.map((item, index) => {
-                console.log(item)
                 return (
                   <View
                     key={item.value} // Sử dụng giá trị item làm key cho mỗi View
@@ -437,8 +453,6 @@ const ItemCategories = (props) => {
                       alignItems: 'center',
                       margin: 4,
                       backgroundColor: '#FFFFFF	'
-
-
                     }}
                   >
                     <Text style={{ marginRight: 0, paddingHorizontal: 5 }}>{item.value}</Text>

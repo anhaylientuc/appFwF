@@ -1,6 +1,6 @@
 import { useIsFocused } from '@react-navigation/native'
 import qs from 'qs'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, version } from 'react'
 import {
   ActivityIndicator, // Import ActivityIndicator
   Dimensions,
@@ -18,6 +18,7 @@ import MyText from 'src/constants/FontFamily'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import NewHTTP from 'src/utils/http/NewHTTP'
 import Spinner from 'react-native-loading-spinner-overlay';
+import MultiSlider from '@ptomasroos/react-native-multi-slider'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
@@ -36,34 +37,41 @@ const Filter = props => {
   const [queryStringState, setqueryStringState] = useState(null)
   const isFocusScreen = useIsFocused()
   const [loading, setLoading] = useState(false) // Add loading state
-
+  const [minPrice, setminPrice] = useState(0)
+  const [maxPrice, setMaxPrice] = useState(100)
+  const [showSlider, setshowSlider] = useState(false)
+  const [twoWayValues, settwoWayValues] = useState([0, 100])
+  const [priceLeft, setpriceLeft] = useState(0)
+  const [priceRight, setpriceRight] = useState(100)
+  const [finishSlider, setfinishSlider] = useState(false)
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true) // Start loading
+        setLoading(true)
+        console.log('ok', filterState)
         navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-
         if (category_id) {
           set_category_id(category_id)
         }
-
+        const query = {}
         const attributes = []
         for (const [key, value] of filterState.entries()) {
-          if (filterState.get(key).length > 0) {
-            attributes.push({ key, value })
+          if (key == 'Giá') {
+            const listPrice = filterState.get('Giá')
+            query.minPrice = listPrice[0]
+            query.maxPrice = listPrice[1]
           }
+          else
+            attributes.push({ key, value })
         }
-
-        const query = {}
         if (attributes.length > 0) query.attributes = attributes
         query.category_id = category_id ? category_id : _category_id
-
         const queryString = qs.stringify(query)
         setqueryStringState(queryString)
         const response = await NewHTTP.getFilter(queryString)
         const { _attributes, _products } = response
-
         setFilterData(_attributes)
+        console.log(filterData)
         setProducts(_products) // Ensure products are set here
       } catch (error) {
         console.log('Error fetching data:', error)
@@ -71,10 +79,37 @@ const Filter = props => {
         setLoading(false) // Stop loading
       }
     }
-
     fetchData()
-  }, [filterState, isFocusScreen, _category_id])
+  }, [filterState])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const query = { category_id: category_id, version: 2 }
+        const res = await NewHTTP.getProducts(query)
+        const listPrice = res.map(item => item.base_price)
+        let min = Math.min(...listPrice)
+        let max = Math.max(...listPrice)
+        setminPrice(min)
+        setMaxPrice(max)
+        if (filterState instanceof Map && filterState.has('Giá')) {
+          console.log('cc')
+          const values = filterState.get('Giá')
+          min = values[0]
+          max = values[1]
+        }
+        setpriceLeft(min)
+        setpriceRight(max)
+        settwoWayValues([min, max])
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchData()
+  }, [])
+  const toggleSlider = () => {
 
+    setshowSlider(!showSlider)
+  }
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -92,7 +127,6 @@ const Filter = props => {
     return (
       <Pressable
         onPress={() => {
-          console.log('navigate', queryStringState)
           props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key, queryString: queryStringState })
         }}
         style={{
@@ -120,7 +154,8 @@ const Filter = props => {
                 {item}
               </Text>
             ))
-            : null}
+            : null
+          }
           <Icons.AntDesign name="arrowright" size={20} />
         </View>
       </Pressable>
@@ -132,7 +167,47 @@ const Filter = props => {
       setFilterState(new Map())
     }
   }
+  const handleValuesChange = (values) => {
+    console.log(values)
+    setpriceLeft(values[0])
+    setpriceRight(values[1])
+  }
+  function formatCurrencyVND(amount) {
+    // Tạo một đối tượng NumberFormat cho tiếng Việt (Việt Nam)
+    const formatter = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      minimumFractionDigits: 0  // Không hiển thị phần thập phân
+    });
 
+    return formatter.format(amount);
+  }
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log('on finish', twoWayValues)
+      // const query = { category_id: category_id, version: 2 }
+      // const res = await NewHTTP.getProducts(query)
+      const min = twoWayValues[0]
+      const max = twoWayValues[1]
+
+      // const newProducts=res.filter(item=>(item['base_price']>=min&&item['base_price']<=max))
+      // console.log(newProducts.length)
+      // setProducts(newProducts)
+      if (min != 0 && max != 100) {
+        const map = new Map()
+
+        map.set('Giá', [min, max])
+        console.log('>>>', map)
+        setFilterState(map)
+      }
+
+    }
+    fetchData()
+  }, [finishSlider])
+  const handleValuesChangeFinish = (values) => {
+    settwoWayValues(values)
+    setfinishSlider(!finishSlider)
+  }
   return (
     <KeyboardAvoidingView>
       <View style={styles.container}>
@@ -142,7 +217,6 @@ const Filter = props => {
           <TouchableOpacity
             style={{ flex: 1 }}
             onPress={() => {
-              console.log(filterState)
               navigation.goBack({ categoryById: category_id })
             }}
           >
@@ -191,11 +265,47 @@ const Filter = props => {
                 alignItems: 'center',
                 paddingVertical: 16
               }}
+              onPress={() => { toggleSlider() }}
             >
               <MyText>Giá</MyText>
               <Icons.AntDesign name="plus" size={20} />
             </Pressable>
+            <View >
 
+              {
+                <View >
+                  <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text>{formatCurrencyVND(priceLeft)}</Text>
+                    <Text>{formatCurrencyVND(priceRight)}</Text>
+                  </View>
+                  <View style={{ alignItems: 'center' }}>
+                    <MultiSlider
+                      values={twoWayValues}
+                      min={minPrice}
+                      max={maxPrice}
+                      sliderLength={350}
+                      allowOverlap={true}
+                      onValuesChangeFinish={handleValuesChangeFinish}
+                      step={100}
+                      onValuesChange={handleValuesChange}
+                      selectedStyle={{
+                        backgroundColor: 'black', // Màu của thanh trượt đã chọn
+                      }}
+                      unselectedStyle={{
+                        backgroundColor: 'black', // Màu của thanh trượt chưa chọn
+                      }}
+                      markerStyle={{
+                        backgroundColor: 'black', // Màu của điểm đánh dấu trên thanh trượt
+                      }}
+
+                    />
+                  </View>
+
+                </View>
+
+
+              }
+            </View>
             <FlatList data={filterData} renderItem={renderItem} keyExtractor={item => item.key} />
           </>
         )}
@@ -217,6 +327,7 @@ const Filter = props => {
           }}
           onPress={() => {
             if (Array.isArray(products) && products.length > 0) {
+              console.log(products.length)
               navigation.navigate('ItemCategories', { _products: products })
             } else {
               console.log('No products to display')

@@ -34,6 +34,7 @@ import { FilterProvider } from 'src/contexts/FilterProvider'
 import StorageProvider from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import Profile from '../components/screens/profilePages/Profile'
+import { PaymentResult } from 'src/components/screens/users/PaymentResult'
 
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
@@ -154,6 +155,8 @@ function MainNavigator() {
         <Stack.Screen name="GoogleMaps" component={GoogleMaps} options={{ title: 'GoogleMaps' }} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
         <Stack.Screen name="PayPage" component={PayPage} />
+        <Stack.Screen name='PaymentResult' component={PaymentResult}/>
+
       </Stack.Navigator>
     ) : (
       UserNavigation()
