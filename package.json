@@ -1,5 +1,5 @@
 {
-  "name": "myreactnative",
+  "name": "fwf",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@devvie/bottom-sheet": "^0.3.0",
+    "@expo/metro-config": "^0.18.11",
     "@gorhom/bottom-sheet": "^4.6.3",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "@react-native-async-storage/async-storage": "1.23.1",
@@ -34,6 +35,7 @@
     "expo-font": "~12.0.7",
     "expo-image-picker": "~15.0.5",
     "expo-linear-gradient": "~13.0.2",
+    "expo-linking": "^6.3.1",
     "expo-location": "^17.0.1",
     "expo-router": "~3.5.17",
     "expo-splash-screen": "~0.27.5",
@@ -56,7 +58,7 @@
     "react-native-toast-message": "^2.2.0",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-vector-icons": "^10.1.0",
-    "react-native-vnpay-merchant": "file:react-native-vnpay-merchant",
+    "react-native-vnpay-merchant": "file:./path/to/react-native-vnpay-merchant",
     "react-native-webview": "13.8.6",
     "typescript": "~5.3.3"
   },

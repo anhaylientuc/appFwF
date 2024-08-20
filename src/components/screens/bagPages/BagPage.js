@@ -18,6 +18,7 @@ import Toast from 'react-native-toast-message'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
+import OrderHTTP from 'src/utils/http/OrderHTTP'
 import UserContext from '../../../contexts/UserContext'
 import Icons from '../../icons/Icon'
 const windowWith = Dimensions.get('window').width
@@ -30,13 +31,15 @@ const BagPage = props => {
   const { storageFavorites, setStorageFavorites } = useStorage()
   const [selected, setSelected] = useState(DataCodeSale)
   const [selectedCodeSale, setSelectedCodeSale] = useState()
-
+  const [myOrder, setMyOrder] = useState(null)
   const [visiblePopupMenu, setVisiblePopupMenu] = useState(null)
   const [addFavorite, setAddFavorite] = useState(null)
   const [price, setPrice] = useState()
   const [transportFee, setTransportFee] = useState()
   const [cart, setCart] = useState([])
   const [favoritesIds, setFavoritesIds] = useState([])
+  const [status, setstatus] = useState(null)
+  const [oderCarts, setoderCarts] = useState([])
 
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -58,9 +61,41 @@ const BagPage = props => {
         setFavoritesIds(favorites.map(favorite => favorite._id))
       }
     }
-
     loadFavorites()
   }, [storageFavorites, navigation])
+
+  useEffect(() => {
+    const newOderCarts = ({
+      _id,
+      product_Name,
+      product_id,
+      base_price,
+      color,
+      image,
+      code,
+      quantity,
+      attributes_id,
+      nameCategoryById,
+      category_id
+    } = storageData)
+    setoderCarts(newOderCarts)
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+    setCart(...storageData)
+    setPrice(totalBasePrice)
+    if (allBasePrices <= 499000) {
+      setTransportFee(49000)
+    } else {
+      setTransportFee(0)
+    }
+
+    setMyOrder({
+      ...myOrder,
+      user: user,
+      carts: storageData,
+      amount: totalPrices
+    })
+  }, [storageData])
+  // set sate Bottom sheet to useRef
 
   const showToastDeleted = title => {
     Toast.show({
@@ -128,13 +163,30 @@ const BagPage = props => {
     return total
   }
 
-  useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-    setCart(...storageData)
-    setPrice(totalBasePrice)
-    setTransportFee(49000)
-  }, [storageData])
-  // set sate Bottom sheet to useRef
+  const handlePayPage = async () => {
+    try {
+      const body = {
+        user: user,
+        carts: storageData,
+        amount: totalPrices
+      }
+      console.log(JSON.stringify(body, null, 2))
+      const res = await OrderHTTP.insert(body)
+
+      setMyOrder(res)
+      if (res.status == '01') {
+        navigation.navigate('PayPage', { order: myOrder, shippingFee: transportFee })
+      } else {
+        console.log(res.status)
+      }
+      console.log('order', JSON.stringify(res, null, 2))
+
+      return res
+    } catch (error) {
+      // Kiểm tra phản hồi lỗi từ server
+      console.log('Error response:', error)
+    }
+  }
 
   // Logic: onclick Open Bottom Sheet Modal
   const handlePresentModal = () => {
@@ -712,16 +764,22 @@ const BagPage = props => {
         >
           <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
             <MyText style={{ fontSize: 12 }}>Giá trị đơn hàng</MyText>
-            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 12 }}>
+            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 10 }}>
               {formattedCurrency}
             </MyText>
           </View>
           <View style={{ height: 8 }} />
           <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
             <MyText style={{ fontSize: 12 }}>Phí giao hàng</MyText>
-            <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 12 }}>
-              {formattedTransportfee}
-            </MyText>
+            {transportFee === 0 ? (
+              <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 10 }}>
+                Miễn Phí
+              </MyText>
+            ) : (
+              <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 10 }}>
+                {formattedTransportfee}
+              </MyText>
+            )}
           </View>
         </View>
 
@@ -823,11 +881,7 @@ const BagPage = props => {
         </View>
         {cart ? (
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('PayPage', {
-                shippingFee: transportFee
-              })
-            }
+            onPress={() => handlePayPage()}
             style={{
               paddingVertical: 16,
               backgroundColor: Colors.black2,
@@ -841,7 +895,7 @@ const BagPage = props => {
                 color: Colors.white,
                 textAlign: 'center',
                 fontWeight: '500',
-                fontSize: 14
+                fontSize: 12
               }}
             >
               Tiếp tục thanh toán
@@ -1005,7 +1059,7 @@ const styles = StyleSheet.create({
   txt_header: {
     marginStart: 32,
     fontWeight: '600',
-    fontSize: 20
+    fontSize: 16
   },
   header: {
     backgroundColor: Colors.white,
@@ -1014,7 +1068,7 @@ const styles = StyleSheet.create({
   btn_apply_txt: {
     color: Colors.white,
     textAlign: 'center',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '500'
   },
   btn_apply: {
