@@ -1,4 +1,4 @@
-package com.myreactnative
+package com.thevysport.MyReactNative
 
 import android.os.Build
 import android.os.Bundle

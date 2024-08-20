@@ -1,19 +1,75 @@
-import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import React, { useEffect, useState } from 'react'
+import { FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { createPicassoComponent } from 'react-native-picasso'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import MyTabs from '../../../navigators/ShopPageTabNavigation'
-const ShopPage = ({ navigation: { goBack } }) => {
+import MyText from 'src/constants/FontFamily'
+import { getCategory } from 'src/utils/http/NewHTTP'
+
+const ShopPage = () => {
+  const PicassoImage = createPicassoComponent(Image)
+  const navigation = useNavigation()
+  const [categories, setCategories] = useState([])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getCategory()
+        setCategories(response)
+      } catch (error) {
+        console.log('>>>' + error)
+        throw error
+      }
+    }
+    fetchData()
+  }, [])
+
+  const renderListCategory = ({ item }) => {
+    const { _id, name, image } = item
+    return (
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('Categories', {
+            categoryId: _id
+          })
+        }
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          marginTop: 16,
+          alignItems: 'center'
+        }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <PicassoImage
+            style={{ height: 48, width: 48, borderRadius: 50 }}
+            source={{ uri: image?image:'' }}
+          />
+
+          <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 16, marginLeft: 16 }}>
+            {name}
+          </MyText>
+        </View>
+        <Icons.AntDesign name={'arrowright'} size={20} />
+      </TouchableOpacity>
+    )
+  }
+
   return (
     <View style={{ backgroundColor: '#fff', width: '100%', height: '100%' }}>
       <View style={styles.view_search}>
-        <TouchableOpacity onPress={() => goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icons.Ionicons name={'chevron-back'} size={24} />
         </TouchableOpacity>
-        <Text style={styles.txt_search}>Categories</Text>
-        <Icons.Ionicons name={'search'} size={24} />
+        <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_search}>
+          Categories
+        </MyText>
+        <TouchableOpacity onPress={() => navigation.navigate('SearchPage')}>
+          <Icons.Ionicons name={'search'} size={24} />
+        </TouchableOpacity>
       </View>
-      <MyTabs />
+      <FlatList renderItem={renderListCategory} data={categories} />
     </View>
   )
 }
@@ -29,13 +85,12 @@ const styles = StyleSheet.create({
     color: Colors.black,
     textAlign: 'center',
     fontSize: 18,
-    fontWeight: '400',
-    lineHeight: 22
+    fontWeight: '400'
   },
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 8,
-    marginTop: 44
+    paddingHorizontal: 16,
+    paddingVertical: 8
   }
 })

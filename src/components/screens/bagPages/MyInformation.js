@@ -1,14 +1,14 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
-const EditAddress = () => {
+const MyInformation = () => {
   return (
     <View>
-      <Text>EditAddress</Text>
+      <Text>MyInformation</Text>
     </View>
   )
 }
 
-export default EditAddress
+export default MyInformation
 
 const styles = StyleSheet.create({})
