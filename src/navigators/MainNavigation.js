@@ -36,6 +36,7 @@ import StorageProvider from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import Profile from '../components/screens/profilePages/Profile'
 import { PaymentResult } from 'src/components/screens/users/PaymentResult'
+import { SearchDetail } from 'src/components/screens/shopPages/SearchDetail'
 
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
@@ -63,20 +64,14 @@ function MainNavigator() {
           component={ProductDetail}
           options={{ title: 'ProductDetail', tabBarStyle: { display: 'none' } }}
         />
-        <Stack.Screen
-          name="ReviewProduct"
-          component={ReviewProduct}
-          options={{ title: 'ReviewProduct' }}
-        />
+        <Stack.Screen name="ReviewProduct" component={ReviewProduct} options={{ title: 'ReviewProduct' }}/>
         <Stack.Screen name="SizeInfo" component={SizeInfo} options={{ title: 'SizeInfo' }} />
         <Stack.Screen name="SearchPage" component={SearchPage} options={{ title: 'SearchPage' }} />
+        <Stack.Screen name="SearchDetail" component={SearchDetail} options={{ title: 'SearchDetail' }} />
         <Stack.Screen name="Filter" component={Filter} options={{ title: 'Filter' }} />
-        <Stack.Screen
-          name="DetailFilter"
-          component={DetailFilter}
-          options={{ title: 'DetailFilter' }}
-        />
+        <Stack.Screen name="DetailFilter" component={DetailFilter} options={{ title: 'DetailFilter' }}/>
         <Stack.Screen name="BagStack" component={BagStack} options={{ title: 'BagStack' }} />
+        
       </Stack.Navigator>
     )
   }

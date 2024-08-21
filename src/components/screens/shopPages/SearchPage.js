@@ -130,8 +130,10 @@ const SearchPage = props => {
           <Text style={{ color: Colors.black, fontFamily: 'Montserrat-SemiBold' }}>Xóa</Text>
         </View>
         {
-          suggest.map((item, index) => (
-            <View
+          suggest.map((item, index) => {
+            const {keyword}=item
+            return (<TouchableOpacity
+              onPress={() => { navigation.replace('SearchDetail', { keyword: keyword }) }}
               key={index}
               style={{
                 flexDirection: 'row',
@@ -143,12 +145,13 @@ const SearchPage = props => {
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Icons.EvilIcons name="search" size={32} />
                 <MyText fontFamily="Montserrat-SemiBold" style={{ marginStart: 16 }}>
-                  {item}
+                  {keyword}
                 </MyText>
               </View>
               <Icons.AntDesign name="arrowright" size={24} />
-            </View>
-          ))
+            </TouchableOpacity>
+            )
+          })
         }
       </View>
       <View style={{ position: 'absolute', bottom: 16 }}>
