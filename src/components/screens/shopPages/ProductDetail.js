@@ -293,8 +293,29 @@ const ProductDetail = props => {
     }
   }
 
+  const setBottomBar = () => {
+    navigation.getParent().setOptions({
+      tabBarStyle: {
+        backgroundColor: Colors.white,
+        bottom: 0,
+        paddingVertical: 8,
+        height: 54
+      }
+    })
+  }
+
   const handleGoBag = () => {
-    navigation.navigate('BagStack', { screen: 'BagPage' })
+    setBottomBar()
+    navigation.navigate('BagStack', {
+      screen: 'BagPage',
+      tabBarStyle: {
+        backgroundColor: Colors.white,
+        bottom: 0,
+        paddingVertical: 8,
+        height: 54
+        // position: 'absolute'
+      }
+    })
   }
 
   // xử lí logic selected attributes

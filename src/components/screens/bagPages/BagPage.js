@@ -35,11 +35,10 @@ const BagPage = props => {
   const [visiblePopupMenu, setVisiblePopupMenu] = useState(null)
   const [addFavorite, setAddFavorite] = useState(null)
   const [price, setPrice] = useState()
-  const [transportFee, setTransportFee] = useState()
+  const [transportFee, setTransportFee] = useState('')
   const [cart, setCart] = useState([])
   const [favoritesIds, setFavoritesIds] = useState([])
-  const [status, setstatus] = useState(null)
-  const [oderCarts, setoderCarts] = useState([])
+  const [oderUser, setoderUser] = useState([])
 
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -53,7 +52,6 @@ const BagPage = props => {
   }
 
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const loadFavorites = async () => {
       const storedFavorites = await AsyncStorage.getItem('my-favorites')
       if (storedFavorites) {
@@ -63,39 +61,40 @@ const BagPage = props => {
     }
     loadFavorites()
   }, [storageFavorites, navigation])
+  // duyệt mảng lấy tất cả giá tiền
+  const allBasePrices = storageData.map(item => item.newPrice)
+  const totalBasePrice = sumBasePrices(allBasePrices)
+  // tính tổng cần thanh toán -> { tổng giá trị đơn hàng + phí ship }
+  const totalPrices = totalBasePrice + transportFee
 
   useEffect(() => {
-    const newOderCarts = ({
-      _id,
-      product_Name,
-      product_id,
-      base_price,
-      color,
-      image,
-      code,
-      quantity,
-      attributes_id,
-      nameCategoryById,
-      category_id
-    } = storageData)
-    setoderCarts(newOderCarts)
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-    setCart(...storageData)
-    setPrice(totalBasePrice)
-    if (allBasePrices <= 499000) {
-      setTransportFee(49000)
-    } else {
-      setTransportFee(0)
-    }
+    const fetchData = () => {
+      if (user) {
+        const shippingOrder = user.shipping.filter(s => s.selected === true)
+        setoderUser({ ...user, shipping: shippingOrder })
+      }
+      console.log(totalBasePrice)
+      setCart(...storageData)
+      setPrice(totalBasePrice)
+      if (totalBasePrice < 499000) {
+        setTransportFee(49000)
+      } else {
+        setTransportFee(0)
+      }
+      const filteredData = storageData.map(item => {
+        const { attributes, ...rest } = item // Loại bỏ thuộc tính 'attributes'
+        return rest // Trả về đối tượng mới mà không có 'attributes'
+      })
 
-    setMyOrder({
-      ...myOrder,
-      user: user,
-      carts: storageData,
-      amount: totalPrices
-    })
+      setMyOrder({
+        ...myOrder,
+        user: oderUser,
+        carts: filteredData,
+        amount: totalPrices
+      })
+    }
+    fetchData()
   }, [storageData])
-  // set sate Bottom sheet to useRef
 
   const showToastDeleted = title => {
     Toast.show({
@@ -139,11 +138,6 @@ const BagPage = props => {
     // set attributes_id to PopupMenu
     setVisiblePopupMenu(attributes_id)
   }
-  // duyệt mảng lấy tất cả giá tiền
-  const allBasePrices = storageData.map(item => item.newPrice)
-  const totalBasePrice = sumBasePrices(allBasePrices)
-  // tính tổng cần thanh toán -> { tổng giá trị đơn hàng + phí ship }
-  const totalPrices = totalBasePrice + transportFee
 
   // Example usage
   // đơn giá
@@ -162,24 +156,29 @@ const BagPage = props => {
 
     return total
   }
+  console.log(transportFee)
 
   const handlePayPage = async () => {
     try {
+      const filteredData = storageData.map(item => {
+        const { attributes, ...rest } = item // Loại bỏ thuộc tính 'attributes'
+        return rest // Trả về đối tượng mới mà không có 'attributes'
+      })
+      console.log(filteredData)
+
       const body = {
-        user: user,
-        carts: storageData,
+        user: oderUser,
+        carts: filteredData,
         amount: totalPrices
       }
-      console.log(JSON.stringify(body, null, 2))
       const res = await OrderHTTP.insert(body)
-
       setMyOrder(res)
-      if (res.status == '01') {
-        navigation.navigate('PayPage', { order: myOrder, shippingFee: transportFee })
-      } else {
-        console.log(res.status)
-      }
-      console.log('order', JSON.stringify(res, null, 2))
+      navigation.navigate('PayPage', { orders: res })
+      // if (res.status === '01') {
+      //   navigation.navigate('PayPage', { orders: res })
+      // } else {
+      //   console.log(res.status)
+      // }
 
       return res
     } catch (error) {
@@ -427,7 +426,7 @@ const BagPage = props => {
     const newQuantity = quantity + 1
     const newPrice = base_price * newQuantity
     const newStorageData = storageData.map((val, index) => {
-      if (val.attributes_id === attributes_id && newQuantity <= val.cnt) {
+      if (val.attributes_id === attributes_id && newQuantity < val.cnt) {
         return {
           ...val,
           quantity: newQuantity,
@@ -454,7 +453,7 @@ const BagPage = props => {
       if (val.attributes_id === attributes_id && newQuantity >= 1) {
         return { ...val, quantity: newQuantity, base_price: base_price, newPrice: newPrice }
       } else {
-        if (newQuantity <= 1) {
+        if (newQuantity < 1) {
           let title = 'Chọn tối thiểu 1'
           showToastError(title)
         }
@@ -771,7 +770,7 @@ const BagPage = props => {
           <View style={{ height: 8 }} />
           <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
             <MyText style={{ fontSize: 12 }}>Phí giao hàng</MyText>
-            {transportFee === 0 ? (
+            {transportFee == 0 ? (
               <MyText fontFamily={'Montserrat-SemiBold'} style={{ fontSize: 10 }}>
                 Miễn Phí
               </MyText>

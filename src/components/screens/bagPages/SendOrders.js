@@ -29,58 +29,83 @@ const SendOrders = props => {
   const [vnp_TransactionNo, setvnp_TransactionNo] = useState('')
   const [amount, setamount] = useState('')
   const [transportFee, setTransportFee] = useState('')
+  const [orderSuccess, setorderSuccess] = useState(false)
   useEffect(() => {
     const fetchData = async () => {
-      const {
-        vnp_Amount,
-        vnp_BankCode,
-        vnp_BankTranNo,
-        vnp_CardType,
-        vnp_OrderInfo,
-        vnp_PayDate,
-        vnp_ResponseCode,
-        vnp_SecureHash,
-        vnp_TmnCode,
-        vnp_TransactionNo,
-        vnp_TransactionStatus,
-        vnp_TxnRef
-      } = route.params
-
-      const payment = {
-        amount: vnp_Amount,
-        bankCode: vnp_BankCode,
-        bankTranNo: vnp_BankTranNo,
-        cardType: vnp_CardType,
-        orderInfo: vnp_OrderInfo,
-        payDate: vnp_PayDate,
-        responseCode: vnp_ResponseCode,
-        secureHash: vnp_SecureHash,
-        tmnCode: vnp_TmnCode,
-        transactionNo: vnp_TransactionNo,
-        transactionStatus: vnp_TransactionStatus,
-        txnRef: vnp_TxnRef
-      }
-      const res = await OrderHTTP.update(payment.orderInfo, { payment })
-      console.log(JSON.stringify(res, null, 2))
-      setvnp_CardType(payment.cardType)
-      setvnp_OrderInfo(payment.orderInfo)
-      setvnp_TransactionNo(payment.transactionNo)
-      setvnp_PayDate(payment.payDate)
-      setamount(res.amount)
-      if (res.amount <= 499000) {
-        setTransportFee(49000)
-      } else {
-        setTransportFee(0)
-      }
-      setoderCarts(res.carts)
-
-      user.shipping.map(item => {
-        if (item.selected == true) {
-          setshipping(item)
+      try {
+        const {
+          vnp_Amount,
+          vnp_BankCode,
+          vnp_BankTranNo,
+          vnp_CardType,
+          vnp_OrderInfo,
+          vnp_PayDate,
+          vnp_ResponseCode,
+          vnp_SecureHash,
+          vnp_TmnCode,
+          vnp_TransactionNo,
+          vnp_TransactionStatus,
+          vnp_TxnRef
+        } = route.params
+        const payment = {
+          amount: vnp_Amount,
+          bankCode: vnp_BankCode,
+          bankTranNo: vnp_BankTranNo,
+          cardType: vnp_CardType,
+          orderInfo: vnp_OrderInfo,
+          payDate: vnp_PayDate,
+          responseCode: vnp_ResponseCode,
+          secureHash: vnp_SecureHash,
+          tmnCode: vnp_TmnCode,
+          transactionNo: vnp_TransactionNo,
+          transactionStatus: vnp_TransactionStatus,
+          txnRef: vnp_TxnRef
         }
-      })
-      if (order) {
-        setoderCarts(res.carts)
+
+        // TH thành công
+        if (payment.responseCode == '00') {
+          console.log('====================================')
+          console.log('Thanh toán thành công')
+
+          const res = await OrderHTTP.update(payment.orderInfo, { payment })
+          console.log(JSON.stringify(res, null, 2))
+          setvnp_CardType(payment.cardType)
+          setvnp_OrderInfo(payment.orderInfo)
+          setvnp_TransactionNo(payment.transactionNo)
+          setvnp_PayDate(payment.payDate)
+          setamount(res.amount)
+          if (res.amount <= 499000) {
+            setTransportFee(49000)
+          } else {
+            setTransportFee(0)
+          }
+          setoderCarts(res.carts)
+          setorderSuccess(true)
+          user.shipping.map(item => {
+            if (item.selected == true) {
+              setshipping(item)
+            }
+          })
+          if (order) {
+            setoderCarts(res.carts)
+          }
+        } else if (payment.responseCode == '24') {
+          payment.responseCode == '02'
+          await OrderHTTP.update(payment.orderInfo, { payment })
+          console.log('Đã xóa hóa đơn')
+          const res = await OrderHTTP.remove(payment.orderInfo)
+          const newOrder = { ...res.result }
+          newOrder.status = '01'
+          delete newOrder.payment
+          delete newOrder._id
+          console.log(JSON.stringify(newOrder, null, 2))
+          const newRes = await OrderHTTP.insert(newOrder)
+          console.log('Hóa đơn đang chờ', JSON.stringify(newOrder, null, 2))
+        } else {
+          throw new Error('Lỗi không xác định')
+        }
+      } catch (error) {
+        console.log('error', error)
       }
     }
     fetchData()
@@ -235,8 +260,8 @@ const SendOrders = props => {
     )
   }
 
-  return (
-    <ScrollView styles={styles.container} showsVerticalScrollIndicator={false}>
+  const paymentSuccessful = () => {
+    return (
       <View style={{ paddingHorizontal: 16, backgroundColor: Colors.grayBg }}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginVertical: 16 }}>
           <MyText style={{ color: Colors.black2, fontSize: 12 }}>Đóng</MyText>
@@ -289,7 +314,7 @@ const SendOrders = props => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               style={styles.container_setting}
-              onPress={() => navigation.navigate('MyOder')}
+              onPress={() => navigation.navigate('ProfileStack')}
             >
               <Icons.AntDesign name="inbox" size={24} />
               <Text style={styles.txtSetting}>GIAO HÀNG</Text>
@@ -318,6 +343,32 @@ const SendOrders = props => {
           </View>
         </View>
       </View>
+    )
+  }
+
+  const paymentFailed = () => {
+    return (
+      <View
+        style={{
+          paddingHorizontal: 16,
+          backgroundColor: Colors.white,
+          width: '100%',
+          height: '100%'
+        }}
+      >
+        <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.red, fontSize: 16 }]}>
+          Thanh toán không thành công
+        </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('HomeStack')}>
+          <Text>Đơn hàng</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  return (
+    <ScrollView styles={styles.container} showsVerticalScrollIndicator={false}>
+      {orderSuccess ? paymentSuccessful() : paymentFailed()}
     </ScrollView>
   )
 }

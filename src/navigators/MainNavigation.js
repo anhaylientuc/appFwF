@@ -29,13 +29,13 @@ import DetailFilter from 'src/components/screens/shopPages/filterScreens/DetailF
 import Filter from 'src/components/screens/shopPages/filterScreens/Filter'
 import ForgotPassword from 'src/components/screens/users/ForgotPassword'
 import Login from 'src/components/screens/users/Login'
+import { PaymentResult } from 'src/components/screens/users/PaymentResult'
 import Register from 'src/components/screens/users/Register'
 import Colors from 'src/constants/Colors'
 import { FilterProvider } from 'src/contexts/FilterProvider'
 import StorageProvider from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import Profile from '../components/screens/profilePages/Profile'
-import { PaymentResult } from 'src/components/screens/users/PaymentResult'
 
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
@@ -122,6 +122,7 @@ function MainNavigator() {
           options={{ title: 'WebViewPayment' }}
         />
         <Stack.Screen name="MyAddress" component={MyAddress} />
+        <Stack.Screen name="MyOder" component={MyOder} />
         <Stack.Screen name="SendOrders" component={SendOrders} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
       </Stack.Navigator>
@@ -157,8 +158,7 @@ function MainNavigator() {
         <Stack.Screen name="GoogleMaps" component={GoogleMaps} options={{ title: 'GoogleMaps' }} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
         <Stack.Screen name="PayPage" component={PayPage} />
-        <Stack.Screen name='PaymentResult' component={PaymentResult}/>
-
+        <Stack.Screen name="PaymentResult" component={PaymentResult} />
       </Stack.Navigator>
     ) : (
       UserNavigation()

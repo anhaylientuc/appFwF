@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
@@ -17,28 +16,61 @@ import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
-import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
+import { formatCurrency } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import OrderHTTP from 'src/utils/http/OrderHTTP'
 const windowWith = Dimensions.get('window').width
 const PayPage = props => {
   const {
     route: {
-      params: { shippingFee }
+      params: { orders }
     }
   } = props
-  const navigation = useNavigation()
-  const { user, setUser } = useContext(UserContext)
-  const [shipping, setshipping] = useState({})
-  const { storageData, setStorageData } = useStorage()
-  const [showOrderDetails, setShowOrderDetails] = useState(false)
-  const [order, setOrder] = useState(null)
 
-  const goBack = () => {
+  const navigation = useNavigation()
+  const { user } = useContext(UserContext)
+  const [shipping, setshipping] = useState({})
+  const [shippingFee, setshippingFee] = useState(0)
+  const [showOrderDetails, setShowOrderDetails] = useState(false)
+
+  const goBack = async () => {
+    console.log(JSON.stringify(orders, null, 2))
+    if (orders.status == '03') {
+      const res = await OrderHTTP.remove(orders._id)
+      console.log('đã xóa hóa đơn tạm')
+    }
     navigation.goBack()
   }
 
-  const allBasePrices = storageData.map(item => item.newPrice)
+  useEffect(() => {
+    const fetchData = () => {
+      if (user) {
+        user.shipping.map(item => {
+          if (item.selected == true) {
+            setshipping(item)
+          }
+        })
+        if (orders.carts.length === 0) {
+          goBack()
+        } else {
+          navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+        }
+        if (orders.amount < 499000) {
+          setshippingFee(49000)
+        } else {
+          setshippingFee(0)
+        }
+      }
+    }
+    fetchData()
+  }, [orders])
+
+  const allBasePrices = orders.carts.map(item => {
+    const ok = item.base_price * item.quantity
+
+    return ok
+  })
+
   const totalBasePrice = sumBasePrices(allBasePrices)
   function sumBasePrices(allBasePrices) {
     let total = 0
@@ -47,38 +79,14 @@ const PayPage = props => {
     }
     return total
   }
+  console.log(totalBasePrice)
 
-  // thành tiền
-  const totalPrices = totalBasePrice + shippingFee
   // format phí ships
   const formattedShippingFee = formatCurrency(shippingFee)
   // format giá trị đơn hàng
   const formattedValueOfOrders = formatCurrency(totalBasePrice)
   // format thành tiền
-  const formattedTotalPrices = formatCurrency(totalPrices)
-
-  useEffect(() => {
-    if (user) {
-      user.shipping.map(item => {
-        if (item.selected == true) {
-          setshipping(item)
-        }
-      })
-      if (storageData.length === 0) {
-        goBack()
-      } else {
-        navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-      }
-
-      setOrder({
-        ...order,
-        amount: totalPrices,
-        carts: storageData,
-        user: user
-        // shipping: { shippingAddress }
-      })
-    }
-  }, [storageData])
+  const formattedTotalPrices = formatCurrency(orders.amount)
 
   const showToastDeleted = title => {
     Toast.show({
@@ -92,35 +100,43 @@ const PayPage = props => {
   }
 
   // Logic: onClick delete Item from List
-  const handleDeleteFromList = async (attributes_id, product_Name) => {
-    const result = await AsyncStorage.getItem('my-cart')
-    let storage = []
-    if (result !== null) {
-      storage = JSON.parse(result)
-    }
+  const handleDeleteFromList = async (attributes_id, product_Name, item) => {
+    // if (storageData) {
+    //   const result = await AsyncStorage.getItem('my-cart')
+    //   let storage = []
+    //   if (result !== null) {
+    //     storage = JSON.parse(result)
+    //   }
 
-    const newStorage = storage.filter(s => s.attributes_id !== attributes_id)
-    setStorageData(newStorage)
-    await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
-    let title = product_Name
-    showToastDeleted(title)
+    //   const newStorage = storage.filter(s => s.attributes_id !== attributes_id)
+    //   setStorageData(newStorage)
+    //   await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
+    //   let title = product_Name
+    //   showToastDeleted(title)
+    // } else {
+    // }
+    if (item) {
+    }
   }
 
   const handleCheck = async () => {
-    try {
-      const body = {
-        carts: storageData,
-        user: user,
-        amount: totalPrices
-      }
-      const res = await OrderHTTP.insert(body)
-      setOrder(res)
-      navigation.navigate('MyChecks', { order: order, orderId: res._id })
-      return res
-    } catch (error) {
-      // Kiểm tra phản hồi lỗi từ server
-      console.log('Error response:', error)
-    }
+    // try {
+    //   const body = {
+    //     user: user,
+    //     amount: amount ? amount : totalPrices,
+    //     carts: cart ? cart : storageData
+    //   }
+    //   const res = await OrderHTTP.insert(body)
+    //   setOrder(res)
+
+    //   return res
+    // } catch (error) {
+    //   // Kiểm tra phản hồi lỗi từ server
+    //   console.log('Error response:', error)
+    // }
+    navigation.navigate('MyChecks', { order: orders, orderId: orders._id })
+    console.log('order: ', orders)
+    console.log('orderId: ', orders._id)
   }
 
   const itemShortList = ({ item, index }) => {
@@ -148,6 +164,7 @@ const PayPage = props => {
               onPress={() => console.log(attributes_id)}
               style={{
                 position: 'absolute',
+
                 bottom: 4,
                 right: 4,
                 backgroundColor: Colors.white,
@@ -165,7 +182,7 @@ const PayPage = props => {
   const shortlist = () => {
     return (
       <FlatList
-        data={storageData}
+        data={orders.carts}
         renderItem={itemShortList}
         scrollEnabled={true}
         horizontal
@@ -268,7 +285,7 @@ const PayPage = props => {
                 <View style={{ marginStart: 16 }}>
                   <Text style={[styles.txt_title, { fontSize: 14 }]}>Bưu kiện</Text>
                   <Text style={[styles.txt_description, { fontSize: 12, marginTop: 8 }]}>
-                    {storageData.length} sản phẩm
+                    {orders.carts.length} sản phẩm
                   </Text>
                 </View>
               </View>
@@ -343,7 +360,7 @@ const PayPage = props => {
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
           >
-            <Text style={styles.txt_title}>Tổng ( {storageData.length} mặt hàng )</Text>
+            <Text style={styles.txt_title}>Tổng ( {orders.carts.length} mặt hàng )</Text>
             <Text style={styles.txt_title}>{formattedTotalPrices}</Text>
           </View>
           <Text style={[styles.txt_description, { fontSize: 10 }]}>
@@ -443,6 +460,7 @@ const PayPage = props => {
 
   const ItemCarts = ({ item, index }) => {
     const { product_Name, base_price, size, color, image, code, quantity, attributes_id } = item
+    const { _id } = item
     const newPrice = { ...item, newPrice: base_price * quantity }
     const formattedPriceProduct = formatCurrency(newPrice.newPrice)
     const formattedBasePriceProduct = formatCurrency(base_price)
@@ -527,8 +545,7 @@ const PayPage = props => {
             }}
           >
             <TouchableOpacity
-              // onPress={() => handleDeleteFromList(attributes, product_Name)}
-              onPress={() => handleDeleteFromList(attributes_id, product_Name)}
+              onPress={() => handleDeleteFromList(attributes_id, product_Name, item, index)}
               style={{
                 alignItems: 'center',
                 width: '100%',
@@ -548,7 +565,7 @@ const PayPage = props => {
       <FlatList
         showsVerticalScrollIndicator={false}
         scrollEnabled={false}
-        data={storageData}
+        data={orders.carts}
         renderItem={ItemCarts}
       />
     )
@@ -571,7 +588,7 @@ const PayPage = props => {
             <View style={{ marginStart: 16 }}>
               <Text style={[styles.txt_title, { fontSize: 16 }]}>Bưu kiện</Text>
               <Text style={[styles.txt_description, { fontSize: 12, marginTop: 8 }]}>
-                {storageData.length} sản phẩm
+                {orders.carts.length} sản phẩm
               </Text>
             </View>
           </View>

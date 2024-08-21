@@ -1,4 +1,3 @@
-import * as Linking from 'expo-linking'
 import React from 'react'
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
@@ -17,8 +16,6 @@ const MyChecks = props => {
     }
   } = props
 
-  console.log(orderId)
-
   const check = async () => {
     try {
       const body = {
@@ -29,9 +26,7 @@ const MyChecks = props => {
         bankCode: '',
         language: 'vn'
       }
-
       const res = await PaymentHTTP.create_url(body)
-
       navigation.navigate('WebViewPayment', { res: res })
     } catch (error) {
       console.log('Error response:', error)
