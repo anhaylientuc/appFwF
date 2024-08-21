@@ -173,6 +173,7 @@ const BagPage = props => {
       }
       const res = await OrderHTTP.insert(body)
       setMyOrder(res)
+      console.log('đã tạo hóa đơn', res.status)
       navigation.navigate('PayPage', { orders: res })
       // if (res.status === '01') {
       //   navigation.navigate('PayPage', { orders: res })
