@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import qs from 'qs'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
   Animated,
   Dimensions,
@@ -6,59 +7,57 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-} from 'react-native';
-import Colors from 'src/constants/Colors';
-import MyText from 'src/constants/FontFamily';
-import { FilterContext } from 'src/contexts/FilterProvider';
-import Icons from 'src/components/icons/Icon';
-import NewHTTP from 'src/utils/http/NewHTTP';
-import qs from 'qs';
-import Spinner from 'react-native-loading-spinner-overlay';
-import Names from 'src/constants/Names';
+  View
+} from 'react-native'
+import Spinner from 'react-native-loading-spinner-overlay'
+import Icons from 'src/components/icons/Icon'
+import Colors from 'src/constants/Colors'
+import MyText from 'src/constants/FontFamily'
+import Names from 'src/constants/Names'
+import { FilterContext } from 'src/contexts/FilterProvider'
+import NewHTTP from 'src/utils/http/NewHTTP'
 
-const windowWidth = Dimensions.get('window').width;
+const windowWidth = Dimensions.get('window').width
 
-const DetailFilter = (props) => {
+const DetailFilter = props => {
   const {
     navigation,
     route: {
-      params: { child, keySelected, queryString },
-    },
-  } = props;
+      params: { child, keySelected, queryString }
+    }
+  } = props
 
-  const position = useRef(new Animated.ValueXY({ x: 500, y: 0 })).current;
-  const [isListItem, setListItem] = useState([]);
-  const [selectedId, setSelectedId] = useState(child);
-  const [quantity, setQuantity] = useState();
-  const [map, setmap] = useState([]);
-  const { filterState, setFilterState } = useContext(FilterContext);
-  const [products, setproducts] = useState([]);
-  const [myHashMap, setmyHashMap] = useState(null);
-  const [attr, setattr] = useState(null);
-  const [loading, setloading] = useState(false);
-  const [colors, setcolors] = useState([]);
+  const position = useRef(new Animated.ValueXY({ x: 500, y: 0 })).current
+  const [isListItem, setListItem] = useState([])
+  const [selectedId, setSelectedId] = useState(child)
+  const [quantity, setQuantity] = useState()
+  const [map, setmap] = useState([])
+  const { filterState, setFilterState } = useContext(FilterContext)
+  const [products, setproducts] = useState([])
+  const [myHashMap, setmyHashMap] = useState(null)
+  const [attr, setattr] = useState(null)
+  const [loading, setloading] = useState(false)
+  const [colors, setcolors] = useState([])
   const [childState, setchildState] = useState([])
   useEffect(() => {
     Animated.timing(position, {
       toValue: { x: 0, y: 0 },
       duration: 250,
-      useNativeDriver: true,
-    }).start();
-  }, [position]);
+      useNativeDriver: true
+    }).start()
+  }, [position])
 
   useEffect(() => {
     setTimeout(() => {
-      setloading(false);
-    }, 2000);
-  }, []);
+      setloading(false)
+    }, 2000)
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         //const response = child;
-        if (!Array.isArray(child))
-          return;
+        if (!Array.isArray(child)) return
         console.log('>>>', child)
         if (filterState instanceof Map && filterState.has(keySelected)) {
           const filter = filterState.get(keySelected)
@@ -69,9 +68,7 @@ const DetailFilter = (props) => {
           })
           console.log(newChild)
           setvalues(newChild)
-        }
-        else
-          setvalues(child);
+        } else setvalues(child)
 
         // fetchValues()
         // const newHashMap = new Map();
@@ -86,19 +83,16 @@ const DetailFilter = (props) => {
         //   setmyHashMap(newHashMap);
         // }
 
-
-        await fetchAttr();
+        await fetchAttr()
       } catch (error) {
         // Handle error
-        console.log(error);
+        console.log(error)
       }
-    };
-    fetchData();
-  }, []);
+    }
+    fetchData()
+  }, [])
 
-
-
-  const [values, setvalues] = useState([]);
+  const [values, setvalues] = useState([])
   const fetchValues = () => {
     try {
       if (!(filterState instanceof Map)) {
@@ -116,93 +110,90 @@ const DetailFilter = (props) => {
       })
       setvalues(newValues)
     } catch (error) {
-      console.log('fetchValues', error);
+      console.log('fetchValues', error)
     }
-  };
+  }
 
   const handleChecked = async (item, index) => {
     try {
-      setloading(true);
+      setloading(true)
       let newValues = values.map((obj, i) => {
-        const { selected } = obj;
+        const { selected } = obj
         if (index == i) {
-          return { ...obj, selected: !selected };
+          return { ...obj, selected: !selected }
         }
-        return obj;
-      });
+        return obj
+      })
 
-      setvalues(newValues);
+      setvalues(newValues)
       newValues = newValues
-        .filter((item) => item.selected == true)
-        .map((item) => {
-          return item.value;
-        });
+        .filter(item => item.selected == true)
+        .map(item => {
+          return item.value
+        })
 
-      const updatedHashmap = new Map(filterState);
-      updatedHashmap.set(keySelected, newValues);
-      if (newValues.length == 0)
-        updatedHashmap.delete(keySelected);
+      const updatedHashmap = new Map(filterState)
+      updatedHashmap.set(keySelected, newValues)
+      if (newValues.length == 0) updatedHashmap.delete(keySelected)
       console.log(updatedHashmap)
-      setFilterState(updatedHashmap);
+      setFilterState(updatedHashmap)
       console.log(filterState)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     } finally {
-      setloading(false);
+      setloading(false)
     }
-  };
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       console.log('ok')
-      await fetchAttr();
-    };
-    fetchData();
-  }, [filterState]);
+      await fetchAttr()
+    }
+    fetchData()
+  }, [filterState])
 
   const fetchAttr = async () => {
     try {
-      setloading(true);
+      setloading(true)
 
-      const attr = [];
-      var newQs = qs.parse(queryString);
+      const attr = []
+      var newQs = qs.parse(queryString)
       for (const [key, value] of filterState.entries()) {
         if (key == 'Giá') {
           newQs.minPrice = value[0]
           newQs.maxPrice = value[1]
-        }
-        else {
+        } else {
           attr.push({
             key: key,
-            value: value,
-          });
+            value: value
+          })
         }
-
       }
 
-      newQs = { ...newQs, attributes: attr };
-      newQs = qs.stringify(newQs);
-      const res = await NewHTTP.getFilter(newQs);
+      newQs = { ...newQs, attributes: attr }
+      newQs = qs.stringify(newQs)
+      const res = await NewHTTP.getFilter(newQs)
 
-      const { _attributes, _products } = res;
-      setproducts(_products);
+      const { _attributes, _products } = res
+      setproducts(_products)
     } catch (error) {
-      console.log('fetchAttr', error);
+      console.log('fetchAttr', error)
     } finally {
-      setloading(false);
+      setloading(false)
     }
-  };
+  }
 
   const handleDeleteAllFilter = () => {
     if (filterState instanceof Map) {
-      filterState.delete(keySelected);
-      setFilterState(filterState);
+      filterState.delete(keySelected)
+      setFilterState(filterState)
     }
-    const newValues = values.map((item) => {
-      return { ...item, selected: false };
-    });
-    setvalues(newValues);
-  };
+    const newValues = values.map(item => {
+      return { ...item, selected: false }
+    })
+    setvalues(newValues)
+  }
 
   return (
     <KeyboardAvoidingView>
@@ -211,29 +202,25 @@ const DetailFilter = (props) => {
           backgroundColor: Colors.white,
           width: windowWidth,
           height: '100%',
-          transform: [{ translateX: position.x }, { translateY: position.y }],
+          transform: [{ translateX: position.x }, { translateY: position.y }]
         }}
       >
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={styles.spinnerTextStyle}
-        />
+        <Spinner visible={loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle} />
         <View style={{ paddingHorizontal: 16 }}>
           <View
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
               paddingVertical: 16,
-              alignItems: 'center',
+              alignItems: 'center'
             }}
           >
             <TouchableOpacity
               style={{ flex: 1 }}
               onPress={() => {
                 navigation.navigate('Filter', {
-                  map: map,
-                });
+                  map: map
+                })
               }}
             >
               <Icons.AntDesign name="arrowleft" size={30} />
@@ -247,7 +234,7 @@ const DetailFilter = (props) => {
             <View style={{ flex: 1 }}>
               {myHashMap instanceof Map && myHashMap.has(keySelected) && (
                 <TouchableOpacity onPress={() => handleDeleteAllFilter()}>
-                  <Text>Xóa các bộ lọc</Text>
+                  <Text style={[styles.txt_description, { fontSize: 12 }]}>Xóa các bộ lọc</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -256,12 +243,18 @@ const DetailFilter = (props) => {
           {values.map((item, index) => {
             const { value } = item
             return (
-              <View key={index} style={[styles.section,
-              { backgroundColor: values[index].selected ? Colors.lightgoldenrodyellow : 'white', width: '100%', },
-              values[index].quantity==0?{ opacity: 0.3, pointerEvents: 'none' }:null
-              ]} >
+              <View
+                key={index}
+                style={[
+                  styles.section,
+                  {
+                    backgroundColor: values[index].selected ? Colors.lightgoldenrodyellow : 'white',
+                    width: '100%'
+                  },
+                  values[index].quantity == 0 ? { opacity: 0.3, pointerEvents: 'none' } : null
+                ]}
+              >
                 <TouchableOpacity
-
                   style={styles.checkboxContainer}
                   onPress={() => handleChecked(item, index)}
                 >
@@ -270,20 +263,20 @@ const DetailFilter = (props) => {
                     size={24}
                   />
                   <Text style={{ marginStart: 16 }}>{Names[value] ? Names[value] : value}</Text>
-                  {
-                    keySelected == 'Màu sắc' ?
-                      <View style={{
+                  {keySelected == 'Màu sắc' ? (
+                    <View
+                      style={{
                         width: 14,
                         height: 14,
                         borderRadius: 7,
                         borderColor: 'black',
                         borderWidth: 1,
                         backgroundColor: Colors[value] ? Colors[value] : 'white',
-                        alignItems: 'center', marginLeft: 5
-                      }}>
-
-                      </View> : null
-                  }
+                        alignItems: 'center',
+                        marginLeft: 5
+                      }}
+                    ></View>
+                  ) : null}
                 </TouchableOpacity>
                 <Text style={styles.paragraph}>{item.quantity}</Text>
               </View>
@@ -298,16 +291,16 @@ const DetailFilter = (props) => {
           paddingVertical: 16,
           paddingHorizontal: 20,
           backgroundColor: Colors.grayBg,
-          width: '100%',
+          width: '100%'
         }}
       >
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('ItemCategories', { _products: products });
+            navigation.navigate('ItemCategories', { _products: products })
           }}
           style={{
             backgroundColor: Colors.black,
-            padding: 16,
+            padding: 16
           }}
         >
           <Text
@@ -315,7 +308,7 @@ const DetailFilter = (props) => {
               color: Colors.white,
               fontSize: 16,
               textAlign: 'center',
-              fontFamily: 'Montserrat-SemiBold',
+              fontFamily: 'Montserrat-SemiBold'
             }}
           >
             Hiện thị {products && products.length} sản phẩm
@@ -323,25 +316,34 @@ const DetailFilter = (props) => {
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
-export default DetailFilter;
+export default DetailFilter
 
 const styles = StyleSheet.create({
+  txt_title: {
+    fontSize: 12,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.black2
+  },
+  txt_description: {
+    fontSize: 10,
+    fontFamily: 'Montserrat-Medium',
+    color: Colors.black2
+  },
   section: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-
+    justifyContent: 'space-between'
   },
   paragraph: {
-    fontSize: 15,
+    fontSize: 15
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    margin: 8,
+    margin: 8
   },
   checkbox: {
     width: 24,
@@ -349,6 +351,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 4,
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+    alignItems: 'center'
+  }
+})

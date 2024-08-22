@@ -24,26 +24,28 @@ const height = Dimensions.get('window').height
 
 const ItemCategories = props => {
   const {
-    route: { params: { categoryById, _products } },
-  } = props;
-  const navigation = useNavigation();
-  const { storageFavorites, setStorageFavorites } = useStorage();
-  const [windowWith, setwindowWith] = useState(width);
-  const [windowHeight, setwindowHeight] = useState(height);
-  const [categoriesById, setCategoriesById] = useState([]);
-  const [products, setproducts] = useState([]);
-  const [addFavorite, setAddFavorite] = useState(false);
-  const [numColumns, setNumColumns] = useState(2);
-  const [selected, setSelected] = useState();
-  const [nameCategoryById, setnameCategoryById] = useState('');
-  const [selectedProductId, setselectedProductId] = useState(null);
-  const { filterState, setFilterState } = useContext(FilterContext);
-  const isFocusScreen = useIsFocused();
-  const [isShowProducts, setIsShowProducts] = useState(false);
-  const [productsParent, setproductsParent] = useState([]);
-  const [favoritesIds, setFavoritesIds] = useState([]);
-  const [_id, set_id] = useState(null);
-  const [attributesArr, setattributesArr] = useState([]);
+    route: {
+      params: { categoryById, _products }
+    }
+  } = props
+  const navigation = useNavigation()
+  const { storageFavorites, setStorageFavorites } = useStorage()
+  const [windowWith, setwindowWith] = useState(width)
+  const [windowHeight, setwindowHeight] = useState(height)
+  const [categoriesById, setCategoriesById] = useState([])
+  const [products, setproducts] = useState([])
+  const [addFavorite, setAddFavorite] = useState(false)
+  const [numColumns, setNumColumns] = useState(2)
+  const [selected, setSelected] = useState()
+  const [nameCategoryById, setnameCategoryById] = useState('')
+  const [selectedProductId, setselectedProductId] = useState(null)
+  const { filterState, setFilterState } = useContext(FilterContext)
+  const isFocusScreen = useIsFocused()
+  const [isShowProducts, setIsShowProducts] = useState(false)
+  const [productsParent, setproductsParent] = useState([])
+  const [favoritesIds, setFavoritesIds] = useState([])
+  const [_id, set_id] = useState(null)
+  const [attributesArr, setattributesArr] = useState([])
 
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -97,11 +99,10 @@ const ItemCategories = props => {
       const newArr = []
       for (const [key, value] of newMap.entries()) {
         if (key == 'Giá') {
-          setprice(value)
-          newArr.push({ key: 'Giá', value:'Giá' })
+          // setprice(value)
+          newArr.push({ key: 'Giá', value: 'Giá' })
           continue
-        }
-        else {
+        } else {
           value.map(item => {
             newArr.push({ key: key, value: item })
           })
@@ -336,10 +337,8 @@ const ItemCategories = props => {
       if (!newMap.has(key)) {
         newMap.set(key, [])
       }
-      if(key=='Giá')
-        newMap.set(key,price)
-      else
-        newMap.get(key).push(value)
+      if (key == 'Giá') newMap.set(key, price)
+      else newMap.get(key).push(value)
     })
     console.log(newMap)
     setFilterState(newMap)
@@ -353,12 +352,11 @@ const ItemCategories = props => {
         const listPrice = filterState.get(key)
         query.minPrice = listPrice[0]
         query.maxPrice = listPrice[1]
-        continue;
+        continue
       }
       attributes.push({ key, value })
     }
-    if (attributes.length > 0)
-      query.attributes = attributes
+    if (attributes.length > 0) query.attributes = attributes
     const queryString = qs.stringify(query)
     const res = await NewHTTP.getFilter(queryString)
     const { _attributes, _products } = res

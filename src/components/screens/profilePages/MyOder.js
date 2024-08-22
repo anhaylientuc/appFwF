@@ -44,7 +44,7 @@ const MyOder = props => {
       <View
         style={{ marginVertical: 8, padding: 16, backgroundColor: Colors.white, paddingBottom: 32 }}
       >
-        {status === '00' && <Text style={styles.txt_title}>Đang vận chuyển</Text>}
+        {status === '00' && <Text style={styles.txt_title}>Đã thanh toán</Text>}
         {status === '01' && (
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
