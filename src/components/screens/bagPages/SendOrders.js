@@ -15,6 +15,8 @@ import MyText from 'src/constants/FontFamily'
 import { formatCurrency, formatDate, useStorage } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import OrderHTTP from 'src/utils/http/OrderHTTP'
+import { CommonActions } from '@react-navigation/native';
+
 const SendOrders = props => {
   const { navigation, route } = props
   const { order } = route.params
@@ -61,7 +63,7 @@ const SendOrders = props => {
           transactionStatus: vnp_TransactionStatus,
           txnRef: vnp_TxnRef
         }
-
+       
         // TH thành công
         if (payment.responseCode == '00') {
           console.log('====================================')
@@ -168,7 +170,14 @@ const SendOrders = props => {
       </View>
     )
   }
-
+  function resetToScreen(navigation) {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
+        routes: [{ name: 'BagPage' }], // Tên của màn hình mà bạn muốn điều hướng đến
+      })
+    );
+  }
   const oder = () => {
     return (
       <View>
@@ -314,7 +323,8 @@ const SendOrders = props => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               style={styles.container_setting}
-              onPress={() => navigation.navigate('ProfileStack')}
+              onPress={() => { navigation.pop()
+                navigation.navigate('ProfileStack')}}
             >
               <Icons.AntDesign name="inbox" size={24} />
               <Text style={styles.txtSetting}>GIAO HÀNG</Text>
@@ -359,7 +369,10 @@ const SendOrders = props => {
         <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.red, fontSize: 16 }]}>
           Thanh toán không thành công
         </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeStack')}>
+        <TouchableOpacity onPress={() => {
+
+          resetToScreen(navigation)
+          navigation.navigate('HomeStack')}}>
           <Text>Đơn hàng</Text>
         </TouchableOpacity>
       </View>
