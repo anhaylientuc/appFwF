@@ -73,7 +73,7 @@ const BagPage = props => {
         const shippingOrder = user.shipping.filter(s => s.selected === true)
         setoderUser({ ...user, shipping: shippingOrder })
       }
-      console.log(totalBasePrice)
+
       setCart(...storageData)
       setPrice(totalBasePrice)
       if (totalBasePrice < 499000) {
@@ -156,7 +156,6 @@ const BagPage = props => {
 
     return total
   }
-  console.log(transportFee)
 
   const handlePayPage = async () => {
     try {
@@ -164,7 +163,6 @@ const BagPage = props => {
         const { attributes, ...rest } = item // Loại bỏ thuộc tính 'attributes'
         return rest // Trả về đối tượng mới mà không có 'attributes'
       })
-      console.log(filteredData)
 
       const body = {
         user: oderUser,
@@ -174,16 +172,11 @@ const BagPage = props => {
       const res = await OrderHTTP.insert(body)
       setMyOrder(res)
       navigation.navigate('PayPage', { orders: res })
-      // if (res.status === '01') {
-      //   navigation.navigate('PayPage', { orders: res })
-      // } else {
-      //   console.log(res.status)
-      // }
 
       return res
     } catch (error) {
       // Kiểm tra phản hồi lỗi từ server
-      console.log('Error response:', error)
+      // console.log('Error response:', error)
     }
   }
 
