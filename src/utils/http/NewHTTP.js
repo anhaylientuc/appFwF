@@ -77,5 +77,16 @@ export const getFilter = async query => {
     console.log('error', error)
   }
 }
-
-export default { getProducts, getFilter }
+const search=async(query)=>{
+  try {
+    const axiosInstance = AxiosInstance()
+    const url = `/search?${query}`
+    console.log(url)
+    const response = await axiosInstance.get(url)
+    console.log('cc',response)
+    return response
+  } catch (error) {
+    throw error
+  }
+}
+export default { getProducts, getFilter,search }
