@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native'
+import { CommonActions, useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
   Dimensions,
@@ -32,13 +32,24 @@ const PayPage = props => {
   const [shipping, setshipping] = useState({})
   const [shippingFee, setshippingFee] = useState(0)
   const [showOrderDetails, setShowOrderDetails] = useState(false)
-
+  function resetToScreen(navigation) {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
+        routes: [{ name: 'BagPage' }] // Tên của màn hình mà bạn muốn điều hướng đến
+      })
+    )
+  }
   const goBack = async () => {
-    if (orders.status == '03') {
+    if (orders.status === '03') {
       const res = await OrderHTTP.remove(orders._id)
-      console.log('đã xóa hóa đơn tạm')
+      console.log('Đã xóa hóa đơn tạm')
     }
-    navigation.navigate('BagPage')
+
+    // Quay trở lại màn hình trước đó
+    resetToScreen(navigation)
+
+    // Cập nhật lại tabBarStyle của parent (nếu cần thiết)
     navigation.getParent().setOptions({
       tabBarStyle: {
         backgroundColor: Colors.white,
@@ -167,20 +178,6 @@ const PayPage = props => {
               }}
               source={{ uri: image }}
             />
-            <TouchableOpacity
-              onPress={() => console.log(attributes_id)}
-              style={{
-                position: 'absolute',
-
-                bottom: 4,
-                right: 4,
-                backgroundColor: Colors.white,
-                padding: 4,
-                borderRadius: 50
-              }}
-            >
-              <Icons.Feather name="trash-2" size={20} />
-            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -209,7 +206,11 @@ const PayPage = props => {
               <Text style={styles.txt_description}>{user.username}</Text>
               <Text style={[styles.txt_description, { marginTop: 8 }]}>{user.email}</Text>
             </View>
-            <Icons.Feather name={'arrow-right'} size={24} color={Colors.black} />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ProfileStack', { screen: 'SettingProfile' })}
+            >
+              <Icons.Feather name={'arrow-right'} size={24} color={Colors.black} />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -553,7 +554,7 @@ const PayPage = props => {
               borderTopRightRadius: 8
             }}
           >
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => handleDeleteFromList(attributes_id, product_Name, item, index)}
               style={{
                 alignItems: 'center',
@@ -562,7 +563,7 @@ const PayPage = props => {
               }}
             >
               <Icons.Feather name={'trash-2'} size={20} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </TouchableOpacity>
         </View>
       </SafeAreaView>

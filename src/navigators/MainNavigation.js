@@ -116,6 +116,12 @@ function MainNavigator() {
           component={WebViewPayment}
           options={{ title: 'WebViewPayment' }}
         />
+        <Stack.Screen
+          name="SettingProfile"
+          component={SettingProfile}
+          options={{ title: 'SettingProfile' }}
+        />
+        <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }} />
         <Stack.Screen name="SendOrders" component={SendOrders} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
       </Stack.Navigator>

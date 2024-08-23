@@ -1,3 +1,4 @@
+import { CommonActions, useNavigation } from '@react-navigation/native'
 import qs from 'qs'
 import React, { useContext, useEffect, useState } from 'react'
 import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
@@ -8,8 +9,8 @@ import { formatCurrency } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import OrderHTTP from 'src/utils/http/OrderHTTP'
 
-const MyOder = props => {
-  const { navigation } = props
+const MyOder = () => {
+  const navigation = useNavigation()
   const { user } = useContext(UserContext)
   const [myoder, setmyoder] = useState([])
   const [transportFee, setTransportFee] = useState()
@@ -31,9 +32,30 @@ const MyOder = props => {
     fetchData()
   }, [navigation])
 
+  function resetToScreen(navigation, item) {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
+        routes: [
+          {
+            name: 'BagStack', // Đặt tên cho stack chứa PayPage
+            params: {
+              // Truyền params cho stack nếu cần thiết
+              screen: 'PayPage', // Chỉ định màn hình 'PayPage' trong stack
+              params: {
+                orders: item // Truyền tham số 'orders' cho PayPage
+              }
+            }
+          }
+        ]
+      })
+    )
+  }
+
   const handlePayPage = async item => {
+    resetToScreen(navigation, item) // Reset stack và điều hướng đến 'PayPage'
     navigation.navigate('BagStack', {
-      screen: 'PayPage', // Chỉ định màn hình 'PayPage' trong 'BagStack'
+      screen: 'PayPage',
       params: {
         orders: item // Truyền tham số 'orders'
       }

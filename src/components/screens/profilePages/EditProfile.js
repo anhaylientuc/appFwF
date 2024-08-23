@@ -1,4 +1,5 @@
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
+import { useNavigation } from 'expo-router'
 import React, { useContext, useEffect, useState } from 'react'
 import {
   KeyboardAvoidingView,
@@ -16,8 +17,8 @@ import Colors from 'src/constants/Colors'
 import UserHTTP from 'src/utils/http/UserHTTP'
 import UserContext from '../../../contexts/UserContext'
 
-const EditProfile = props => {
-  const { navigation } = props
+const EditProfile = () => {
+  const navigation = useNavigation()
   const [birthDate, setbirthDate] = useState(new Date())
   const [isShowGender, setIsShowGender] = useState(false)
   const [gender, setGender] = useState(null) // Initialize gender state

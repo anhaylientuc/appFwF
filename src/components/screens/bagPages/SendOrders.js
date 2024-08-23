@@ -166,6 +166,14 @@ const SendOrders = props => {
       </View>
     )
   }
+  function resetProfileStack(navigation) {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
+        routes: [{ name: 'Profile' }] // Tên của màn hình mà bạn muốn điều hướng đến
+      })
+    )
+  }
   function resetToScreen(navigation) {
     navigation.dispatch(
       CommonActions.reset({
@@ -386,6 +394,7 @@ const SendOrders = props => {
         <TouchableOpacity
           onPress={() => {
             resetToScreen(navigation)
+            resetProfileStack(navigation)
             navigation.navigate('ProfileStack', { screen: 'MyOder' })
           }}
         >

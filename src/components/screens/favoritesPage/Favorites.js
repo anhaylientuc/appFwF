@@ -377,9 +377,12 @@ const Favorites = () => {
 
   const handleClickItem = item => {
     const { _id, product_id } = item
-    navigation.navigate('ProductDetail', {
-      _id: _id,
-      product_id: product_id
+    navigation.navigate('ShopStack', {
+      screen: 'ProductDetail',
+      params: {
+        _id: _id,
+        product_id: product_id
+      }
     })
   }
 
@@ -597,8 +600,10 @@ const Favorites = () => {
               data={selected}
               numColumns={3}
               renderItem={({ item, index }) => {
+                const { cnt, value } = item
                 return (
                   <TouchableOpacity
+                    disabled={cnt == 0 ? true : false}
                     style={{
                       borderWidth: 1,
                       justifyContent: 'center',
@@ -609,7 +614,8 @@ const Favorites = () => {
                       marginEnd: 16,
                       marginBottom: 16,
                       borderColor: item._id === attributes_id ? Colors.red : Colors.gray,
-                      backgroundColor: item._id === attributes_id ? Colors.red : Colors.white
+                      backgroundColor: item._id === attributes_id ? Colors.red : Colors.white,
+                      opacity: cnt == 0 ? 0.3 : 1
                     }}
                     onPress={() => {
                       handleSelectAndPresentModal(item, index)
