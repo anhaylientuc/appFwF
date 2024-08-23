@@ -132,12 +132,18 @@ function MainNavigator() {
           component={ReturnMethod}
           options={{ title: 'ReturnMethod' }}
         />
+         <Stack.Screen
+          name="WebViewPayment"
+          component={WebViewPayment}
+          options={{ title: 'WebViewPayment' }}
+        />
         <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }} />
         <Stack.Screen
           name="SettingProfile"
           component={SettingProfile}
           options={{ title: 'SettingProfile' }}
         />
+           <Stack.Screen name="MyChecks" component={MyChecks} options={{ title: 'MyChecks' }} />
         <Stack.Screen
           name="EditProfile"
           component={EditProfile}

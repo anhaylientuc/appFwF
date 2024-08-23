@@ -1,3 +1,4 @@
+import { CommonActions } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
   FlatList,
@@ -15,7 +16,6 @@ import MyText from 'src/constants/FontFamily'
 import { formatCurrency, formatDate, useStorage } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import OrderHTTP from 'src/utils/http/OrderHTTP'
-import { CommonActions } from '@react-navigation/native';
 
 const SendOrders = props => {
   const { navigation, route } = props
@@ -63,12 +63,11 @@ const SendOrders = props => {
           transactionStatus: vnp_TransactionStatus,
           txnRef: vnp_TxnRef
         }
-       
+        setStorageData([])
         // TH thành công
         if (payment.responseCode == '00') {
           console.log('====================================')
           console.log('Thanh toán thành công')
-
           const res = await OrderHTTP.update(payment.orderInfo, { payment })
           console.log(JSON.stringify(res, null, 2))
           setvnp_CardType(payment.cardType)
@@ -100,9 +99,7 @@ const SendOrders = props => {
           newOrder.status = '01'
           delete newOrder.payment
           delete newOrder._id
-          console.log(JSON.stringify(newOrder, null, 2))
           const newRes = await OrderHTTP.insert(newOrder)
-          console.log('Hóa đơn đang chờ', JSON.stringify(newOrder, null, 2))
         } else {
           throw new Error('Lỗi không xác định')
         }
@@ -174,7 +171,15 @@ const SendOrders = props => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
-        routes: [{ name: 'BagPage' }], // Tên của màn hình mà bạn muốn điều hướng đến
+        routes: [{ name: 'BagPage' }] // Tên của màn hình mà bạn muốn điều hướng đến
+      })
+    )
+  }
+  function resetProfileStack(navigation) {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
+        routes: [{ name: 'Profile' }], // Tên của màn hình mà bạn muốn điều hướng đến
       })
     );
   }
@@ -323,8 +328,17 @@ const SendOrders = props => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               style={styles.container_setting}
-              onPress={() => { navigation.pop()
-                navigation.navigate('ProfileStack')}}
+<<<<<<< HEAD
+              onPress={() => { 
+                resetToScreen(navigation)
+                resetProfileStack(navigation)
+                navigation.navigate('ProfileStack',{screen: 'MyOrder'})}}
+=======
+              onPress={() => {
+                navigation.pop()
+                navigation.navigate('ProfileStack')
+              }}
+>>>>>>> 4bb9064ed16103bd2666b1fc14a90198f4bfd7b9
             >
               <Icons.AntDesign name="inbox" size={24} />
               <Text style={styles.txtSetting}>GIAO HÀNG</Text>
@@ -369,10 +383,20 @@ const SendOrders = props => {
         <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.red, fontSize: 16 }]}>
           Thanh toán không thành công
         </Text>
+<<<<<<< HEAD
         <TouchableOpacity onPress={() => {
 
           resetToScreen(navigation)
-          navigation.navigate('HomeStack')}}>
+          resetProfileStack(navigation)
+          navigation.navigate('ProfileStack',{screen:'Profile'})}}>
+=======
+        <TouchableOpacity
+          onPress={() => {
+            resetToScreen(navigation)
+            navigation.navigate('HomeStack')
+          }}
+        >
+>>>>>>> 4bb9064ed16103bd2666b1fc14a90198f4bfd7b9
           <Text>Đơn hàng</Text>
         </TouchableOpacity>
       </View>
