@@ -48,7 +48,6 @@ const Filter = props => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        console.log('ok', filterState)
         navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
         if (category_id) {
           set_category_id(category_id)
@@ -69,7 +68,7 @@ const Filter = props => {
         const response = await NewHTTP.getFilter(queryString)
         const { _attributes, _products } = response
         setFilterData(_attributes)
-        console.log(filterData)
+
         setProducts(_products) // Ensure products are set here
       } catch (error) {
         console.log('Error fetching data:', error)
@@ -90,7 +89,6 @@ const Filter = props => {
         setminPrice(min)
         setMaxPrice(max)
         if (filterState instanceof Map && filterState.has('Giá')) {
-          console.log('cc')
           const values = filterState.get('Giá')
           min = values[0]
           max = values[1]

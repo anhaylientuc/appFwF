@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import { useContext, useEffect, useRef, useState } from 'react'
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Image,
@@ -25,6 +26,7 @@ const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 const BagPage = props => {
   const { user } = useContext(UserContext)
+  const [loading, setLoading] = useState(false) // Add loading state
   const sheetRef = useRef(null)
   const navigation = useNavigation()
   const { storageData, setStorageData } = useStorage()
@@ -40,7 +42,7 @@ const BagPage = props => {
   const [favoritesIds, setFavoritesIds] = useState([])
   const [oderUser, setoderUser] = useState([])
 
-  const setBottomBar = () => {
+  useEffect(() => {
     navigation.getParent().setOptions({
       tabBarStyle: {
         backgroundColor: Colors.white,
@@ -49,7 +51,7 @@ const BagPage = props => {
         height: 54
       }
     })
-  }
+  }, [navigation])
 
   useEffect(() => {
     const loadFavorites = async () => {
@@ -69,29 +71,35 @@ const BagPage = props => {
 
   useEffect(() => {
     const fetchData = () => {
-      if (user) {
-        const shippingOrder = user.shipping.filter(s => s.selected === true)
-        setoderUser({ ...user, shipping: shippingOrder })
-      }
+      try {
+        setLoading(true)
+        if (user) {
+          const shippingOrder = user.shipping.filter(s => s.selected === true)
+          setoderUser({ ...user, shipping: shippingOrder })
+        }
+        setCart(...storageData)
+        setPrice(totalBasePrice)
+        if (totalBasePrice < 499000) {
+          setTransportFee(49000)
+        } else {
+          setTransportFee(0)
+        }
+        const filteredData = storageData.map(item => {
+          const { attributes, ...rest } = item // Loại bỏ thuộc tính 'attributes'
+          return rest // Trả về đối tượng mới mà không có 'attributes'
+        })
 
-      setCart(...storageData)
-      setPrice(totalBasePrice)
-      if (totalBasePrice < 499000) {
-        setTransportFee(49000)
-      } else {
-        setTransportFee(0)
+        setMyOrder({
+          ...myOrder,
+          user: oderUser,
+          carts: filteredData,
+          amount: totalPrices
+        })
+      } catch (error) {
+        console.log('Error fetching data:', error)
+      } finally {
+        setLoading(false) // Stop loading
       }
-      const filteredData = storageData.map(item => {
-        const { attributes, ...rest } = item // Loại bỏ thuộc tính 'attributes'
-        return rest // Trả về đối tượng mới mà không có 'attributes'
-      })
-
-      setMyOrder({
-        ...myOrder,
-        user: oderUser,
-        carts: filteredData,
-        amount: totalPrices
-      })
     }
     fetchData()
   }, [storageData])
@@ -117,7 +125,6 @@ const BagPage = props => {
       //  text2: 'Đây là một cái gì đó '
       onPress: () => {
         navigation.navigate('FavoriteStack')
-        setBottomBar()
       }
     })
   }
@@ -159,6 +166,7 @@ const BagPage = props => {
 
   const handlePayPage = async () => {
     try {
+      setLoading(true)
       const filteredData = storageData.map(item => {
         const { attributes, ...rest } = item // Loại bỏ thuộc tính 'attributes'
         return rest // Trả về đối tượng mới mà không có 'attributes'
@@ -177,6 +185,8 @@ const BagPage = props => {
     } catch (error) {
       // Kiểm tra phản hồi lỗi từ server
       // console.log('Error response:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -249,7 +259,6 @@ const BagPage = props => {
     if (result !== null) {
       storage = JSON.parse(result)
     }
-
     const newStorage = storage.filter(s => s.attributes_id !== visiblePopupMenu)
     setStorageData(newStorage)
     await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
@@ -862,11 +871,8 @@ const BagPage = props => {
         backgroundColor: Colors.grayBg
       }}
     >
-      <View style={[styles.header]}>
-        <View style={{ flexDirection: 'row' }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icons.Ionicons name={'arrow-back-sharp'} size={24} color={Colors.black} />
-          </TouchableOpacity>
+      <View style={styles.header}>
+        <View>
           <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_header}>
             Giỏ hàng của tôi
           </MyText>
@@ -895,105 +901,111 @@ const BagPage = props => {
           </TouchableOpacity>
         ) : null}
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: Colors.grayBg }}>
-        <MyText style={{ textAlign: 'center', padding: 16, fontSize: 12 }}>
-          Miễn phí giao hàng cho Member với đơn từ 499k
-        </MyText>
-        {/* {noCart()} */}
-        {cart ? ListItemCart() : noCart()}
-        <View style={{ height: 20 }} />
-        <View style={{ marginVertical: 16 }}>
-          <MyText
-            fontFamily={'Montserrat-SemiBold'}
-            style={{
-              fontWeight: '500',
-              color: Colors.black,
-              fontSize: 12,
-              marginHorizontal: 16
-            }}
-          >
-            Chúng tôi chấp nhận
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.black} />
+        </View>
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: Colors.grayBg }}>
+          <MyText style={{ textAlign: 'center', padding: 16, fontSize: 12 }}>
+            Miễn phí giao hàng cho Member với đơn từ 499k
           </MyText>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: 16,
-              marginVertical: 16,
-              backgroundColor: Colors.white
-            }}
-          >
-            <View>
-              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 10 }}>
-                Thanh toán khi
-              </MyText>
-              <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 10 }}>
-                nhận hàng
-              </MyText>
-            </View>
-
-            <Image
-              style={{ width: 120, height: 36 }}
-              source={require('@assets/images/logo_primary.png')}
-            />
-            <Image
-              style={{ width: 36, height: 36 }}
-              source={require('@assets/images/ic_momo.png')}
-            />
-            <Image
-              style={{ width: 52, height: 32 }}
-              source={require('@assets/images/ic_master_card.png')}
-            />
-            <View />
-          </View>
-          <View
-            style={{
-              backgroundColor: Colors.white,
-              padding: 16,
-              width: windowWith
-            }}
-          >
-            <MyText style={{ fontSize: 10 }}>
-              Giá cả và chi phí giao hàng này chưa phải là cuối cùng cho đến khi bạn tới phần thanh
-              toán.
+          {/* {noCart()} */}
+          {cart ? ListItemCart() : noCart()}
+          <View style={{ height: 20 }} />
+          <View style={{ marginVertical: 16 }}>
+            <MyText
+              fontFamily={'Montserrat-SemiBold'}
+              style={{
+                fontWeight: '500',
+                color: Colors.black,
+                fontSize: 12,
+                marginHorizontal: 16
+              }}
+            >
+              Chúng tôi chấp nhận
             </MyText>
             <View
               style={{
                 flexDirection: 'row',
-                marginTop: 8,
-                width: windowWith - 16
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: 16,
+                marginVertical: 16,
+                backgroundColor: Colors.white
               }}
             >
-              <MyText style={{ fontSize: 10 }}>Miễn phí trả hàng trong 30 ngày.</MyText>
-              <MyText style={{ borderBottomWidth: 0.5, marginStart: 4, fontSize: 10 }}>
-                trả hàng và hoàn tiền
-              </MyText>
+              <View>
+                <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 10 }}>
+                  Thanh toán khi
+                </MyText>
+                <MyText style={{ textAlign: 'center', color: Colors.black, fontSize: 10 }}>
+                  nhận hàng
+                </MyText>
+              </View>
+
+              <Image
+                style={{ width: 120, height: 36 }}
+                source={require('@assets/images/logo_primary.png')}
+              />
+              <Image
+                style={{ width: 36, height: 36 }}
+                source={require('@assets/images/ic_momo.png')}
+              />
+              <Image
+                style={{ width: 52, height: 32 }}
+                source={require('@assets/images/ic_master_card.png')}
+              />
+              <View />
             </View>
+            <View
+              style={{
+                backgroundColor: Colors.white,
+                padding: 16,
+                width: windowWith
+              }}
+            >
+              <MyText style={{ fontSize: 10 }}>
+                Giá cả và chi phí giao hàng này chưa phải là cuối cùng cho đến khi bạn tới phần
+                thanh toán.
+              </MyText>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginTop: 8,
+                  width: windowWith - 16
+                }}
+              >
+                <MyText style={{ fontSize: 10 }}>Miễn phí trả hàng trong 30 ngày.</MyText>
+                <MyText style={{ borderBottomWidth: 0.5, marginStart: 4, fontSize: 10 }}>
+                  trả hàng và hoàn tiền
+                </MyText>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('ReturnMethod')}
+              style={{
+                marginTop: 16,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                backgroundColor: Colors.white,
+                paddingHorizontal: 20,
+                paddingVertical: 12
+              }}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Icons.Feather name={'box'} size={32} />
+                <MyText style={{ marginStart: 16, fontWeight: '500', fontSize: 10 }}>
+                  Giao hàng và chọn phương thức đổi trả
+                </MyText>
+              </View>
+              <Icons.MaterialIcons name={'navigate-next'} size={24} />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            onPress={() => props.navigation.navigate('ReturnMethod')}
-            style={{
-              marginTop: 16,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              backgroundColor: Colors.white,
-              paddingHorizontal: 20,
-              paddingVertical: 12
-            }}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icons.Feather name={'box'} size={32} />
-              <MyText style={{ marginStart: 16, fontWeight: '500', fontSize: 10 }}>
-                Giao hàng và chọn phương thức đổi trả
-              </MyText>
-            </View>
-            <Icons.MaterialIcons name={'navigate-next'} size={24} />
-          </TouchableOpacity>
-        </View>
-        {/* <View style={{ height: 32 }} /> */}
-      </ScrollView>
+          {/* <View style={{ height: 32 }} /> */}
+        </ScrollView>
+      )}
       <BottomSheet
         height={windowHeight / 1.6}
         style={{ backgroundColor: Colors.white }}
@@ -1049,9 +1061,8 @@ const styles = StyleSheet.create({
     fontWeight: '500'
   },
   txt_header: {
-    marginStart: 32,
-    fontWeight: '600',
-    fontSize: 16
+    fontSize: 18,
+    paddingHorizontal: 8
   },
   header: {
     backgroundColor: Colors.white,
@@ -1117,6 +1128,11 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 8,
     elevation: 4,
     shadowColor: Colors.gray
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
 

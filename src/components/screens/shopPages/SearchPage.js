@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import qs from 'qs'
+import React, { useEffect, useState } from 'react'
 import {
   Animated,
   Dimensions,
@@ -7,23 +8,22 @@ import {
   TextInput,
   TouchableOpacity,
   View
-} from 'react-native';
-import Colors from 'src/constants/Colors';
-import MyText from 'src/constants/FontFamily';
-import Icons from '../../icons/Icon';
-import NewHTTP from 'src/utils/http/NewHTTP';
-import qs from 'qs';
+} from 'react-native'
+import Colors from 'src/constants/Colors'
+import MyText from 'src/constants/FontFamily'
+import NewHTTP from 'src/utils/http/NewHTTP'
+import Icons from '../../icons/Icon'
 
-const windowWith = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+const windowWith = Dimensions.get('window').width
+const windowHeight = Dimensions.get('window').height
 
 const SearchPage = props => {
-  const { navigation } = props;
-  const [keyword, setkeyword] = useState('');
-  const [debouncedKeyword, setdebouncedKeyword] = useState(keyword);
-  const [suggest, setsuggest] = useState([]);
+  const { navigation } = props
+  const [keyword, setkeyword] = useState('')
+  const [debouncedKeyword, setdebouncedKeyword] = useState(keyword)
+  const [suggest, setsuggest] = useState([])
 
-  const position = new Animated.ValueXY({ x: 0, y: 0 });
+  const position = new Animated.ValueXY({ x: 0, y: 0 })
 
   // Chỉ thực hiện hoạt ảnh khi màn hình được hiển thị lần đầu tiên
   useEffect(() => {
@@ -31,39 +31,39 @@ const SearchPage = props => {
       toValue: { x: 0, y: 0 },
       duration: 500,
       useNativeDriver: true
-    }).start();
-  }, []); // [] đảm bảo rằng hoạt ảnh chỉ chạy một lần khi màn hình được render lần đầu
+    }).start()
+  }, []) // [] đảm bảo rằng hoạt ảnh chỉ chạy một lần khi màn hình được render lần đầu
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      console.log(keyword);
-      setdebouncedKeyword(keyword);
-    }, 500);
+      console.log(keyword)
+      setdebouncedKeyword(keyword)
+    }, 500)
 
     return () => {
-      clearTimeout(handler);
-    };
-  }, [keyword]);
+      clearTimeout(handler)
+    }
+  }, [keyword])
 
   useEffect(() => {
     if (debouncedKeyword) {
-      console.log(debouncedKeyword);
+      console.log(debouncedKeyword)
       const fetchData = async () => {
-        const query = {};
-        query.keyword = debouncedKeyword;
-        const queryString = qs.stringify(query);
-        const response = await NewHTTP.search(queryString);
-        setsuggest(response);
-      };
-      fetchData();
+        const query = {}
+        query.keyword = debouncedKeyword
+        const queryString = qs.stringify(query)
+        const response = await NewHTTP.search(queryString)
+        setsuggest(response)
+      }
+      fetchData()
     } else {
-      setsuggest([]);
+      setsuggest([])
     }
-  }, [debouncedKeyword]);
+  }, [debouncedKeyword])
 
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
-  }, []);
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+  }, [])
 
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -73,8 +73,8 @@ const SearchPage = props => {
         paddingVertical: 8,
         height: 54
       }
-    });
-  };
+    })
+  }
 
   return (
     <Animated.View
@@ -129,11 +129,13 @@ const SearchPage = props => {
           </Text>
           <Text style={{ color: Colors.black, fontFamily: 'Montserrat-SemiBold' }}>Xóa</Text>
         </View>
-        {
-          suggest.map((item, index) => {
-            const {keyword}=item
-            return (<TouchableOpacity
-              onPress={() => { navigation.replace('SearchDetail', { keyword: keyword }) }}
+        {suggest.map((item, index) => {
+          const { keyword } = item
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.replace('SearchDetail', { keyword: keyword })
+              }}
               key={index}
               style={{
                 flexDirection: 'row',
@@ -150,11 +152,10 @@ const SearchPage = props => {
               </View>
               <Icons.AntDesign name="arrowright" size={24} />
             </TouchableOpacity>
-            )
-          })
-        }
+          )
+        })}
       </View>
-      <View style={{ position: 'absolute', bottom: 16 }}>
+      <View style={{ position: 'absolute', bottom: 32 }}>
         <View
           style={{
             flexDirection: 'row',
@@ -178,9 +179,9 @@ const SearchPage = props => {
         </View>
       </View>
     </Animated.View>
-  );
-};
+  )
+}
 
-export default SearchPage;
+export default SearchPage
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({})

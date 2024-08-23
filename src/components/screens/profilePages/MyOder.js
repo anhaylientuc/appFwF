@@ -32,9 +32,12 @@ const MyOder = props => {
   }, [navigation])
 
   const handlePayPage = async item => {
-    const { carts, amount, status } = item
-
-    navigation.navigate('PayPage', { shippingFee: transportFee, orders: item })
+    navigation.navigate('BagStack', {
+      screen: 'PayPage', // Chỉ định màn hình 'PayPage' trong 'BagStack'
+      params: {
+        orders: item // Truyền tham số 'orders'
+      }
+    })
   }
 
   const renderOrder = ({ item }) => {

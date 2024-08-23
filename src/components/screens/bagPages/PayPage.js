@@ -34,12 +34,19 @@ const PayPage = props => {
   const [showOrderDetails, setShowOrderDetails] = useState(false)
 
   const goBack = async () => {
-    console.log(JSON.stringify(orders, null, 2))
     if (orders.status == '03') {
       const res = await OrderHTTP.remove(orders._id)
       console.log('đã xóa hóa đơn tạm')
     }
-    navigation.goBack()
+    navigation.navigate('BagPage')
+    navigation.getParent().setOptions({
+      tabBarStyle: {
+        backgroundColor: Colors.white,
+        bottom: 0,
+        paddingVertical: 8,
+        height: 54
+      }
+    })
   }
 
   useEffect(() => {
@@ -265,7 +272,9 @@ const PayPage = props => {
                   </View>
                 </View>
               </View>
-              <TouchableOpacity onPress={() => navigation.navigate('MyAddress')}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ProfileStack', { screen: 'MyAddress' })}
+              >
                 <Icons.MaterialIcons name={'navigate-next'} size={20} />
               </TouchableOpacity>
             </View>

@@ -63,6 +63,10 @@ const ProductDetail = props => {
   const [attributes, setattributes] = useState()
 
   useEffect(() => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+  }, [navigation])
+
+  useEffect(() => {
     const listener = scrollY.addListener(({ value }) => {
       if (value > windowHeight / 2) {
         setHeaderBg(Colors.white)
@@ -79,7 +83,6 @@ const ProductDetail = props => {
   }, [scrollY])
 
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const loadFavorites = async () => {
       const storedFavorites = await AsyncStorage.getItem('my-favorites')
       if (storedFavorites) {
@@ -305,16 +308,8 @@ const ProductDetail = props => {
   }
 
   const handleGoBag = () => {
-    setBottomBar()
     navigation.navigate('BagStack', {
-      screen: 'BagPage',
-      tabBarStyle: {
-        backgroundColor: Colors.white,
-        bottom: 0,
-        paddingVertical: 8,
-        height: 54
-        // position: 'absolute'
-      }
+      screen: 'BagPage'
     })
   }
 

@@ -22,13 +22,21 @@ export const SearchDetail = props => {
   const [products, setproducts] = useState([])
   const [check, setcheck] = useState([])
   useEffect(() => {
+    navigation.getParent().setOptions({
+      tabBarStyle: {
+        backgroundColor: Colors.white,
+        bottom: 0,
+        paddingVertical: 8,
+        height: 54
+      }
+    })
     const fetchData = async () => {
       const response = await NewHTTP.getProducts({ keyword: keyword })
       console.log(response)
       setproducts(response)
     }
     fetchData()
-  }, [])
+  }, [navigation])
   function swapNe(x) {
     try {
       if (!products || products.length === 0) return

@@ -66,7 +66,6 @@ const SendOrders = props => {
         setStorageData([])
         // TH thành công
         if (payment.responseCode == '00') {
-          console.log('====================================')
           console.log('Thanh toán thành công')
           const res = await OrderHTTP.update(payment.orderInfo, { payment })
           console.log(JSON.stringify(res, null, 2))
@@ -361,20 +360,36 @@ const SendOrders = props => {
         style={{
           paddingHorizontal: 16,
           backgroundColor: Colors.white,
+          alignItems: 'center',
+          justifyContent: 'center',
           width: '100%',
           height: '100%'
         }}
       >
+        <Text
+          style={[
+            styles.txt_title,
+            { textAlign: 'center', color: Colors.black2, fontSize: 16, paddingTop: 16 }
+          ]}
+        >
+          Thanh toán
+        </Text>
+        <View style={{ alignItems: 'center' }}>
+          <Image
+            source={require('../../../assets/images/ic_error.png')}
+            style={{ width: 104, height: 104 }}
+          />
+        </View>
         <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.red, fontSize: 16 }]}>
-          Thanh toán không thành công
+          Giao dịch không thành công
         </Text>
         <TouchableOpacity
           onPress={() => {
             resetToScreen(navigation)
-            navigation.navigate('HomeStack')
+            navigation.navigate('ProfileStack', { screen: 'MyOder' })
           }}
         >
-          <Text>Đơn hàng</Text>
+          <Text style={styles.txt_description}>Xem đơn hàng</Text>
         </TouchableOpacity>
       </View>
     )
@@ -442,6 +457,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    height: '100%'
+    height: '100%',
+    backgroundColor: Colors.grayBg
   }
 })
