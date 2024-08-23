@@ -117,10 +117,11 @@ function MainNavigator() {
           options={{ title: 'WebViewPayment' }}
         />
         <Stack.Screen
-          name="SettingProfile"
-          component={SettingProfile}
-          options={{ title: 'SettingProfile' }}
+          name="EditProfile"
+          component={EditProfile}
+          options={{ title: 'EditProfile' }}
         />
+        <Stack.Screen name="MyAddress" component={MyAddress} options={{ title: 'MyAddress' }} />
         <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }} />
         <Stack.Screen name="SendOrders" component={SendOrders} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
@@ -137,7 +138,7 @@ function MainNavigator() {
           component={ReturnMethod}
           options={{ title: 'ReturnMethod' }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="WebViewPayment"
           component={WebViewPayment}
           options={{ title: 'WebViewPayment' }}
@@ -148,7 +149,7 @@ function MainNavigator() {
           component={SettingProfile}
           options={{ title: 'SettingProfile' }}
         />
-           <Stack.Screen name="MyChecks" component={MyChecks} options={{ title: 'MyChecks' }} />
+        <Stack.Screen name="MyChecks" component={MyChecks} options={{ title: 'MyChecks' }} />
         <Stack.Screen
           name="EditProfile"
           component={EditProfile}

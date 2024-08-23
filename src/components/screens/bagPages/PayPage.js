@@ -62,22 +62,26 @@ const PayPage = props => {
 
   useEffect(() => {
     const fetchData = () => {
-      if (user) {
-        user.shipping.map(item => {
-          if (item.selected == true) {
-            setshipping(item)
+      try {
+        if (user) {
+          user.shipping.map(item => {
+            if (item.selected == true) {
+              setshipping(item)
+            }
+          })
+          if (orders.carts.length === 0) {
+            goBack()
+          } else {
+            navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
           }
-        })
-        if (orders.carts.length === 0) {
-          goBack()
-        } else {
-          navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+          if (orders.amount < 499000) {
+            setshippingFee(49000)
+          } else {
+            setshippingFee(0)
+          }
         }
-        if (orders.amount < 499000) {
-          setshippingFee(49000)
-        } else {
-          setshippingFee(0)
-        }
+      } catch (error) {
+        console.log(error)
       }
     }
     fetchData()
@@ -152,7 +156,7 @@ const PayPage = props => {
     //   // Kiểm tra phản hồi lỗi từ server
     //   console.log('Error response:', error)
     // }
-    navigation.navigate( 'MyChecks', { order: orders, orderId: orders._id })
+    navigation.navigate('MyChecks', { order: orders, orderId: orders._id })
     console.log('order: ', orders)
     console.log('orderId: ', orders._id)
   }
@@ -206,9 +210,7 @@ const PayPage = props => {
               <Text style={styles.txt_description}>{user.username}</Text>
               <Text style={[styles.txt_description, { marginTop: 8 }]}>{user.email}</Text>
             </View>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ProfileStack', { screen: 'SettingProfile' })}
-            >
+            <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}>
               <Icons.Feather name={'arrow-right'} size={24} color={Colors.black} />
             </TouchableOpacity>
           </View>
@@ -273,10 +275,8 @@ const PayPage = props => {
                   </View>
                 </View>
               </View>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('ProfileStack', { screen: 'MyAddress' })}
-              >
-                <Icons.MaterialIcons name={'navigate-next'} size={20} />
+              <TouchableOpacity onPress={() => navigation.navigate('MyAddress')}>
+                <Icons.MaterialIcons name={'navigate-next'} size={24} />
               </TouchableOpacity>
             </View>
           )}
@@ -301,10 +301,10 @@ const PayPage = props => {
               </View>
               <TouchableOpacity
                 onPress={() => setShowOrderDetails(!showOrderDetails)}
-                style={{ flexDirection: 'row' }}
+                style={{ flexDirection: 'row', alignItems: 'center' }}
               >
                 <Text style={[styles.txt_description, { fontSize: 12 }]}>Chi tiết đơn hàng</Text>
-                <Icons.MaterialIcons name={'navigate-next'} size={20} style={{ marginStart: 8 }} />
+                <Icons.MaterialIcons name={'navigate-next'} size={24} style={{ marginStart: 8 }} />
               </TouchableOpacity>
             </View>
             {shortlist()}
@@ -425,7 +425,7 @@ const PayPage = props => {
             paddingVertical: 16
           }}
         >
-          <Icons.MaterialIcons name="lock-outline" size={20} />
+          <Icons.MaterialIcons name="lock-outline" size={24} />
           <Text style={[styles.txt_description, { textAlign: 'center', fontSize: 10 }]}>
             Tất cả dữ liệu sẽ được mã hóa
           </Text>

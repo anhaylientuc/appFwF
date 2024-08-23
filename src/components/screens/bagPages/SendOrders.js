@@ -179,9 +179,9 @@ const SendOrders = props => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
-        routes: [{ name: 'Profile' }], // Tên của màn hình mà bạn muốn điều hướng đến
+        routes: [{ name: 'Profile' }] // Tên của màn hình mà bạn muốn điều hướng đến
       })
-    );
+    )
   }
   const oder = () => {
     return (
@@ -328,10 +328,11 @@ const SendOrders = props => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               style={styles.container_setting}
-              onPress={() => { 
+              onPress={() => {
                 resetToScreen(navigation)
                 resetProfileStack(navigation)
-                navigation.navigate('ProfileStack',{screen: 'MyOrder'})}}
+                navigation.navigate('ProfileStack', { screen: 'MyOrder' })
+              }}
             >
               <Icons.AntDesign name="inbox" size={24} />
               <Text style={styles.txtSetting}>GIAO HÀNG</Text>
@@ -370,18 +371,27 @@ const SendOrders = props => {
           paddingHorizontal: 16,
           backgroundColor: Colors.white,
           width: '100%',
-          height: '100%'
+          height: '100%',
+          justifyContent: 'center',
+          alignItems: 'center'
         }}
       >
+        <Text style={[styles.txt_title, { marginVertical: 16, fontSize: 18 }]}>Thanh toán</Text>
+        <Image
+          source={require('../../../assets/images/ic_error.png')}
+          style={{ width: 104, height: 104, marginBottom: 16 }}
+        />
         <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.red, fontSize: 16 }]}>
           Thanh toán không thành công
         </Text>
-        <TouchableOpacity onPress={() => {
-
-          resetToScreen(navigation)
-          resetProfileStack(navigation)
-          navigation.navigate('ProfileStack',{screen:'Profile'})}}>
-          <Text>Đơn hàng</Text>
+        <TouchableOpacity
+          onPress={() => {
+            resetToScreen(navigation)
+            resetProfileStack(navigation)
+            navigation.navigate('ProfileStack', { screen: 'Profile' })
+          }}
+        >
+          <Text style={styles.txt_title}>Đơn hàng đã bị hủy</Text>
         </TouchableOpacity>
       </View>
     )

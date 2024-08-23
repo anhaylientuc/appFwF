@@ -1,6 +1,14 @@
 import { useNavigation } from '@react-navigation/native'
 import React, { useEffect, useState } from 'react'
-import { FlatList, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import {
+  ActivityIndicator,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
@@ -15,14 +23,18 @@ const Categories = props => {
   const navigation = useNavigation()
   const [categoriesId, setCategoriesId] = useState({})
   const [nameCategories, setnameCategories] = useState('')
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true)
         const response = await getCategoryById(categoryId)
         setCategoriesId(response.child)
         setnameCategories(response.name)
       } catch (error) {
         console.log(error)
+      } finally {
+        setLoading(false)
       }
     }
     fetchData()
@@ -47,7 +59,7 @@ const Categories = props => {
         <MyText
           style={{
             color: Colors.black,
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: '400',
             left: 40,
             bottom: 17
@@ -74,7 +86,10 @@ const Categories = props => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={{ backgroundColor: Colors.grayBg }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ backgroundColor: Colors.grayBg, width: '100%', height: '100%' }}
+        showsVerticalScrollIndicator={false}
+      >
         <TouchableOpacity
           style={{
             backgroundColor: Colors.red,
@@ -87,7 +102,7 @@ const Categories = props => {
           }}
         >
           <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_VIEW_ALL_ITEMS}>
-            VIEW ALL ITEMS
+            XEM TẤT CẢ THỂ LOẠI
           </MyText>
         </TouchableOpacity>
 
@@ -101,17 +116,24 @@ const Categories = props => {
             fontWeight: '500'
           }}
         >
-          Choose category
+          Thể loại thời trang
         </MyText>
 
-        <FlatList
-          style={{ marginBottom: '5%' }}
-          scrollEnabled={false}
-          showsVerticalScrollIndicator={false} // thanh cuộn
-          showsHorizontalScrollIndicator={false}
-          data={categoriesId}
-          renderItem={renderItem}
-        />
+        {!loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.black} />
+            <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text>
+          </View>
+        ) : (
+          <FlatList
+            style={{ marginBottom: '5%' }}
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false} // thanh cuộn
+            showsHorizontalScrollIndicator={false}
+            data={categoriesId}
+            renderItem={renderItem}
+          />
+        )}
       </ScrollView>
     </View>
   )
@@ -120,6 +142,11 @@ const Categories = props => {
 export default Categories
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   txt_VIEW_ALL_ITEMS: {
     color: Colors.white,
     fontSize: 12,
@@ -136,12 +163,22 @@ const styles = StyleSheet.create({
   txt_search: {
     color: Colors.black,
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '400'
   },
   view_search: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 16
+  },
+  txt_title: {
+    fontSize: 12,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.black2
+  },
+  txt_description: {
+    fontSize: 10,
+    fontFamily: 'Montserrat-Medium',
+    color: Colors.black2
   }
 })

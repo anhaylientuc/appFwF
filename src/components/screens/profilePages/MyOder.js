@@ -1,7 +1,16 @@
 import { CommonActions, useNavigation } from '@react-navigation/native'
 import qs from 'qs'
 import React, { useContext, useEffect, useState } from 'react'
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
@@ -14,19 +23,27 @@ const MyOder = () => {
   const { user } = useContext(UserContext)
   const [myoder, setmyoder] = useState([])
   const [transportFee, setTransportFee] = useState()
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
-      const query = {}
-      query.user_id = user._id
-      const queryString = qs.stringify(query)
-      const res = await OrderHTTP.get(queryString)
-      console.log(res.length)
-      setmyoder(res)
-      if (res.amount <= 499000) {
-        setTransportFee(49000)
-      } else {
-        setTransportFee(0)
+      try {
+        setLoading(true)
+        const query = {}
+        query.user_id = user._id
+        const queryString = qs.stringify(query)
+        const res = await OrderHTTP.get(queryString)
+        console.log(res.length)
+        setmyoder(res)
+        if (res.amount <= 499000) {
+          setTransportFee(49000)
+        } else {
+          setTransportFee(0)
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false)
       }
     }
     fetchData()
@@ -38,14 +55,7 @@ const MyOder = () => {
         index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
         routes: [
           {
-            name: 'BagStack', // Đặt tên cho stack chứa PayPage
-            params: {
-              // Truyền params cho stack nếu cần thiết
-              screen: 'PayPage', // Chỉ định màn hình 'PayPage' trong stack
-              params: {
-                orders: item // Truyền tham số 'orders' cho PayPage
-              }
-            }
+            name: 'Profile' // Đặt tên cho stack chứa PayPage
           }
         ]
       })
@@ -53,7 +63,7 @@ const MyOder = () => {
   }
 
   const handlePayPage = async item => {
-    resetToScreen(navigation, item) // Reset stack và điều hướng đến 'PayPage'
+    resetToScreen(navigation, item)
     navigation.navigate('BagStack', {
       screen: 'PayPage',
       params: {
@@ -154,62 +164,64 @@ const MyOder = () => {
   }
 
   return (
-    <View>
-      <View style={styles.container}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 16,
-            paddingVertical: 16,
-            alignItems: 'center',
-            width: '100%'
-          }}
+    <View style={styles.container}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+          alignItems: 'center',
+          width: '100%'
+        }}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icons.AntDesign name="arrowleft" size={24} style={{ flex: 1 }} />
+        </TouchableOpacity>
+        <MyText
+          fontFamily={'Montserrat-SemiBold'}
+          style={{ marginStart: 16, fontSize: 20, textAlign: 'center', flex: 2 }}
         >
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icons.AntDesign name="arrowleft" size={24} style={{ flex: 1 }} />
-          </TouchableOpacity>
-          <MyText
-            fontFamily={'Montserrat-SemiBold'}
-            style={{ marginStart: 16, fontSize: 20, textAlign: 'center', flex: 2 }}
-          >
-            Đơn hàng của tôi
-          </MyText>
-          <View style={{ flex: 1 }} />
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 16,
-            width: '100%'
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              width: '100%',
-              borderBottomWidth: 2,
-              paddingVertical: 16,
-              borderBlockColor: Colors.red
-            }}
-          >
-            <Text style={{ textAlign: 'center' }}>Trực tuyến ({myoder.length})</Text>
-          </View>
-          <View style={{ flex: 1, width: '100%', borderBottomWidth: 0, paddingVertical: 16 }}>
-            <Text style={{ textAlign: 'center' }}>Tại cửa hàng (0)</Text>
-          </View>
-        </View>
-
-        {myoder.length === 0 ? (
-          noOrder()
-        ) : (
-          <View style={{ padding: 16, height: '100%' }}>
-            <FlatList data={myoder} renderItem={renderOrder} showsVerticalScrollIndicator={false} />
-            <View style={{ height: 94 }} />
-          </View>
-        )}
+          Đơn hàng của tôi
+        </MyText>
+        <View style={{ flex: 1 }} />
       </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          width: '100%'
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            width: '100%',
+            borderBottomWidth: 2,
+            paddingVertical: 16,
+            borderBlockColor: Colors.red
+          }}
+        >
+          <Text style={{ textAlign: 'center' }}>Trực tuyến ({myoder.length})</Text>
+        </View>
+        <View style={{ flex: 1, width: '100%', borderBottomWidth: 0, paddingVertical: 16 }}>
+          <Text style={{ textAlign: 'center' }}>Tại cửa hàng (0)</Text>
+        </View>
+      </View>
+
+      {!myoder ? (
+        noOrder()
+      ) : loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.black} />
+        </View>
+      ) : (
+        <View style={{ padding: 16, height: '100%' }}>
+          <FlatList data={myoder} renderItem={renderOrder} showsVerticalScrollIndicator={false} />
+          <View style={{ height: 94 }} />
+        </View>
+      )}
     </View>
   )
 }
@@ -217,6 +229,11 @@ const MyOder = () => {
 export default MyOder
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   txt_title: {
     fontSize: 12,
     fontFamily: 'Montserrat-SemiBold',
