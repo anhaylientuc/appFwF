@@ -328,17 +328,10 @@ const SendOrders = props => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               style={styles.container_setting}
-<<<<<<< HEAD
               onPress={() => { 
                 resetToScreen(navigation)
                 resetProfileStack(navigation)
                 navigation.navigate('ProfileStack',{screen: 'MyOrder'})}}
-=======
-              onPress={() => {
-                navigation.pop()
-                navigation.navigate('ProfileStack')
-              }}
->>>>>>> 4bb9064ed16103bd2666b1fc14a90198f4bfd7b9
             >
               <Icons.AntDesign name="inbox" size={24} />
               <Text style={styles.txtSetting}>GIAO HÀNG</Text>
@@ -383,20 +376,11 @@ const SendOrders = props => {
         <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.red, fontSize: 16 }]}>
           Thanh toán không thành công
         </Text>
-<<<<<<< HEAD
         <TouchableOpacity onPress={() => {
 
           resetToScreen(navigation)
           resetProfileStack(navigation)
           navigation.navigate('ProfileStack',{screen:'Profile'})}}>
-=======
-        <TouchableOpacity
-          onPress={() => {
-            resetToScreen(navigation)
-            navigation.navigate('HomeStack')
-          }}
-        >
->>>>>>> 4bb9064ed16103bd2666b1fc14a90198f4bfd7b9
           <Text>Đơn hàng</Text>
         </TouchableOpacity>
       </View>
