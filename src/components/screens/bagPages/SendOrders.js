@@ -66,6 +66,7 @@ const SendOrders = props => {
         setStorageData([])
         // TH thành công
         if (payment.responseCode == '00') {
+          console.log('====================================')
           console.log('Thanh toán thành công')
           const res = await OrderHTTP.update(payment.orderInfo, { payment })
           console.log(JSON.stringify(res, null, 2))
@@ -166,14 +167,6 @@ const SendOrders = props => {
       </View>
     )
   }
-  function resetProfileStack(navigation) {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
-        routes: [{ name: 'Profile' }] // Tên của màn hình mà bạn muốn điều hướng đến
-      })
-    )
-  }
   function resetToScreen(navigation) {
     navigation.dispatch(
       CommonActions.reset({
@@ -181,6 +174,14 @@ const SendOrders = props => {
         routes: [{ name: 'BagPage' }] // Tên của màn hình mà bạn muốn điều hướng đến
       })
     )
+  }
+  function resetProfileStack(navigation) {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
+        routes: [{ name: 'Profile' }], // Tên của màn hình mà bạn muốn điều hướng đến
+      })
+    );
   }
   const oder = () => {
     return (
@@ -327,10 +328,10 @@ const SendOrders = props => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               style={styles.container_setting}
-              onPress={() => {
-                navigation.pop()
-                navigation.navigate('ProfileStack')
-              }}
+              onPress={() => { 
+                resetToScreen(navigation)
+                resetProfileStack(navigation)
+                navigation.navigate('ProfileStack',{screen: 'MyOrder'})}}
             >
               <Icons.AntDesign name="inbox" size={24} />
               <Text style={styles.txtSetting}>GIAO HÀNG</Text>
@@ -368,37 +369,19 @@ const SendOrders = props => {
         style={{
           paddingHorizontal: 16,
           backgroundColor: Colors.white,
-          alignItems: 'center',
-          justifyContent: 'center',
           width: '100%',
           height: '100%'
         }}
       >
-        <Text
-          style={[
-            styles.txt_title,
-            { textAlign: 'center', color: Colors.black2, fontSize: 16, paddingTop: 16 }
-          ]}
-        >
-          Thanh toán
-        </Text>
-        <View style={{ alignItems: 'center' }}>
-          <Image
-            source={require('../../../assets/images/ic_error.png')}
-            style={{ width: 104, height: 104 }}
-          />
-        </View>
         <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.red, fontSize: 16 }]}>
-          Giao dịch không thành công
+          Thanh toán không thành công
         </Text>
-        <TouchableOpacity
-          onPress={() => {
-            resetToScreen(navigation)
-            resetProfileStack(navigation)
-            navigation.navigate('ProfileStack', { screen: 'MyOder' })
-          }}
-        >
-          <Text style={styles.txt_description}>Xem đơn hàng</Text>
+        <TouchableOpacity onPress={() => {
+
+          resetToScreen(navigation)
+          resetProfileStack(navigation)
+          navigation.navigate('ProfileStack',{screen:'Profile'})}}>
+          <Text>Đơn hàng</Text>
         </TouchableOpacity>
       </View>
     )
@@ -466,7 +449,6 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    height: '100%',
-    backgroundColor: Colors.grayBg
+    height: '100%'
   }
 })

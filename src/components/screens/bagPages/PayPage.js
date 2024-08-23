@@ -152,7 +152,7 @@ const PayPage = props => {
     //   // Kiểm tra phản hồi lỗi từ server
     //   console.log('Error response:', error)
     // }
-    navigation.navigate('MyChecks', { order: orders, orderId: orders._id })
+    navigation.navigate( 'MyChecks', { order: orders, orderId: orders._id })
     console.log('order: ', orders)
     console.log('orderId: ', orders._id)
   }
