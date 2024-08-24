@@ -1,6 +1,8 @@
-import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect, useState } from 'react'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { LinearGradient } from 'expo-linear-gradient'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import {
+  ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   ScrollView,
@@ -41,6 +43,7 @@ const MyAddress = () => {
   const [districtError, setdistrictError] = useState(false)
   const [wardError, setwardError] = useState(false)
   const [zipCodeError, setzipCodeError] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const showToastSuccess = title => {
     setTimeout(() => {
@@ -61,6 +64,13 @@ const MyAddress = () => {
       })
     }, 500)
   }
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+      }
+    }, [navigation])
+  )
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,6 +86,7 @@ const MyAddress = () => {
         setdataPhuongXa(jsonPhuong.data)
       } catch (error) {
         console.log('Error fetching data:', error)
+      } finally {
       }
     }
 
@@ -103,77 +114,95 @@ const MyAddress = () => {
   }
 
   const handleSave = async () => {
-    const newShipping = {
-      name: name,
-      address: address,
-      city: city,
-      district: district,
-      ward: ward,
-      zipCode: zipCode,
-      selected: false,
-      idTinhThanh: idTinhThanh,
-      idQuanHuyen: idQuanHuyen
-    }
-    if (
-      !nameError &&
-      !addressError &&
-      !cityError &&
-      !districtError &&
-      !wardError &&
-      name &&
-      address &&
-      city &&
-      district &&
-      ward &&
-      zipCodeError == false
-    ) {
-      var arrShipping = shippingList
-      arrShipping.push(newShipping)
-      const data = {
-        shipping: arrShipping
+    try {
+      setLoading(true)
+      const newShipping = {
+        name: name,
+        address: address,
+        city: city,
+        district: district,
+        ward: ward,
+        zipCode: zipCode,
+        selected: false,
+        idTinhThanh: idTinhThanh,
+        idQuanHuyen: idQuanHuyen
       }
-      const newUser = await UserHTTP.updateUser(user._id, data)
-      setUser(newUser)
-      showToastSuccess()
-    } else {
-      if (!name) {
-        setnameError(true)
+      if (
+        !nameError &&
+        !addressError &&
+        !cityError &&
+        !districtError &&
+        !wardError &&
+        name &&
+        address &&
+        city &&
+        district &&
+        ward &&
+        zipCodeError == false
+      ) {
+        var arrShipping = shippingList
+        arrShipping.push(newShipping)
+        const data = {
+          shipping: arrShipping
+        }
+        const newUser = await UserHTTP.updateUser(user._id, data)
+        setUser(newUser)
+        showToastSuccess()
+      } else {
+        if (!name) {
+          setnameError(true)
+        }
+        if (!address) {
+          setaddressError(true)
+        }
+        if (!city) {
+          setcityError(true)
+        }
+        if (!district) {
+          setdistrictError(true)
+        }
+        if (!ward) {
+          setwardError(true)
+        }
       }
-      if (!address) {
-        setaddressError(true)
-      }
-      if (!city) {
-        setcityError(true)
-      }
-      if (!district) {
-        setdistrictError(true)
-      }
-      if (!ward) {
-        setwardError(true)
-      }
+    } catch (error) {
+    } finally {
+      setLoading(false)
     }
   }
   const handleDeleteShipping = async index => {
-    const newShippingList = shippingList.filter((_, i) => i !== index)
-    const data = {
-      shipping: newShippingList
+    try {
+      setLoading(true)
+      const newShippingList = shippingList.filter((_, i) => i !== index)
+      const data = {
+        shipping: newShippingList
+      }
+      const newUser = await UserHTTP.updateUser(user._id, data)
+      setUser(newUser)
+      showToastDelete()
+    } catch (error) {
+    } finally {
+      setLoading(false)
     }
-    const newUser = await UserHTTP.updateUser(user._id, data)
-    setUser(newUser)
-    showToastDelete()
   }
 
   const handleSelected = async (index, item) => {
-    shippingList.map((item, i) => {
-      if (i === index) {
-        item.selected = true
-      } else {
-        item.selected = false
-      }
-      return item
-    })
-    const newUser = await UserHTTP.updateUser(user._id, { shipping: shippingList })
-    setUser(newUser)
+    try {
+      setLoading(true)
+      shippingList.map((item, i) => {
+        if (i === index) {
+          item.selected = true
+        } else {
+          item.selected = false
+        }
+        return item
+      })
+      const newUser = await UserHTTP.updateUser(user._id, { shipping: shippingList })
+      setUser(newUser)
+    } catch (error) {
+    } finally {
+      setLoading(false)
+    }
   }
 
   const showTinhThanh = () => {
@@ -301,258 +330,260 @@ const MyAddress = () => {
 
   const viewEditAddress = () => {
     return (
-      <View
-        style={{
-          padding: 24,
-          margin: 16,
-          backgroundColor: Colors.white
-        }}
-      >
-        <Text style={[styles.txt_title, { marginBottom: 16 }]}>Địa chỉ giao hàng</Text>
-        <View style={styles.container_title}>
-          <Text style={styles.txtTitleProfile}>*Họ và tên</Text>
-          <View
-            style={[
-              nameError && !name ? styles.container_textInput_error : styles.container_textInput
-            ]}
-          >
-            <TextInput value={name} onChange={e => handleName(e)} style={styles.txtTextInput} />
-          </View>
-          {nameError && !name ? (
-            <Text
-              style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
-            >
-              Vui lòng nhập tên
-            </Text>
-          ) : null}
-        </View>
-        <View style={styles.container_title}>
-          <Text style={styles.txtTitleProfile}>*Địa chỉ</Text>
-          <View
-            style={[
-              addressError && !address
-                ? styles.container_textInput_error
-                : styles.container_textInput
-            ]}
-          >
-            <TextInput
-              value={address}
-              onChange={e => handleAddress(e)}
-              style={styles.txtTextInput}
-            />
-          </View>
-          {addressError && !address ? (
-            <Text
-              style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
-            >
-              Vui lòng nhập địa chỉ
-            </Text>
-          ) : null}
-          <Text
-            style={[
-              styles.txt_description,
-              { color: Colors.darkGray2, marginTop: 8, fontSize: 10 }
-            ]}
-          >
-            Số nhà, tên đường, khu phố, thôn xóm
-          </Text>
-        </View>
-        <View style={styles.container_title}>
-          <Text style={styles.txtTitleProfile}>*Tỉnh/Thành phố</Text>
-          <TouchableOpacity
-            onPress={() => setisShowTinhThanh(!isShowTinhThanh)}
-            style={[
-              cityError && !city ? styles.container_textInput_error : styles.container_textInput
-            ]}
-          >
-            <Text style={styles.txtTextInput}>{city}</Text>
-          </TouchableOpacity>
-          {isShowTinhThanh ? showTinhThanh() : null}
-          {cityError && !city ? (
-            <Text
-              style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
-            >
-              Vui lòng chọn Tỉnh/Tp
-            </Text>
-          ) : null}
-        </View>
-        <View style={styles.container_title}>
-          <Text style={styles.txtTitleProfile}>*Quận/Huyện</Text>
-          <TouchableOpacity
-            onPress={() => setisShowQuanHuyen(!isShowQuanHuyen)}
-            style={[
-              districtError && !district
-                ? styles.container_textInput_error
-                : styles.container_textInput
-            ]}
-          >
-            <Text style={styles.txtTextInput}>{district}</Text>
-          </TouchableOpacity>
-          {isShowQuanHuyen ? showQuanHuyen() : null}
-          {districtError && !district ? (
-            <Text
-              style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
-            >
-              Vui lòng chọn Quận/Huyện
-            </Text>
-          ) : null}
-          <Text
-            style={[
-              styles.txt_description,
-              { color: Colors.darkGray2, marginTop: 4, fontSize: 10, marginTop: 8 }
-            ]}
-          >
-            Quận/Huyện
-          </Text>
-        </View>
-        <View style={styles.container_title}>
-          <Text style={styles.txtTitleProfile}>*Phường/Xã</Text>
-
-          <TouchableOpacity
-            onPress={() => setisShowPhuongXa(!isShowPhuongXa)}
-            style={[
-              wardError && !ward ? styles.container_textInput_error : styles.container_textInput
-            ]}
-          >
-            <Text style={styles.txtTextInput}>{ward}</Text>
-          </TouchableOpacity>
-          {isShowPhuongXa ? showPhuongXa() : null}
-          {wardError && !ward ? (
-            <Text
-              style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
-            >
-              Vui lòng chọn Phường/Xã
-            </Text>
-          ) : null}
-
-          <Text
-            style={[
-              styles.txt_description,
-              { color: Colors.darkGray2, marginTop: 4, fontSize: 10 }
-            ]}
-          >
-            Phường/Xã
-          </Text>
-        </View>
-        <View style={styles.container_title}>
-          <Text style={styles.txtTitleProfile}>Mã bưu điện</Text>
-          <View
-            style={[zipCodeError ? styles.container_textInput_error : styles.container_textInput]}
-          >
-            <TextInput
-              value={zipCode}
-              placeholder="Có thể bỏ qua bước này"
-              onChangeText={handleZipCode} // Changed to onChangeText for better handling
-              style={styles.txtTextInput}
-              keyboardType="numeric" // Sets the keyboard to numeric
-              maxLength={6} // Optional: Limit the number of digits
-            />
-          </View>
-          {zipCodeError ? (
-            <Text
-              style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
-            >
-              Vui lòng nhập đúng mã bưu điện (880000)
-            </Text>
-          ) : null}
-          <Text
-            style={[
-              styles.txt_description,
-              { color: Colors.darkGray2, marginTop: 4, fontSize: 10 }
-            ]}
-          >
-            Nhập mã bưu điện của bạn. Ví dụ:880000
-          </Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => handleSave()}
+      <View>
+        <View
           style={{
-            backgroundColor: Colors.black2,
-            paddingVertical: 16,
-            marginTop: 16,
-            borderWidth: 1,
-            borderColor: Colors.black2
+            padding: 24,
+            margin: 16,
+            backgroundColor: Colors.white
           }}
         >
-          <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.white }]}>Lưu</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setShowViewEdit(!showViewEdit)}
-          style={{
-            backgroundColor: Colors.white,
-            paddingVertical: 16,
-            marginTop: 16,
-            borderWidth: 1,
-            borderColor: Colors.black2
-          }}
-        >
-          <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.black2 }]}>Hủy</Text>
-        </TouchableOpacity>
+          <Text style={[styles.txt_title, { marginBottom: 16 }]}>Địa chỉ giao hàng</Text>
+          <View style={styles.container_title}>
+            <Text style={styles.txtTitleProfile}>*Họ và tên</Text>
+            <View
+              style={[
+                nameError && !name ? styles.container_textInput_error : styles.container_textInput
+              ]}
+            >
+              <TextInput value={name} onChange={e => handleName(e)} style={styles.txtTextInput} />
+            </View>
+            {nameError && !name ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng nhập tên
+              </Text>
+            ) : null}
+          </View>
+          <View style={styles.container_title}>
+            <Text style={styles.txtTitleProfile}>*Địa chỉ</Text>
+            <View
+              style={[
+                addressError && !address
+                  ? styles.container_textInput_error
+                  : styles.container_textInput
+              ]}
+            >
+              <TextInput
+                value={address}
+                onChange={e => handleAddress(e)}
+                style={styles.txtTextInput}
+              />
+            </View>
+            {addressError && !address ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng nhập địa chỉ
+              </Text>
+            ) : null}
+            <Text
+              style={[
+                styles.txt_description,
+                { color: Colors.darkGray2, marginTop: 8, fontSize: 10 }
+              ]}
+            >
+              Số nhà, tên đường, khu phố, thôn xóm
+            </Text>
+          </View>
+          <View style={styles.container_title}>
+            <Text style={styles.txtTitleProfile}>*Tỉnh/Thành phố</Text>
+            <TouchableOpacity
+              onPress={() => setisShowTinhThanh(!isShowTinhThanh)}
+              style={[
+                cityError && !city ? styles.container_textInput_error : styles.container_textInput
+              ]}
+            >
+              <Text style={styles.txtTextInput}>{city}</Text>
+            </TouchableOpacity>
+            {isShowTinhThanh ? showTinhThanh() : null}
+            {cityError && !city ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng chọn Tỉnh/Tp
+              </Text>
+            ) : null}
+          </View>
+          <View style={styles.container_title}>
+            <Text style={styles.txtTitleProfile}>*Quận/Huyện</Text>
+            <TouchableOpacity
+              onPress={() => setisShowQuanHuyen(!isShowQuanHuyen)}
+              style={[
+                districtError && !district
+                  ? styles.container_textInput_error
+                  : styles.container_textInput
+              ]}
+            >
+              <Text style={styles.txtTextInput}>{district}</Text>
+            </TouchableOpacity>
+            {isShowQuanHuyen ? showQuanHuyen() : null}
+            {districtError && !district ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng chọn Quận/Huyện
+              </Text>
+            ) : null}
+            <Text
+              style={[
+                styles.txt_description,
+                { color: Colors.darkGray2, marginTop: 4, fontSize: 10, marginTop: 8 }
+              ]}
+            >
+              Quận/Huyện
+            </Text>
+          </View>
+          <View style={styles.container_title}>
+            <Text style={styles.txtTitleProfile}>*Phường/Xã</Text>
+
+            <TouchableOpacity
+              onPress={() => setisShowPhuongXa(!isShowPhuongXa)}
+              style={[
+                wardError && !ward ? styles.container_textInput_error : styles.container_textInput
+              ]}
+            >
+              <Text style={styles.txtTextInput}>{ward}</Text>
+            </TouchableOpacity>
+            {isShowPhuongXa ? showPhuongXa() : null}
+            {wardError && !ward ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng chọn Phường/Xã
+              </Text>
+            ) : null}
+
+            <Text
+              style={[
+                styles.txt_description,
+                { color: Colors.darkGray2, marginTop: 4, fontSize: 10 }
+              ]}
+            >
+              Phường/Xã
+            </Text>
+          </View>
+          <View style={styles.container_title}>
+            <Text style={styles.txtTitleProfile}>Mã bưu điện</Text>
+            <View
+              style={[zipCodeError ? styles.container_textInput_error : styles.container_textInput]}
+            >
+              <TextInput
+                value={zipCode}
+                placeholder="Có thể bỏ qua bước này"
+                onChangeText={handleZipCode} // Changed to onChangeText for better handling
+                style={styles.txtTextInput}
+                keyboardType="numeric" // Sets the keyboard to numeric
+                maxLength={6} // Optional: Limit the number of digits
+              />
+            </View>
+            {zipCodeError ? (
+              <Text
+                style={[styles.txt_description, { fontSize: 10, marginTop: 4, color: Colors.red }]}
+              >
+                Vui lòng nhập đúng mã bưu điện (880000)
+              </Text>
+            ) : null}
+            <Text
+              style={[
+                styles.txt_description,
+                { color: Colors.darkGray2, marginTop: 4, fontSize: 10 }
+              ]}
+            >
+              Nhập mã bưu điện của bạn. Ví dụ:880000
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => handleSave()}
+            style={{
+              backgroundColor: Colors.black2,
+              paddingVertical: 16,
+              marginTop: 16,
+              borderWidth: 1,
+              borderColor: Colors.black2
+            }}
+          >
+            <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.white }]}>
+              Lưu
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setShowViewEdit(!showViewEdit)}
+            style={{
+              backgroundColor: Colors.white,
+              paddingVertical: 16,
+              marginTop: 16,
+              borderWidth: 1,
+              borderColor: Colors.black2
+            }}
+          >
+            <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.black2 }]}>
+              Hủy
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     )
   }
 
   return (
-    <KeyboardAvoidingView>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View
+    <KeyboardAvoidingView style={styles.container}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 16,
+          paddingTop: 16
+        }}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{ flex: 1 }}>
+          <Icons.AntDesign name="arrowleft" size={24} />
+        </TouchableOpacity>
+        <Text style={styles.txtHeader}>Địa chỉ của tôi</Text>
+        <View style={{ flex: 1 }} />
+      </View>
+      {loading ? (
+        <LinearGradient
+          colors={[Colors.transparent08, Colors.transparent06, Colors.transparent08]}
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingHorizontal: 16,
-            paddingTop: 16
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            bottom: 0,
+            top: 0,
+            justifyContent: 'center',
+            alignItems: 'center'
           }}
         >
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ flex: 1 }}>
-            <Icons.AntDesign name="arrowleft" size={24} />
-          </TouchableOpacity>
-          <Text style={styles.txtHeader}>Địa chỉ của tôi</Text>
-          <View style={{ flex: 1 }} />
-        </View>
-
-        {shippingList.length == [] ? (
-          <Text
-            style={[
-              styles.txt_title,
-              { color: Colors.black2, textAlign: 'center', paddingVertical: 32 }
-            ]}
-          >
-            Chưa có địa chỉ giao hàng được lưu
-          </Text>
-        ) : (
-          shippingList &&
-          shippingList.map((item, index) => (
-            <View
-              key={index}
-              style={{
-                padding: 24,
-                margin: 16,
-                backgroundColor: Colors.white
-              }}
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.black} />
+            <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text>
+          </View>
+        </LinearGradient>
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {shippingList.length == [] ? (
+            <Text
+              style={[
+                styles.txt_title,
+                { color: Colors.black2, textAlign: 'center', paddingVertical: 32, fontSize: 16 }
+              ]}
             >
-              <View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <Text style={[styles.txt_title, { fontSize: 16 }]}>Địa chỉ giao hàng</Text>
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate('EditAddress', {
-                        index: index,
-                        item: item
-                      })
-                    }
-                  >
-                    <Text style={[styles.txt_description, { borderBottomWidth: 1 }]}>Sửa</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={{ height: 32 }} />
-
+              Chưa có địa chỉ giao hàng được lưu
+            </Text>
+          ) : (
+            shippingList &&
+            shippingList.map((item, index) => (
+              <View
+                key={index}
+                style={{
+                  padding: 24,
+                  margin: 16,
+                  backgroundColor: Colors.white
+                }}
+              >
                 <View>
                   <View
                     style={{
@@ -561,49 +592,72 @@ const MyAddress = () => {
                       alignItems: 'center'
                     }}
                   >
-                    <Text style={[styles.txt_title, { fontSize: 12 }]}>
-                      Người nhận: {item.name}
-                    </Text>
-                    <TouchableOpacity onPress={() => handleDeleteShipping(index)}>
-                      <Text style={[styles.txt_description, { borderBottomWidth: 1 }]}>Xóa</Text>
+                    <Text style={[styles.txt_title, { fontSize: 16 }]}>Địa chỉ giao hàng</Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate('EditAddress', {
+                          index: index,
+                          item: item
+                        })
+                      }
+                    >
+                      <Text style={[styles.txt_description, { borderBottomWidth: 1 }]}>Sửa</Text>
                     </TouchableOpacity>
                   </View>
-                  <Text style={[styles.txt_title, { marginTop: 8 }]}>{item.address}</Text>
-                  <View style={{ flexDirection: 'row', marginTop: 4, flexWrap: 'wrap' }}>
-                    <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.ward}</Text>
-                    <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.district}</Text>
-                    <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.city}</Text>
+                  <View style={{ height: 32 }} />
+
+                  <View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <Text style={[styles.txt_title, { fontSize: 12 }]}>
+                        Người nhận: {item.name}
+                      </Text>
+                      <TouchableOpacity onPress={() => handleDeleteShipping(index)}>
+                        <Text style={[styles.txt_description, { borderBottomWidth: 1 }]}>Xóa</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <Text style={[styles.txt_title, { marginTop: 8 }]}>{item.address}</Text>
+                    <View style={{ flexDirection: 'row', marginTop: 4, flexWrap: 'wrap' }}>
+                      <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.ward}</Text>
+                      <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.district}</Text>
+                      <Text style={[styles.txt_title, { marginEnd: 4 }]}>{item.city}</Text>
+                    </View>
+                    <Text style={styles.txt_title}>{item.zipCode}</Text>
+                    <TouchableOpacity
+                      onPress={() => handleSelected(index, item)}
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
+                      {item.selected === false ? (
+                        <Icons.Ionicons name="radio-button-off-outline" size={24} />
+                      ) : (
+                        <Icons.Ionicons name="radio-button-on-outline" size={24} />
+                      )}
+                      <Text style={[styles.txt_description, { marginStart: 8, fontSize: 12 }]}>
+                        Địa chỉ mặc định
+                      </Text>
+                    </TouchableOpacity>
                   </View>
-                  <Text style={styles.txt_title}>{item.zipCode}</Text>
-                  <TouchableOpacity
-                    onPress={() => handleSelected(index, item)}
-                    style={{ flexDirection: 'row', alignItems: 'center' }}
-                  >
-                    {item.selected === false ? (
-                      <Icons.Ionicons name="radio-button-off-outline" size={24} />
-                    ) : (
-                      <Icons.Ionicons name="radio-button-on-outline" size={24} />
-                    )}
-                    <Text style={[styles.txt_description, { marginStart: 8, fontSize: 12 }]}>
-                      Địa chỉ mặc định
-                    </Text>
-                  </TouchableOpacity>
                 </View>
               </View>
-            </View>
-          ))
-        )}
-        {showViewEdit ? viewEditAddress() : null}
+            ))
+          )}
+          {showViewEdit ? viewEditAddress() : null}
 
-        {!showViewEdit ? (
-          <TouchableOpacity
-            onPress={() => setShowViewEdit(!showViewEdit)}
-            style={{ borderWidth: 1, padding: 16, marginHorizontal: 16 }}
-          >
-            <Text style={[styles.txt_title, { textAlign: 'center' }]}>Thêm địa chỉ mới</Text>
-          </TouchableOpacity>
-        ) : null}
-      </ScrollView>
+          {!showViewEdit ? (
+            <TouchableOpacity
+              onPress={() => setShowViewEdit(!showViewEdit)}
+              style={{ borderWidth: 1, padding: 16, marginHorizontal: 16 }}
+            >
+              <Text style={[styles.txt_title, { textAlign: 'center' }]}>Thêm địa chỉ mới</Text>
+            </TouchableOpacity>
+          ) : null}
+        </ScrollView>
+      )}
     </KeyboardAvoidingView>
   )
 }

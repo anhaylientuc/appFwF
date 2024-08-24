@@ -644,7 +644,6 @@ const ReviewProduct = props => {
                 backgroundColor: Colors.red,
                 flexDirection: 'row',
                 alignItems: 'center',
-
                 borderRadius: 25,
                 elevation: 4,
                 shadowColor: '#52006A',

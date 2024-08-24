@@ -1,4 +1,5 @@
 import { CommonActions, useNavigation } from '@react-navigation/native'
+import { LinearGradient } from 'expo-linear-gradient'
 import qs from 'qs'
 import React, { useContext, useEffect, useState } from 'react'
 import {
@@ -213,9 +214,23 @@ const MyOder = () => {
       {!myoder ? (
         noOrder()
       ) : loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.black} />
-        </View>
+        <LinearGradient
+          colors={[Colors.transparent08, Colors.transparent06, Colors.transparent08]}
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            bottom: 0,
+            top: 0,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.black} />
+            <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text>
+          </View>
+        </LinearGradient>
       ) : (
         <View style={{ padding: 16, height: '100%' }}>
           <FlatList data={myoder} renderItem={renderOrder} showsVerticalScrollIndicator={false} />

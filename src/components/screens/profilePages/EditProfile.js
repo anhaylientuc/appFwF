@@ -2,6 +2,7 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
 import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
@@ -34,6 +35,8 @@ const EditProfile = () => {
   const [zipCode, setZipCode] = useState('')
   const [zipCodeError, setzipCodeError] = useState(false)
   const { user, setUser } = useContext(UserContext)
+  const [loading, setLoading] = useState(false)
+
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     setemail(user.email)
@@ -43,10 +46,6 @@ const EditProfile = () => {
     setZipCode(user.zipCode)
     setdateOfBirth(user.dateOfBirth)
   }, [user])
-
-  console.log('emailError', emailError)
-  console.log('emailVar', emailVar)
-
   // show chọn ngày tháng năm
   const showDatePicker = () => {
     DateTimePickerAndroid.open({
@@ -109,7 +108,7 @@ const EditProfile = () => {
     setTimeout(() => {
       Toast.show({
         type: 'success',
-        text1: 'Cập nhật địa chỉ giao hàng thành công ✔',
+        text1: 'Cập nhật thông tin cá nhân thành công ✔',
         text1Style: { fontSize: 14, fontFamily: 'Montserrat-SemiBold', color: Colors.green }
       })
     }, 500)
@@ -117,37 +116,44 @@ const EditProfile = () => {
 
   // Logic: lưu lại thay đổi
   const handleSave = async () => {
-    const data = {
-      ...user,
-      email: email,
-      username: name,
-      phoneNumber: sdt,
-      gender: gender,
-      zipCode: zipCode,
-      dateOfBirth: birthDate.toLocaleDateString()
-    }
-    if (
-      name != '' &&
-      email != '' &&
-      sdt != '' &&
-      nameError == false &&
-      emailError == false &&
-      sdtError == false
-    ) {
-      const newUser = await UserHTTP.updateUser(user._id, data)
-      setUser(newUser)
-      showToastSuccess()
-      navigation.goBack()
-    } else {
-      if (!name) {
-        setnameError(true)
+    try {
+      setLoading(true)
+      const data = {
+        ...user,
+        email: email,
+        username: name,
+        phoneNumber: sdt,
+        gender: gender,
+        zipCode: zipCode,
+        dateOfBirth: birthDate.toLocaleDateString()
       }
-      if (!email) {
-        setemailError(true)
+      if (
+        name != '' &&
+        email != '' &&
+        sdt != '' &&
+        nameError == false &&
+        emailError == false &&
+        sdtError == false
+      ) {
+        const newUser = await UserHTTP.updateUser(user._id, data)
+        setUser(newUser)
+        showToastSuccess()
+        navigation.goBack()
+      } else {
+        if (!name) {
+          setnameError(true)
+        }
+        if (!email) {
+          setemailError(true)
+        }
+        if (!sdt) {
+          setsdtError(true)
+        }
       }
-      if (!sdt) {
-        setsdtError(true)
-      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -474,16 +480,22 @@ const EditProfile = () => {
                   onPress={() => handleSave()}
                   style={[styles.container_btn, { backgroundColor: Colors.black2 }]}
                 >
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      color: Colors.white,
-                      fontFamily: 'Montserrat-SemiBold',
-                      fontSize: 16
-                    }}
-                  >
-                    Lưu
-                  </Text>
+                  {loading ? (
+                    <View style={styles.loadingContainer}>
+                      <ActivityIndicator size="small" color={Colors.white} />
+                    </View>
+                  ) : (
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        color: Colors.white,
+                        fontFamily: 'Montserrat-SemiBold',
+                        fontSize: 16
+                      }}
+                    >
+                      Lưu
+                    </Text>
+                  )}
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.container_btn} onPress={() => navigation.goBack()}>
@@ -511,6 +523,11 @@ const EditProfile = () => {
 export default EditProfile
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   icons: {
     marginEnd: 4
   },

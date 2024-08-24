@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
+  ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   ScrollView,
@@ -46,18 +47,22 @@ const EditAddress = props => {
   const [districtError, setdistrictError] = useState(false)
   const [wardError, setwardError] = useState(false)
   const [zipCodeError, setzipCodeError] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   // set các giá trị mặc định ban đầu
   useEffect(() => {
-    const shipping = user.shipping[index]
-    setName(shipping.name)
-    setAddress(shipping.address)
-    setCity(shipping.city)
-    setDistrict(shipping.district)
-    setWard(shipping.ward)
-    setZipCode(shipping.zipCode)
-    setidTinhThanh(shipping.idTinhThanh)
-    setidQuanHuyen(shipping.idQuanHuyen)
+    const fetchData = () => {
+      const shipping = user.shipping[index]
+      setName(shipping.name)
+      setAddress(shipping.address)
+      setCity(shipping.city)
+      setDistrict(shipping.district)
+      setWard(shipping.ward)
+      setZipCode(shipping.zipCode)
+      setidTinhThanh(shipping.idTinhThanh)
+      setidQuanHuyen(shipping.idQuanHuyen)
+    }
+    fetchData()
   }, [])
 
   // set các giá trị khi id tỉnh thành hoặc id quận huyện thay đổi
@@ -123,46 +128,52 @@ const EditAddress = props => {
       idTinhThanh: idTinhThanh,
       idQuanHuyen: idQuanHuyen
     }
-    if (
-      nameError == false &&
-      addressError == false &&
-      cityError == false &&
-      districtError == false &&
-      wardError == false &&
-      name != '' &&
-      address != '' &&
-      city != '' &&
-      district != '' &&
-      ward != '' &&
-      zipCodeError == false
-    ) {
-      var updatedShipping = [...user.shipping]
-      updatedShipping[index] = newShipping
+    try {
+      setLoading(true)
+      if (
+        nameError == false &&
+        addressError == false &&
+        cityError == false &&
+        districtError == false &&
+        wardError == false &&
+        name != '' &&
+        address != '' &&
+        city != '' &&
+        district != '' &&
+        ward != '' &&
+        zipCodeError == false
+      ) {
+        var updatedShipping = [...user.shipping]
+        updatedShipping[index] = newShipping
 
-      const data = {
-        shipping: updatedShipping
+        const data = {
+          shipping: updatedShipping
+        }
+        const newUser = await UserHTTP.updateUser(user._id, data)
+        setUser(newUser)
+        showToastSuccess()
+        navigation.goBack()
+        console.log(newUser)
+      } else {
+        if (!name) {
+          setnameError(true)
+        }
+        if (!address) {
+          setaddressError(true)
+        }
+        if (!city) {
+          setcityError(true)
+        }
+        if (!district) {
+          setdistrictError(true)
+        }
+        if (!ward) {
+          setwardError(true)
+        }
       }
-      const newUser = await UserHTTP.updateUser(user._id, data)
-      setUser(newUser)
-      showToastSuccess()
-      navigation.goBack()
-      console.log(newUser)
-    } else {
-      if (!name) {
-        setnameError(true)
-      }
-      if (!address) {
-        setaddressError(true)
-      }
-      if (!city) {
-        setcityError(true)
-      }
-      if (!district) {
-        setdistrictError(true)
-      }
-      if (!ward) {
-        setwardError(true)
-      }
+    } catch (error) {
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -296,6 +307,7 @@ const EditAddress = props => {
     <KeyboardAvoidingView>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <Text style={styles.txtHeader}>Sửa địa chỉ</Text>
+
         <View style={{ padding: 24, margin: 16, backgroundColor: Colors.white }}>
           <Text style={[styles.txt_title, { marginBottom: 16 }]}>Địa chỉ giao hàng</Text>
           <View style={styles.container_title}>
@@ -463,14 +475,20 @@ const EditAddress = props => {
               borderColor: Colors.black2
             }}
           >
-            <Text
-              style={[
-                styles.txt_title,
-                { textAlign: 'center', color: Colors.white, fontFamily: 'Montserrat-SemiBold' }
-              ]}
-            >
-              Lưu
-            </Text>
+            {loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color={Colors.white} />
+              </View>
+            ) : (
+              <Text
+                style={[
+                  styles.txt_title,
+                  { textAlign: 'center', color: Colors.white, fontFamily: 'Montserrat-SemiBold' }
+                ]}
+              >
+                Lưu
+              </Text>
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -492,6 +510,7 @@ const EditAddress = props => {
             </Text>
           </TouchableOpacity>
         </View>
+
         <View style={{ height: 16 }} />
       </ScrollView>
     </KeyboardAvoidingView>
@@ -547,7 +566,7 @@ const styles = StyleSheet.create({
   },
   txtHeader: {
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: 'Montserrat-SemiBold',
     marginTop: 16
   },
@@ -574,7 +593,7 @@ const styles = StyleSheet.create({
     color: Colors.black
   },
   txt_title: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Montserrat-SemiBold',
     color: Colors.black2
   }

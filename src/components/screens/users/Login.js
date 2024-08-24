@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
+  ActivityIndicator,
   Keyboard,
   ScrollView,
   StyleSheet,
@@ -26,6 +27,7 @@ const Login = () => {
   const [isShowError, setisShowError] = useState(false)
   const [isShowErrorPass, setisShowErrorPass] = useState(false)
   const [incorrect, setIncorrect] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const userError = email === '' || password === '' || !password || !email
 
@@ -59,6 +61,7 @@ const Login = () => {
     setPassword(PasswordVar)
     setPasswordVerify(false)
     setisShowErrorPass(false)
+    setIncorrect(false)
 
     if (regex.test(PasswordVar)) {
       setPassword(PasswordVar)
@@ -69,6 +72,8 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
+      setLoading(true)
+      setIncorrect(false)
       if (userError) {
         !email ? setisShowError(true) : setisShowError(false)
         !password ? setisShowErrorPass(true) & setIncorrect(false) : setisShowErrorPass(false)
@@ -87,6 +92,8 @@ const Login = () => {
     } catch (error) {
       // Kiểm tra phản hồi lỗi từ server
       console.log('Error response:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -121,10 +128,7 @@ const Login = () => {
                   ]}
                 >
                   <View style={styles.container_userName_txtInput}>
-                    <TextInput
-                      onChange={e => handleEmail(e)}
-                      style={{ width: '70%', height: '100%', color: Colors.black }}
-                    />
+                    <TextInput onChange={e => handleEmail(e)} style={styles.txtTextInput} />
                     {!email.length ? null : emailVerify ? (
                       <Icons.AntDesign name="checkcircleo" size={24} color={Colors.green} />
                     ) : (
@@ -169,13 +173,10 @@ const Login = () => {
                 >
                   <View style={styles.container_userName_txtInput}>
                     <TextInput
+                      onFocus={() => setIncorrect(false)}
                       onChange={e => handlePassword(e)}
                       secureTextEntry={showPassWord}
-                      style={{
-                        width: '70%',
-                        height: '100%',
-                        color: Colors.black
-                      }}
+                      style={styles.txtTextInput}
                     />
                     {!password.length ? null : (
                       <TouchableOpacity onPress={() => setShowPassWord(!showPassWord)}>
@@ -233,7 +234,13 @@ const Login = () => {
             </View>
             <View style={{ paddingHorizontal: 8 }}>
               <TouchableOpacity style={[styles.btnLogin]} onPress={() => handleLogin()}>
-                <Text style={styles.txtbtn}>Đăng Nhập</Text>
+                {loading ? (
+                  <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="small" color={Colors.white} />
+                  </View>
+                ) : (
+                  <Text style={styles.txtbtn}>Đăng Nhập</Text>
+                )}
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -257,6 +264,19 @@ const Login = () => {
 export default Login
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  txtTextInput: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 14,
+    color: Colors.black2,
+    width: '70%',
+    height: '100%',
+    color: Colors.black
+  },
   container_userName_txtInput: {
     paddingHorizontal: 16,
     width: '100%',

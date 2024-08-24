@@ -1,6 +1,7 @@
 import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { useContext, useEffect, useRef, useState } from 'react'
 import {
   ActivityIndicator,
@@ -916,9 +917,23 @@ const BagPage = props => {
         ) : null}
       </View>
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.black} />
-        </View>
+        <LinearGradient
+          colors={[Colors.transparent08, Colors.transparent06, Colors.transparent08]}
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            bottom: 0,
+            top: 0,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.black} />
+            <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text>
+          </View>
+        </LinearGradient>
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: Colors.grayBg }}>
           <MyText style={{ textAlign: 'center', padding: 16, fontSize: 12 }}>
@@ -1070,6 +1085,16 @@ const BagPage = props => {
 export default BagPage
 
 const styles = StyleSheet.create({
+  txt_title: {
+    fontSize: 12,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.black2
+  },
+  txt_description: {
+    fontSize: 10,
+    fontFamily: 'Montserrat-Medium',
+    color: Colors.black2
+  },
   txt_price: {
     fontSize: 12,
     fontWeight: '500'

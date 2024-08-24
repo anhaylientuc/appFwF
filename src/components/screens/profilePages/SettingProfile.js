@@ -22,7 +22,14 @@ const SettingProfile = () => {
   useFocusEffect(
     useCallback(() => {
       if (navigation) {
-        navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+        navigation.getParent().setOptions({
+          tabBarStyle: {
+            backgroundColor: Colors.white,
+            bottom: 0,
+            paddingVertical: 8,
+            height: 54
+          }
+        })
       }
     }, [navigation])
   )
