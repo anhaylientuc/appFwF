@@ -20,6 +20,8 @@ import { FilterContext } from 'src/contexts/FilterProvider'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import NewHTTP, { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
 import { ActivityIndicator } from 'react-native'
+import FastImage from 'react-native-fast-image';
+
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
@@ -283,14 +285,17 @@ const ItemCategories = props => {
             {images.map(
               (image, index) =>
                 image.url != '' && (
-                  <Image
+                  <FastImage
                     resizeMode={numColumns ? 'contain' : 'cover'}
                     key={index}
                     style={{
                       width: windowWith - 20,
                       height: windowHeight
                     }}
-                    source={{ uri: image.url }}
+                    source={{
+                      uri: image.url,
+                      priority: FastImage.priority.high,
+                    }}
                   />
                 )
             )}
