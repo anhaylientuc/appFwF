@@ -44,6 +44,7 @@ const Filter = props => {
   const [priceLeft, setpriceLeft] = useState(0)
   const [priceRight, setpriceRight] = useState(100)
   const [finishSlider, setfinishSlider] = useState(false)
+  const [step, setstep] = useState(null)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,10 +57,13 @@ const Filter = props => {
         const attributes = []
         for (const [key, value] of filterState.entries()) {
           if (key == 'Giá') {
+            console.log('ok')
             const listPrice = filterState.get('Giá')
             query.minPrice = listPrice[0]
             query.maxPrice = listPrice[1]
-          } else attributes.push({ key, value })
+          } 
+          else
+             attributes.push({ key, value })
         }
         if (attributes.length > 0) query.attributes = attributes
         query.category_id = category_id ? category_id : _category_id
@@ -68,7 +72,10 @@ const Filter = props => {
         const response = await NewHTTP.getFilter(queryString)
         const { _attributes, _products } = response
         setFilterData(_attributes)
-
+        const listPrice = _products.map(item => item.base_price)
+        const min = Math.min(...listPrice)
+        const max = Math.max(...listPrice)
+       
         setProducts(_products) // Ensure products are set here
       } catch (error) {
         console.log('Error fetching data:', error)
@@ -86,6 +93,7 @@ const Filter = props => {
         const listPrice = res.map(item => item.base_price)
         let min = Math.min(...listPrice)
         let max = Math.max(...listPrice)
+       
         setminPrice(min)
         setMaxPrice(max)
         if (filterState instanceof Map && filterState.has('Giá')) {
@@ -93,6 +101,14 @@ const Filter = props => {
           min = values[0]
           max = values[1]
         }
+        if(min==max){
+          setstep(0)
+          setminPrice(min)
+          setMaxPrice(max)
+        }
+         
+        else
+          setstep(100)
         setpriceLeft(min)
         setpriceRight(max)
         settwoWayValues([min, max])
@@ -141,14 +157,14 @@ const Filter = props => {
         <View style={{ flexDirection: 'row' }}>
           {filterState instanceof Map && filterState.has(key)
             ? filterState.get(key).map((item, index) => (
-                <Text
-                  key={index}
-                  numberOfLines={1}
-                  style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
-                >
-                  {item}
-                </Text>
-              ))
+              <Text
+                key={index}
+                numberOfLines={1}
+                style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
+              >
+                {item}
+              </Text>
+            ))
             : null}
           <Icons.AntDesign name="arrowright" size={20} />
         </View>
@@ -159,9 +175,17 @@ const Filter = props => {
   const handleDeleteAllFilter = () => {
     if (filterState instanceof Map) {
       setFilterState(new Map())
+      settwoWayValues([minPrice,maxPrice])
+      setpriceLeft(minPrice)
+      setMaxPrice(maxPrice)
     }
   }
   const handleValuesChange = values => {
+    if(values[0]==values[1]){
+      console.log('cc')
+      return
+    }
+      
     console.log(values)
     setpriceLeft(values[0])
     setpriceRight(values[1])
@@ -183,24 +207,28 @@ const Filter = props => {
       // const res = await NewHTTP.getProducts(query)
       const min = twoWayValues[0]
       const max = twoWayValues[1]
-
+      console.log(twoWayValues)
       // const newProducts=res.filter(item=>(item['base_price']>=min&&item['base_price']<=max))
       // console.log(newProducts.length)
       // setProducts(newProducts)
       if (min != 0 && max != 100) {
         const map = new Map()
-
         map.set('Giá', [min, max])
-        console.log('>>>', map)
         setFilterState(map)
       }
     }
     fetchData()
   }, [finishSlider])
   const handleValuesChangeFinish = values => {
+    if(values[0]==values[1]){
+      console.log('dkm')
+      return
+    }
+      
     settwoWayValues(values)
     setfinishSlider(!finishSlider)
   }
+  
   return (
     <KeyboardAvoidingView>
       <View style={styles.container}>
@@ -289,7 +317,7 @@ const Filter = props => {
                       sliderLength={350}
                       allowOverlap={true}
                       onValuesChangeFinish={handleValuesChangeFinish}
-                      step={100}
+                      step={step}
                       onValuesChange={handleValuesChange}
                       selectedStyle={{
                         backgroundColor: 'black' // Màu của thanh trượt đã chọn

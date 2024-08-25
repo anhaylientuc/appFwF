@@ -19,6 +19,7 @@ import MyText from 'src/constants/FontFamily'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import NewHTTP, { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
+import { ActivityIndicator } from 'react-native'
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
@@ -46,6 +47,8 @@ const ItemCategories = props => {
   const [favoritesIds, setFavoritesIds] = useState([])
   const [_id, set_id] = useState(null)
   const [attributesArr, setattributesArr] = useState([])
+  const [price, setprice] = useState([])
+  const [loading, setLoading] = useState(false) // Add loading state
 
   const setBottomBar = () => {
     navigation.getParent().setOptions({
@@ -77,7 +80,7 @@ const ItemCategories = props => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setproducts(products)
+        //setproducts(products)
         const response = await getCategoryById(categoryById)
         setnameCategoryById(response.name)
         const { _id, name, parentID, image } = response
@@ -99,7 +102,7 @@ const ItemCategories = props => {
       const newArr = []
       for (const [key, value] of newMap.entries()) {
         if (key == 'Giá') {
-          // setprice(value)
+          setprice(value)
           newArr.push({ key: 'Giá', value: 'Giá' })
           continue
         } else {
@@ -199,17 +202,27 @@ const ItemCategories = props => {
 
   // Logic: onclick set product by category Id
   const handlePressedCategoryId = async _id => {
+    setLoading(true)
+    setproducts([])
     const version = 2
     const category_id = _id
     try {
+      //if(filterState instanceof Map && filterState.size()>0)
       setFilterState([])
-      const products = await getProducts({ version, category_id })
-      const productsParent = await getProducts({ version: 1, category_id })
-      setproductsParent(productsParent[0].category_id)
-      setproducts(products)
       setselectedProductId(_id)
+      const productsParent = await getProducts({ version: 1, category_id })
+      if (productsParent && productsParent.length > 0) {
+        setproductsParent(productsParent[0].category_id)
+      }
+      const products = await getProducts({ version, category_id })
+      //console.log(products.length)
+      setproducts(products)
+
     } catch (error) {
-      console.error('Error:', error)
+      console.error('Error 1:', error)
+    }
+    finally {
+      setLoading(false)
     }
   }
 
@@ -246,6 +259,7 @@ const ItemCategories = props => {
   }
 
   const renderItems = ({ item }) => {
+
     const { _id, name, images, base_price, product_id } = item
     const formattedCurrency = formatCurrency(base_price)
 
@@ -377,6 +391,7 @@ const ItemCategories = props => {
           shadowColor: Colors.gray
         }}
       >
+
         <View style={styles.view_search}>
           <TouchableOpacity
             onPress={() => {
@@ -486,7 +501,6 @@ const ItemCategories = props => {
               <MyText style={{ fontSize: 12 }}>Sản phẩm</MyText>
             </TouchableOpacity>
           </View>
-
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <MyText style={{ fontSize: 12 }}>{products && products.length} Sản phẩm</MyText>
             <TouchableOpacity onPress={() => handleColum()} style={{ marginStart: 16 }}>
@@ -498,16 +512,32 @@ const ItemCategories = props => {
             </TouchableOpacity>
           </View>
         </View>
-        <FlatList
-          // render Item Product by Category
-          style={{ marginBottom: '25%', paddingHorizontal: 16 }}
-          scrollEnabled={false}
-          numColumns={numColumns}
-          key={numColumns}
-          showsVerticalScrollIndicator={false} // thanh cuộn
-          data={products}
-          renderItem={renderItems}
-        />
+        {
+          loading ? (
+            <View style={{ alignItems: 'center', justifyContent: 'center', height: 400 }}>
+              <ActivityIndicator size="large" color={Colors.red} />
+            </View>
+          ) : (products && products.length > 0) ? (
+            <FlatList
+              // render Item Product by Category
+              style={{ marginBottom: '25%', paddingHorizontal: 16 }}
+              keyExtractor={item => item._id}
+              scrollEnabled={false}
+              numColumns={numColumns}
+              key={numColumns}
+              showsVerticalScrollIndicator={false} // thanh cuộn
+              data={products}
+              renderItem={renderItems}
+            />
+          ) : (
+            <View style={{ alignItems: 'center', justifyContent: 'center', height: 400 }}>
+              <Text style={{ fontSize: 18 }}>
+                Chưa có sản phẩm
+              </Text>
+            </View>
+          )
+        }
+
       </ScrollView>
     </View>
   )
