@@ -1,6 +1,7 @@
+import MultiSlider from '@ptomasroos/react-native-multi-slider'
 import { useIsFocused } from '@react-navigation/native'
 import qs from 'qs'
-import React, { useContext, useEffect, useState, version } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   ActivityIndicator, // Import ActivityIndicator
   Dimensions,
@@ -12,13 +13,12 @@ import {
   TouchableOpacity,
   View
 } from 'react-native'
+import Spinner from 'react-native-loading-spinner-overlay'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import NewHTTP from 'src/utils/http/NewHTTP'
-import Spinner from 'react-native-loading-spinner-overlay';
-import MultiSlider from '@ptomasroos/react-native-multi-slider'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
@@ -44,11 +44,11 @@ const Filter = props => {
   const [priceLeft, setpriceLeft] = useState(0)
   const [priceRight, setpriceRight] = useState(100)
   const [finishSlider, setfinishSlider] = useState(false)
+  const [step, setstep] = useState(null)
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        console.log('ok', filterState)
         navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
         if (category_id) {
           set_category_id(category_id)
@@ -57,12 +57,13 @@ const Filter = props => {
         const attributes = []
         for (const [key, value] of filterState.entries()) {
           if (key == 'Giá') {
+            console.log('ok')
             const listPrice = filterState.get('Giá')
             query.minPrice = listPrice[0]
             query.maxPrice = listPrice[1]
-          }
+          } 
           else
-            attributes.push({ key, value })
+             attributes.push({ key, value })
         }
         if (attributes.length > 0) query.attributes = attributes
         query.category_id = category_id ? category_id : _category_id
@@ -71,7 +72,10 @@ const Filter = props => {
         const response = await NewHTTP.getFilter(queryString)
         const { _attributes, _products } = response
         setFilterData(_attributes)
-        console.log(filterData)
+        const listPrice = _products.map(item => item.base_price)
+        const min = Math.min(...listPrice)
+        const max = Math.max(...listPrice)
+       
         setProducts(_products) // Ensure products are set here
       } catch (error) {
         console.log('Error fetching data:', error)
@@ -89,14 +93,22 @@ const Filter = props => {
         const listPrice = res.map(item => item.base_price)
         let min = Math.min(...listPrice)
         let max = Math.max(...listPrice)
+       
         setminPrice(min)
         setMaxPrice(max)
         if (filterState instanceof Map && filterState.has('Giá')) {
-          console.log('cc')
           const values = filterState.get('Giá')
           min = values[0]
           max = values[1]
         }
+        if(min==max){
+          setstep(0)
+          setminPrice(min)
+          setMaxPrice(max)
+        }
+         
+        else
+          setstep(100)
         setpriceLeft(min)
         setpriceRight(max)
         settwoWayValues([min, max])
@@ -107,7 +119,6 @@ const Filter = props => {
     fetchData()
   }, [])
   const toggleSlider = () => {
-
     setshowSlider(!showSlider)
   }
   const setBottomBar = () => {
@@ -127,7 +138,11 @@ const Filter = props => {
     return (
       <Pressable
         onPress={() => {
-          props.navigation.navigate('DetailFilter', { child: item.child, keySelected: key, queryString: queryStringState })
+          props.navigation.navigate('DetailFilter', {
+            child: item.child,
+            keySelected: key,
+            queryString: queryStringState
+          })
         }}
         style={{
           flexDirection: 'row',
@@ -136,11 +151,7 @@ const Filter = props => {
           paddingVertical: 16
         }}
       >
-        <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={styles.spinnerTextStyle}
-        />
+        <Spinner visible={loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle} />
         <MyText>{key}</MyText>
 
         <View style={{ flexDirection: 'row' }}>
@@ -154,8 +165,7 @@ const Filter = props => {
                 {item}
               </Text>
             ))
-            : null
-          }
+            : null}
           <Icons.AntDesign name="arrowright" size={20} />
         </View>
       </Pressable>
@@ -165,9 +175,17 @@ const Filter = props => {
   const handleDeleteAllFilter = () => {
     if (filterState instanceof Map) {
       setFilterState(new Map())
+      settwoWayValues([minPrice,maxPrice])
+      setpriceLeft(minPrice)
+      setMaxPrice(maxPrice)
     }
   }
-  const handleValuesChange = (values) => {
+  const handleValuesChange = values => {
+    if(values[0]==values[1]){
+      console.log('cc')
+      return
+    }
+      
     console.log(values)
     setpriceLeft(values[0])
     setpriceRight(values[1])
@@ -177,10 +195,10 @@ const Filter = props => {
     const formatter = new Intl.NumberFormat('vi-VN', {
       style: 'currency',
       currency: 'VND',
-      minimumFractionDigits: 0  // Không hiển thị phần thập phân
-    });
+      minimumFractionDigits: 0 // Không hiển thị phần thập phân
+    })
 
-    return formatter.format(amount);
+    return formatter.format(amount)
   }
   useEffect(() => {
     const fetchData = async () => {
@@ -189,30 +207,38 @@ const Filter = props => {
       // const res = await NewHTTP.getProducts(query)
       const min = twoWayValues[0]
       const max = twoWayValues[1]
-
+      console.log(twoWayValues)
       // const newProducts=res.filter(item=>(item['base_price']>=min&&item['base_price']<=max))
       // console.log(newProducts.length)
       // setProducts(newProducts)
       if (min != 0 && max != 100) {
         const map = new Map()
-
         map.set('Giá', [min, max])
-        console.log('>>>', map)
         setFilterState(map)
       }
-
     }
     fetchData()
   }, [finishSlider])
-  const handleValuesChangeFinish = (values) => {
+  const handleValuesChangeFinish = values => {
+    if(values[0]==values[1]){
+      console.log('dkm')
+      return
+    }
+      
     settwoWayValues(values)
     setfinishSlider(!finishSlider)
   }
+  
   return (
     <KeyboardAvoidingView>
       <View style={styles.container}>
         <View
-          style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16, alignItems: 'center' }}
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingVertical: 16,
+            alignItems: 'center'
+          }}
         >
           <TouchableOpacity
             style={{ flex: 1 }}
@@ -229,15 +255,13 @@ const Filter = props => {
             Bộ lọc & sắp xếp
           </MyText>
           <View style={{ flex: 1 }}>
-            {
-              filterState instanceof Map && filterState.size > 0 ? (
-                <TouchableOpacity onPress={handleDeleteAllFilter}>
-                  <Text style={{ textAlign: 'right' }}>
-                    Xóa bộ lọc
-                  </Text>
-                </TouchableOpacity>
-              ) : null
-            }
+            {filterState instanceof Map && filterState.size > 0 ? (
+              <TouchableOpacity onPress={handleDeleteAllFilter}>
+                <Text style={[styles.txt_description, { textAlign: 'right', fontSize: 12 }]}>
+                  Xóa bộ lọc
+                </Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
         </View>
 
@@ -265,18 +289,25 @@ const Filter = props => {
                 alignItems: 'center',
                 paddingVertical: 16
               }}
-              onPress={() => { toggleSlider() }}
+              onPress={() => {
+                toggleSlider()
+              }}
             >
               <MyText>Giá</MyText>
               <Icons.AntDesign name="plus" size={20} />
             </Pressable>
-            <View >
-
+            <View>
               {
-                <View >
-                  <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text>{formatCurrencyVND(priceLeft)}</Text>
-                    <Text>{formatCurrencyVND(priceRight)}</Text>
+                <View>
+                  <View
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between'
+                    }}
+                  >
+                    <Text style={styles.txt_title}>{formatCurrencyVND(priceLeft)}</Text>
+                    <Text style={styles.txt_title}>{formatCurrencyVND(priceRight)}</Text>
                   </View>
                   <View style={{ alignItems: 'center' }}>
                     <MultiSlider
@@ -286,24 +317,20 @@ const Filter = props => {
                       sliderLength={350}
                       allowOverlap={true}
                       onValuesChangeFinish={handleValuesChangeFinish}
-                      step={100}
+                      step={step}
                       onValuesChange={handleValuesChange}
                       selectedStyle={{
-                        backgroundColor: 'black', // Màu của thanh trượt đã chọn
+                        backgroundColor: 'black' // Màu của thanh trượt đã chọn
                       }}
                       unselectedStyle={{
-                        backgroundColor: 'black', // Màu của thanh trượt chưa chọn
+                        backgroundColor: 'black' // Màu của thanh trượt chưa chọn
                       }}
                       markerStyle={{
-                        backgroundColor: 'black', // Màu của điểm đánh dấu trên thanh trượt
+                        backgroundColor: 'black' // Màu của điểm đánh dấu trên thanh trượt
                       }}
-
                     />
                   </View>
-
                 </View>
-
-
               }
             </View>
             <FlatList data={filterData} renderItem={renderItem} keyExtractor={item => item.key} />
@@ -353,6 +380,16 @@ const Filter = props => {
 export default Filter
 
 const styles = StyleSheet.create({
+  txt_title: {
+    fontSize: 12,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.black2
+  },
+  txt_description: {
+    fontSize: 10,
+    fontFamily: 'Montserrat-Medium',
+    color: Colors.black2
+  },
   container: {
     width: '100%',
     height: '100%',

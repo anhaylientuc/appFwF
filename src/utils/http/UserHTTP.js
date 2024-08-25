@@ -15,7 +15,9 @@ export const login = async (email, password) => {
     const res = await AxiosInstance().post(url, body)
     ToastAndroid.show('Đăng nhập thành công', ToastAndroid.SHORT)
     return res
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export const register = async (email, password, username) => {
@@ -48,7 +50,7 @@ export const register = async (email, password, username) => {
   } catch (error) {
     ToastAndroid.show('Tài khoản đã tồn tại vui lòng tạo tài khoản mới', ToastAndroid.SHORT)
     // Xử lý lỗi nếu có
-    throw error // Ném lỗi để bên ngoài có thể xử lý tiếp
+    console.log(error)
   }
 }
 
@@ -65,7 +67,9 @@ export const forgotPass = async email => {
     const res = await AxiosInstance().post(url, body)
     ToastAndroid.show('Đã gửi Email khôi phục thành công', ToastAndroid.SHORT)
     return res
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export const updateUser = async (_id, data) => {
@@ -73,7 +77,9 @@ export const updateUser = async (_id, data) => {
     const url = `/users/${_id}`
     const res = await AxiosInstance().put(url, data)
     return res
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export default { forgotPass, updateUser }

@@ -8,6 +8,7 @@ import BagPage from 'src/components/screens/bagPages/BagPage'
 import MyChecks from 'src/components/screens/bagPages/MyChecks'
 import PayPage from 'src/components/screens/bagPages/PayPage'
 import ReturnMethod from 'src/components/screens/bagPages/ReturnMethod'
+import SendOrders from 'src/components/screens/bagPages/SendOrders'
 import WebViewPayment from 'src/components/screens/bagPages/WebViewPayment'
 import Favorites from 'src/components/screens/favoritesPage/Favorites'
 import HomePage from 'src/components/screens/homePages/HomePage'
@@ -21,6 +22,7 @@ import Categories from 'src/components/screens/shopPages/Categories'
 import ItemCategories from 'src/components/screens/shopPages/ItemCategories'
 import ProductDetail from 'src/components/screens/shopPages/ProductDetail'
 import ReviewProduct from 'src/components/screens/shopPages/ReviewProduct'
+import { SearchDetail } from 'src/components/screens/shopPages/SearchDetail'
 import SearchPage from 'src/components/screens/shopPages/SearchPage'
 import ShopPage from 'src/components/screens/shopPages/ShopPage'
 import SizeInfo from 'src/components/screens/shopPages/SizeInfo'
@@ -28,13 +30,13 @@ import DetailFilter from 'src/components/screens/shopPages/filterScreens/DetailF
 import Filter from 'src/components/screens/shopPages/filterScreens/Filter'
 import ForgotPassword from 'src/components/screens/users/ForgotPassword'
 import Login from 'src/components/screens/users/Login'
+import { PaymentResult } from 'src/components/screens/users/PaymentResult'
 import Register from 'src/components/screens/users/Register'
 import Colors from 'src/constants/Colors'
 import { FilterProvider } from 'src/contexts/FilterProvider'
 import StorageProvider from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import Profile from '../components/screens/profilePages/Profile'
-import { PaymentResult } from 'src/components/screens/users/PaymentResult'
 
 const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
@@ -43,7 +45,7 @@ function MainNavigator() {
   const { user } = useContext(UserContext)
   const navigation = useNavigation()
 
-  const ShopStack = ({ navigation }) => {
+  const ShopStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="ShopPage" component={ShopPage} options={{ title: 'Trang chủ Shop' }} />
@@ -69,13 +71,17 @@ function MainNavigator() {
         />
         <Stack.Screen name="SizeInfo" component={SizeInfo} options={{ title: 'SizeInfo' }} />
         <Stack.Screen name="SearchPage" component={SearchPage} options={{ title: 'SearchPage' }} />
+        <Stack.Screen
+          name="SearchDetail"
+          component={SearchDetail}
+          options={{ title: 'SearchDetail' }}
+        />
         <Stack.Screen name="Filter" component={Filter} options={{ title: 'Filter' }} />
         <Stack.Screen
           name="DetailFilter"
           component={DetailFilter}
           options={{ title: 'DetailFilter' }}
         />
-        <Stack.Screen name="BagStack" component={BagStack} options={{ title: 'BagStack' }} />
       </Stack.Navigator>
     )
   }
@@ -86,20 +92,15 @@ function MainNavigator() {
     </Stack.Navigator>
   )
 
-  const FavoriteStack = ({ navigation }) => {
+  const FavoriteStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Favorites" component={Favorites} options={{ title: 'Favorite' }} />
-        <Stack.Screen
-          name="ProductDetail"
-          component={ProductDetail}
-          options={{ title: 'ProductDetail', tabBarStyle: { display: 'none' } }}
-        />
       </Stack.Navigator>
     )
   }
 
-  const BagStack = ({ navigation }) => {
+  const BagStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="BagPage" component={BagPage} options={{ title: 'BagPage' }} />
@@ -111,16 +112,18 @@ function MainNavigator() {
         <Stack.Screen name="MyChecks" component={MyChecks} options={{ title: 'MyChecks' }} />
         <Stack.Screen name="PayPage" component={PayPage} options={{ title: 'PayPage' }} />
         <Stack.Screen
-          name="ProductDetail"
-          component={ProductDetail}
-          options={{ title: 'ProductDetail', tabBarStyle: { display: 'none' } }}
-        />
-        <Stack.Screen
           name="WebViewPayment"
           component={WebViewPayment}
           options={{ title: 'WebViewPayment' }}
         />
-        <Stack.Screen name="MyAddress" component={MyAddress} />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfile}
+          options={{ title: 'EditProfile' }}
+        />
+        <Stack.Screen name="MyAddress" component={MyAddress} options={{ title: 'MyAddress' }} />
+        <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }} />
+        <Stack.Screen name="SendOrders" component={SendOrders} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
       </Stack.Navigator>
     )
@@ -135,12 +138,18 @@ function MainNavigator() {
           component={ReturnMethod}
           options={{ title: 'ReturnMethod' }}
         />
+        <Stack.Screen
+          name="WebViewPayment"
+          component={WebViewPayment}
+          options={{ title: 'WebViewPayment' }}
+        />
         <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }} />
         <Stack.Screen
           name="SettingProfile"
           component={SettingProfile}
           options={{ title: 'SettingProfile' }}
         />
+        <Stack.Screen name="MyChecks" component={MyChecks} options={{ title: 'MyChecks' }} />
         <Stack.Screen
           name="EditProfile"
           component={EditProfile}
@@ -155,8 +164,7 @@ function MainNavigator() {
         <Stack.Screen name="GoogleMaps" component={GoogleMaps} options={{ title: 'GoogleMaps' }} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
         <Stack.Screen name="PayPage" component={PayPage} />
-        <Stack.Screen name='PaymentResult' component={PaymentResult}/>
-
+        <Stack.Screen name="PaymentResult" component={PaymentResult} />
       </Stack.Navigator>
     ) : (
       UserNavigation()
@@ -168,7 +176,6 @@ function MainNavigator() {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-      <Stack.Screen name="FavoriteStack" component={FavoriteStack} />
     </Stack.Navigator>
   )
 

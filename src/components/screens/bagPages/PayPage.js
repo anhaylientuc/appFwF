@@ -1,5 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useNavigation } from '@react-navigation/native'
+import { CommonActions, useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
 import {
   Dimensions,
@@ -17,28 +16,83 @@ import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
-import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
+import { formatCurrency } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import OrderHTTP from 'src/utils/http/OrderHTTP'
 const windowWith = Dimensions.get('window').width
 const PayPage = props => {
   const {
     route: {
-      params: { shippingFee }
+      params: { orders }
     }
   } = props
-  const navigation = useNavigation()
-  const { user, setUser } = useContext(UserContext)
-  const [shipping, setshipping] = useState({})
-  const { storageData, setStorageData } = useStorage()
-  const [showOrderDetails, setShowOrderDetails] = useState(false)
-  const [order, setOrder] = useState(null)
 
-  const goBack = () => {
-    navigation.goBack()
+  const navigation = useNavigation()
+  const { user } = useContext(UserContext)
+  const [shipping, setshipping] = useState({})
+  const [shippingFee, setshippingFee] = useState(0)
+  const [showOrderDetails, setShowOrderDetails] = useState(false)
+  function resetToScreen(navigation) {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
+        routes: [{ name: 'BagPage' }] // Tên của màn hình mà bạn muốn điều hướng đến
+      })
+    )
+  }
+  const goBack = async () => {
+    if (orders.status === '03') {
+      const res = await OrderHTTP.remove(orders._id)
+      console.log('Đã xóa hóa đơn tạm')
+    }
+
+    // Quay trở lại màn hình trước đó
+    resetToScreen(navigation)
+
+    // Cập nhật lại tabBarStyle của parent (nếu cần thiết)
+    navigation.getParent().setOptions({
+      tabBarStyle: {
+        backgroundColor: Colors.white,
+        bottom: 0,
+        paddingVertical: 8,
+        height: 54
+      }
+    })
   }
 
-  const allBasePrices = storageData.map(item => item.newPrice)
+  useEffect(() => {
+    const fetchData = () => {
+      try {
+        if (user) {
+          user.shipping.map(item => {
+            if (item.selected == true) {
+              setshipping(item)
+            }
+          })
+          if (orders.carts.length === 0) {
+            goBack()
+          } else {
+            navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+          }
+          if (orders.amount < 499000) {
+            setshippingFee(49000)
+          } else {
+            setshippingFee(0)
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchData()
+  }, [orders])
+
+  const allBasePrices = orders.carts.map(item => {
+    const ok = item.base_price * item.quantity
+
+    return ok
+  })
+
   const totalBasePrice = sumBasePrices(allBasePrices)
   function sumBasePrices(allBasePrices) {
     let total = 0
@@ -47,36 +101,14 @@ const PayPage = props => {
     }
     return total
   }
+  console.log(totalBasePrice)
 
-  // thành tiền
-  const totalPrices = totalBasePrice + shippingFee
   // format phí ships
   const formattedShippingFee = formatCurrency(shippingFee)
   // format giá trị đơn hàng
   const formattedValueOfOrders = formatCurrency(totalBasePrice)
   // format thành tiền
-  const formattedTotalPrices = formatCurrency(totalPrices)
-
-  useEffect(() => {
-    user.shipping.map(item => {
-      if (item.selected == true) {
-        setshipping(item)
-      }
-    })
-    if (storageData.length === 0) {
-      goBack()
-    } else {
-      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-    }
-
-    setOrder({
-      ...order,
-      amount: totalPrices,
-      carts: storageData,
-      user: user
-      // shipping: { shippingAddress }
-    })
-  }, [storageData])
+  const formattedTotalPrices = formatCurrency(orders.amount)
 
   const showToastDeleted = title => {
     Toast.show({
@@ -90,35 +122,43 @@ const PayPage = props => {
   }
 
   // Logic: onClick delete Item from List
-  const handleDeleteFromList = async (attributes_id, product_Name) => {
-    const result = await AsyncStorage.getItem('my-cart')
-    let storage = []
-    if (result !== null) {
-      storage = JSON.parse(result)
-    }
+  const handleDeleteFromList = async (attributes_id, product_Name, item) => {
+    // if (storageData) {
+    //   const result = await AsyncStorage.getItem('my-cart')
+    //   let storage = []
+    //   if (result !== null) {
+    //     storage = JSON.parse(result)
+    //   }
 
-    const newStorage = storage.filter(s => s.attributes_id !== attributes_id)
-    setStorageData(newStorage)
-    await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
-    let title = product_Name
-    showToastDeleted(title)
+    //   const newStorage = storage.filter(s => s.attributes_id !== attributes_id)
+    //   setStorageData(newStorage)
+    //   await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
+    //   let title = product_Name
+    //   showToastDeleted(title)
+    // } else {
+    // }
+    if (item) {
+    }
   }
 
   const handleCheck = async () => {
-    try {
-      const body = {
-        carts: storageData,
-        user: user,
-        amount: totalPrices
-      }
-      const res = await OrderHTTP.insert(body)
-      setOrder(res)
-      navigation.navigate('MyChecks', { order: order })
-      return res
-    } catch (error) {
-      // Kiểm tra phản hồi lỗi từ server
-      console.log('Error response:', error)
-    }
+    // try {
+    //   const body = {
+    //     user: user,
+    //     amount: amount ? amount : totalPrices,
+    //     carts: cart ? cart : storageData
+    //   }
+    //   const res = await OrderHTTP.insert(body)
+    //   setOrder(res)
+
+    //   return res
+    // } catch (error) {
+    //   // Kiểm tra phản hồi lỗi từ server
+    //   console.log('Error response:', error)
+    // }
+    navigation.navigate('MyChecks', { order: orders, orderId: orders._id })
+    console.log('order: ', orders)
+    console.log('orderId: ', orders._id)
   }
 
   const itemShortList = ({ item, index }) => {
@@ -133,28 +173,15 @@ const PayPage = props => {
             borderRadius: 8
           }}
         >
-          <View style={{ backgroundColor: Colors.grayBg }}>
+          <View style={{ backgroundColor: Colors.white }}>
             <Image
               style={{
                 width: 104,
                 height: 104,
-                resizeMode: 'cover'
+                resizeMode: 'center'
               }}
               source={{ uri: image }}
             />
-            <TouchableOpacity
-              onPress={() => console.log(attributes_id)}
-              style={{
-                position: 'absolute',
-                bottom: 4,
-                right: 4,
-                backgroundColor: Colors.white,
-                padding: 4,
-                borderRadius: 50
-              }}
-            >
-              <Icons.Feather name="trash-2" size={20} />
-            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -163,7 +190,7 @@ const PayPage = props => {
   const shortlist = () => {
     return (
       <FlatList
-        data={storageData}
+        data={orders.carts}
         renderItem={itemShortList}
         scrollEnabled={true}
         horizontal
@@ -177,18 +204,20 @@ const PayPage = props => {
     return (
       <View>
         <View style={{ backgroundColor: Colors.white, padding: 16 }}>
-          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>Thông tin của tôi</Text>
+          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 14 }}>Thông tin của tôi</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ marginTop: 16 }}>
               <Text style={styles.txt_description}>{user.username}</Text>
               <Text style={[styles.txt_description, { marginTop: 8 }]}>{user.email}</Text>
             </View>
-            <Icons.Feather name={'arrow-right'} size={24} color={Colors.black} />
+            <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}>
+              <Icons.Feather name={'arrow-right'} size={24} color={Colors.black} />
+            </TouchableOpacity>
           </View>
         </View>
 
         <View style={{ backgroundColor: Colors.white, padding: 16, marginTop: 16 }}>
-          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 16 }}>Địa chỉ giao hàng</Text>
+          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 14 }}>Địa chỉ giao hàng</Text>
           {!user ? (
             <TouchableOpacity
               style={{ backgroundColor: Colors.black, padding: 16, marginVertical: 16 }}
@@ -225,18 +254,29 @@ const PayPage = props => {
                       (84+) {user.phoneNumber}
                     </Text>
                   </View>
-                  <Text>{shipping.name}</Text>
-                  <View style={{ flexDirection: 'row', gap: 8 }}>
-                    <Text>{shipping.address}</Text>
-                    <Text>P. {shipping.ward}</Text>
-                    <Text>{shipping.district}</Text>
-                    <Text>{shipping.city}</Text>
+                  <View>
+                    <View style={{ height: 4 }} />
+                    <Text style={styles.txt_description}>{shipping.name}</Text>
+                    <View style={{ height: 4 }} />
+                    <Text style={styles.txt_description}>{shipping.address}</Text>
+                    <View style={{ height: 4 }} />
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                      <Text style={[styles.txt_description, { marginEnd: 4 }]}>
+                        {shipping.ward}
+                      </Text>
+                      <Text style={[styles.txt_description, { marginEnd: 4 }]}>
+                        {shipping.district}
+                      </Text>
+                      <Text style={[styles.txt_description, { marginEnd: 4 }]}>
+                        {shipping.city}
+                      </Text>
+                    </View>
+                    <Text style={styles.txt_description}>{shipping.zipCode}</Text>
                   </View>
-                  <Text>{shipping.zipCode}</Text>
                 </View>
               </View>
               <TouchableOpacity onPress={() => navigation.navigate('MyAddress')}>
-                <Icons.MaterialIcons name={'navigate-next'} size={20} />
+                <Icons.MaterialIcons name={'navigate-next'} size={24} />
               </TouchableOpacity>
             </View>
           )}
@@ -253,18 +293,18 @@ const PayPage = props => {
               <View style={{ flexDirection: 'row' }}>
                 <Icons.Feather name={'box'} size={24} />
                 <View style={{ marginStart: 16 }}>
-                  <Text style={[styles.txt_title, { fontSize: 16 }]}>Bưu kiện</Text>
+                  <Text style={[styles.txt_title, { fontSize: 14 }]}>Bưu kiện</Text>
                   <Text style={[styles.txt_description, { fontSize: 12, marginTop: 8 }]}>
-                    {storageData.length} sản phẩm
+                    {orders.carts.length} sản phẩm
                   </Text>
                 </View>
               </View>
               <TouchableOpacity
                 onPress={() => setShowOrderDetails(!showOrderDetails)}
-                style={{ flexDirection: 'row' }}
+                style={{ flexDirection: 'row', alignItems: 'center' }}
               >
-                <Text style={[styles.txt_description, { fontSize: 14 }]}>Chi tiết đơn hàng</Text>
-                <Icons.MaterialIcons name={'navigate-next'} size={20} style={{ marginStart: 8 }} />
+                <Text style={[styles.txt_description, { fontSize: 12 }]}>Chi tiết đơn hàng</Text>
+                <Icons.MaterialIcons name={'navigate-next'} size={24} style={{ marginStart: 8 }} />
               </TouchableOpacity>
             </View>
             {shortlist()}
@@ -319,14 +359,18 @@ const PayPage = props => {
             >
               <Text style={styles.txt_description}>Phí vận chuyển</Text>
               <View>
-                <Text style={[styles.txt_description]}>{formattedShippingFee}</Text>
+                {shippingFee === 0 ? (
+                  <Text style={[styles.txt_description]}>Miễn Phí</Text>
+                ) : (
+                  <Text style={[styles.txt_description]}>{formattedShippingFee}</Text>
+                )}
               </View>
             </View>
           </View>
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16 }}
           >
-            <Text style={styles.txt_title}>Tổng ( {storageData.length} mặt hàng )</Text>
+            <Text style={styles.txt_title}>Tổng ( {orders.carts.length} mặt hàng )</Text>
             <Text style={styles.txt_title}>{formattedTotalPrices}</Text>
           </View>
           <Text style={[styles.txt_description, { fontSize: 10 }]}>
@@ -343,7 +387,7 @@ const PayPage = props => {
             style={{ padding: 16, backgroundColor: Colors.black, marginTop: 28 }}
           >
             <Text
-              style={[styles.txt_title, { fontSize: 16, textAlign: 'center', color: Colors.white }]}
+              style={[styles.txt_title, { fontSize: 12, textAlign: 'center', color: Colors.white }]}
             >
               Hoàn tất thanh toán
             </Text>
@@ -381,7 +425,7 @@ const PayPage = props => {
             paddingVertical: 16
           }}
         >
-          <Icons.MaterialIcons name="lock-outline" size={20} />
+          <Icons.MaterialIcons name="lock-outline" size={24} />
           <Text style={[styles.txt_description, { textAlign: 'center', fontSize: 10 }]}>
             Tất cả dữ liệu sẽ được mã hóa
           </Text>
@@ -426,6 +470,7 @@ const PayPage = props => {
 
   const ItemCarts = ({ item, index }) => {
     const { product_Name, base_price, size, color, image, code, quantity, attributes_id } = item
+    const { _id } = item
     const newPrice = { ...item, newPrice: base_price * quantity }
     const formattedPriceProduct = formatCurrency(newPrice.newPrice)
     const formattedBasePriceProduct = formatCurrency(base_price)
@@ -436,7 +481,8 @@ const PayPage = props => {
           style={{
             flexDirection: 'row',
             backgroundColor: Colors.white,
-            borderRadius: 8
+            borderRadius: 8,
+            justifyContent: 'space-between'
           }}
         >
           <TouchableWithoutFeedback onPress={() => handlePressProductItem(item)}>
@@ -454,7 +500,7 @@ const PayPage = props => {
           <View
             style={{
               width: windowWith / 2,
-              paddingHorizontal: 16,
+              paddingHorizontal: 8,
               paddingVertical: 12,
               backgroundColor: Colors.white
             }}
@@ -508,18 +554,16 @@ const PayPage = props => {
               borderTopRightRadius: 8
             }}
           >
-            <TouchableOpacity
-              // onPress={() => handleDeleteFromList(attributes, product_Name)}
-              onPress={() => handleDeleteFromList(attributes_id, product_Name)}
+            {/* <TouchableOpacity
+              onPress={() => handleDeleteFromList(attributes_id, product_Name, item, index)}
               style={{
-                flexDirection: 'row',
                 alignItems: 'center',
                 width: '100%',
                 padding: 16
               }}
             >
               <Icons.Feather name={'trash-2'} size={20} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -528,31 +572,17 @@ const PayPage = props => {
   // render List product
   const ListItemCart = () => {
     return (
-      <View>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={false}
-          data={storageData}
-          renderItem={ItemCarts}
-        />
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            backgroundColor: Colors.white,
-            marginTop: 24,
-            padding: 12,
-            elevation: 2,
-            shadowColor: Colors.gray
-          }}
-        ></View>
-      </View>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={false}
+        data={orders.carts}
+        renderItem={ItemCarts}
+      />
     )
   }
   const orderDetails = () => {
     return (
-      <View style={{ flex: 1, paddingHorizontal: 16 }}>
+      <View style={{ width: '100%', height: '100%', paddingHorizontal: 16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}>
           <TouchableOpacity onPress={() => setShowOrderDetails(!showOrderDetails)}>
             <Icons.Feather name="x" size={32} />
@@ -568,7 +598,7 @@ const PayPage = props => {
             <View style={{ marginStart: 16 }}>
               <Text style={[styles.txt_title, { fontSize: 16 }]}>Bưu kiện</Text>
               <Text style={[styles.txt_description, { fontSize: 12, marginTop: 8 }]}>
-                {storageData.length} sản phẩm
+                {orders.carts.length} sản phẩm
               </Text>
             </View>
           </View>
@@ -598,7 +628,8 @@ const PayPage = props => {
           {user ? hasUser() : noUser()}
         </View>
       ) : (
-        orderDetails()
+        // orderDetails()
+        <View>{orderDetails()}</View>
       )}
     </ScrollView>
   )
@@ -608,17 +639,17 @@ export default PayPage
 
 const styles = StyleSheet.create({
   txt_description: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Montserrat-Medium'
   },
   txt_description_items: {
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: 'Montserrat-Medium',
     color: Colors.black,
     flex: 1
   },
   txt_title: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Montserrat-SemiBold'
   },
 

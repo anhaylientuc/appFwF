@@ -38,10 +38,8 @@ const StorageProvider = ({ children }) => {
       value={{
         storageData,
         storageFavorites,
-
         setStorageData,
         setStorageFavorites,
-
         getDataProducts,
         getDataFavorites
       }}
@@ -61,6 +59,16 @@ export function formatCurrency(amount, options = {}) {
     currency: currency
   })
   return formatter.format(amount)
+}
+
+export function formatDate(dateString) {
+  // Lấy các phần của chuỗi
+  const year = dateString.slice(0, 4)
+  const month = dateString.slice(4, 6)
+  const day = dateString.slice(6, 8)
+
+  // Định dạng lại ngày thành dd/mm/yyyy
+  return `${day}/${month}/${year}`
 }
 
 export default StorageProvider

@@ -63,6 +63,10 @@ const ProductDetail = props => {
   const [attributes, setattributes] = useState()
 
   useEffect(() => {
+    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+  }, [navigation])
+
+  useEffect(() => {
     const listener = scrollY.addListener(({ value }) => {
       if (value > windowHeight / 2) {
         setHeaderBg(Colors.white)
@@ -79,7 +83,6 @@ const ProductDetail = props => {
   }, [scrollY])
 
   useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
     const loadFavorites = async () => {
       const storedFavorites = await AsyncStorage.getItem('my-favorites')
       if (storedFavorites) {
@@ -275,7 +278,6 @@ const ProductDetail = props => {
   }
 
   const handelPresenProductId = item => {
-
     try {
       const filteredData = item.attributes.filter(item => item.key === 'Kích cỡ')
       const filteredImages = item.images
@@ -292,11 +294,23 @@ const ProductDetail = props => {
       console.error('Error:', error)
       // Handle errors appropriately in your application
     }
+  }
 
+  const setBottomBar = () => {
+    navigation.getParent().setOptions({
+      tabBarStyle: {
+        backgroundColor: Colors.white,
+        bottom: 0,
+        paddingVertical: 8,
+        height: 54
+      }
+    })
   }
 
   const handleGoBag = () => {
-    navigation.navigate('BagStack', { screen: 'BagPage' })
+    navigation.navigate('BagStack', {
+      screen: 'BagPage'
+    })
   }
 
   // xử lí logic selected attributes
@@ -551,22 +565,18 @@ const ProductDetail = props => {
             style={{ width: windowWith, height: windowHeight / 1.2 }}
             data={wallPaper}
             renderItem={({ item, index }) => {
-
               return (
                 item.url != '' && (
-                  <Pressable  >
+                  <Pressable>
                     <Image
                       resizeMode="cover"
-
                       style={{ width: windowWith, height: windowHeight / 1.2 }}
                       source={{ uri: item.url }}
                     />
                   </Pressable>
                 )
               )
-            }
-
-            }
+            }}
           />
           {thumbs ? showModalAddToCart() : null}
 
@@ -623,11 +633,8 @@ const ProductDetail = props => {
               showsHorizontalScrollIndicator={false}
               data={thumbs}
               renderItem={({ item, index }) => {
-
                 return (
-
                   <TouchableOpacity
-
                     onPress={() => handelPresenProductId(item)}
                     style={{ marginHorizontal: 4 }}
                   >
@@ -635,20 +642,18 @@ const ProductDetail = props => {
                       style={
                         selectedId === item._id
                           ? {
-                            width: 57,
-                            height: 86,
-                            borderColor: Colors.black,
-                            borderWidth: 1.4
-                          }
+                              width: 57,
+                              height: 86,
+                              borderColor: Colors.black,
+                              borderWidth: 1.4
+                            }
                           : { width: 57, height: 86 }
                       }
                       source={{ uri: item.images[0].url }}
                     />
                   </TouchableOpacity>
                 )
-              }
-
-              }
+              }}
             />
           </View>
 
@@ -996,7 +1001,6 @@ const ProductDetail = props => {
                 return (
                   <TouchableOpacity
                     disabled={cnt == 0 ? true : false}
-
                     style={{
                       borderWidth: 1,
                       justifyContent: 'center',

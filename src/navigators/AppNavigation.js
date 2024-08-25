@@ -1,11 +1,11 @@
-import { Link, NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
+import * as Linking from 'expo-linking'
 import React, { forwardRef, useImperativeHandle, useRef } from 'react'
 import { StyleSheet } from 'react-native'
 import Toast from 'react-native-toast-message'
 import { UserProvider } from 'src/contexts/UserContext'
 import MainNavigator from './MainNavigation'
-import * as Linking from 'expo-linking';
 
 const AppNavigation = () => {
   const toastRef = useRef(null)
@@ -22,17 +22,17 @@ const AppNavigation = () => {
   const config = {
     screens: {
       HomeStack: 'HomeStack',
-      ProfileStack: {
+      BagStack: {
         screens: {
-          PaymentResult: 'PaymentResult', // Ensure this is correctly nested under ProfileStack
-        },
-      },
-    },
-  };
-  const prefix=Linking.createURL('app')
+          SendOrders: 'SendOrders' // Ensure this is correctly nested under ProfileStack
+        }
+      }
+    }
+  }
+  const prefix = Linking.createURL('app')
   console.log(prefix)
   return (
-    <NavigationContainer linking={{prefixes:[prefix],config}}>
+    <NavigationContainer linking={{ prefixes: [prefix], config }}>
       <UserProvider>
         <MainNavigator />
         <ToastComponent ref={toastRef} />

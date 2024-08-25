@@ -4,7 +4,6 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import PaymentHTTP from 'src/utils/http/PaymentHTTP'
-import * as Linking from 'expo-linking';
 
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
@@ -13,7 +12,7 @@ const MyChecks = props => {
   const {
     navigation,
     route: {
-      params: { order }
+      params: { order, orderId }
     }
   } = props
 
@@ -21,14 +20,13 @@ const MyChecks = props => {
     try {
       const body = {
         amount: order.amount,
+        orderId: orderId,
         orderDescription: 'hoa don ne',
         orderType: 20000,
         bankCode: '',
         language: 'vn'
       }
-
       const res = await PaymentHTTP.create_url(body)
-
       navigation.navigate('WebViewPayment', { res: res })
     } catch (error) {
       console.log('Error response:', error)
@@ -66,7 +64,7 @@ const MyChecks = props => {
       <View style={[styles.container_method, { marginTop: 16 }]}>
         <View />
         <TouchableOpacity
-          onPress={() => check()}
+          // onPress={() => navigation.navigate('SendOrders', { order: order })}
           style={{ flexDirection: 'row', alignItems: 'center' }}
         >
           <Text style={styles.txt_description}>Thanh toán khi nhận hàng</Text>
@@ -78,18 +76,18 @@ const MyChecks = props => {
           />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={() => {
-        try {
-          console.log('ok2')
-          Linking.openURL('myapp://app/PaymentResult')
-        } catch (error) {
-          console.log(error)
-        }
-
-      }
-      }>
+      {/* <TouchableOpacity
+        onPress={() => {
+          try {
+            console.log('ok2')
+            Linking.openURL('myapp://app/PaymentResult')
+          } catch (error) {
+            console.log(error)
+          }
+        }}
+      >
         <Text>ok</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <View
         style={{
           flexDirection: 'row',
