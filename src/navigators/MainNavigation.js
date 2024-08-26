@@ -42,9 +42,9 @@ const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
 
 function MainNavigator() {
+
   const { user } = useContext(UserContext)
   const navigation = useNavigation()
-
   const ShopStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -217,14 +217,18 @@ function MainNavigator() {
             component={ShopStack}
             options={{
               tabBarLabel: '',
-              tabBarIcon: ({ focused }) => (
-                <Icons.Ionicons
-                  name={focused ? 'menu-outline' : 'menu-outline'}
-                  color={!focused ? Colors.gray : Colors.red}
-                  size={30}
-                />
-              )
+              tabBarIcon: ({ focused }) =>{
+                
+                return(
+                  <Icons.Ionicons
+                    name={focused ? 'menu-outline' : 'menu-outline'}
+                    color={!focused ? Colors.gray : Colors.red}
+                    size={30}
+                  />
+                )
+              } 
             }}
+            
           />
           <Button.Screen
             name="FavoriteStack"
@@ -248,13 +252,15 @@ function MainNavigator() {
               tabBarLabel: '',
               // tabBarStyle: { display: 'none' },
               tabBarColor: Colors.white,
-              tabBarIcon: ({ focused }) => (
-                <Icons.Ionicons
-                  name={focused ? 'bag-handle' : 'bag-handle-outline'}
-                  color={!focused ? Colors.gray : Colors.red}
-                  size={30}
-                />
-              )
+              tabBarIcon: ({ focused }) =>{
+                  return(
+                    <Icons.Ionicons
+                      name={focused ? 'bag-handle' : 'bag-handle-outline'}
+                      color={!focused ? Colors.gray : Colors.red}
+                      size={30}
+                    />
+                  )
+              } 
             }}
           />
 

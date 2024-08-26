@@ -21,6 +21,7 @@ import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import NewHTTP, { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
 import { ActivityIndicator } from 'react-native'
 import FastImage from 'react-native-fast-image';
+import Names from 'src/constants/Names'
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
@@ -51,7 +52,7 @@ const ItemCategories = props => {
   const [attributesArr, setattributesArr] = useState([])
   const [price, setprice] = useState([])
   const [loading, setLoading] = useState(false) // Add loading state
-
+  const [selectedCategoryId, setselectedCategoryId] = useState(undefined)
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -100,22 +101,31 @@ const ItemCategories = props => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const newMap = new Map(filterState)
-      const newArr = []
-      for (const [key, value] of newMap.entries()) {
-        if (key == 'Giá') {
-          setprice(value)
-          newArr.push({ key: 'Giá', value: 'Giá' })
-          continue
-        } else {
-          value.map(item => {
-            newArr.push({ key: key, value: item })
-          })
+      try {
+        setLoading(true)
+        const newMap = new Map(filterState)
+        const newArr = []
+        for (const [key, value] of newMap.entries()) {
+          if (key == 'Giá') {
+            setprice(value)
+            newArr.push({ key: 'Giá', value: 'Giá' })
+            continue
+          } else {
+            value.map(item => {
+              newArr.push({ key: key, value: item })
+            })
+          }
         }
+        console.log(newArr)
+        setattributesArr(newArr)
+        await fetchProducts()
+      } catch (error) {
+        console.log(error)
       }
-      console.log(newArr)
-      setattributesArr(newArr)
-      await fetchProducts()
+      finally {
+        setLoading(false)
+      }
+
     }
     fetchData()
   }, [filterState])
@@ -203,20 +213,23 @@ const ItemCategories = props => {
   }
 
   // Logic: onclick set product by category Id
-  const handlePressedCategoryId = async _id => {
+  const handlePressedCategoryId = async (_id) => {
+
+    setselectedCategoryId(_id)
+    console.log(selectedCategoryId)
     setLoading(true)
-    setproducts([])
-    const version = 2
-    const category_id = _id
+
+    // const version = 2
+    // const category_id = _id
     try {
       //if(filterState instanceof Map && filterState.size()>0)
       setFilterState([])
       setselectedProductId(_id)
-      const productsParent = await getProducts({ version: 1, category_id })
-      if (productsParent && productsParent.length > 0) {
-        setproductsParent(productsParent[0].category_id)
-      }
-      const products = await getProducts({ version, category_id })
+      // const productsParent = await getProducts({ version: 1, category_id:_id })
+      // if (productsParent && productsParent.length > 0) {
+      //   setproductsParent(productsParent[0].category_id)
+      // }
+      const products = await getProducts({ version: 2, category_id: _id })
       //console.log(products.length)
       setproducts(products)
 
@@ -347,24 +360,33 @@ const ItemCategories = props => {
 
   // Xóa một thuộc tính khỏi attributesArr
   const removeAttribute = (attribute, index) => {
-    const newArr = attributesArr.filter(
-      item => item.key != attribute.key || item.value != attribute.value
-    )
-    const newMap = new Map()
-    newArr.map(item => {
-      const { key, value } = item
-      if (!newMap.has(key)) {
-        newMap.set(key, [])
-      }
-      if (key == 'Giá') newMap.set(key, price)
-      else newMap.get(key).push(value)
-    })
-    console.log(newMap)
-    setFilterState(newMap)
+    try {
+      setLoading(true)
+      const newArr = attributesArr.filter(
+        item => item.key != attribute.key || item.value != attribute.value
+      )
+      const newMap = new Map()
+      newArr.map(item => {
+        const { key, value } = item
+        if (!newMap.has(key)) {
+          newMap.set(key, [])
+        }
+        if (key == 'Giá') newMap.set(key, price)
+        else newMap.get(key).push(value)
+      })
+      console.log(newMap)
+      setFilterState(newMap)
+    } catch (error) {
+      console.log(error)
+    }
+    finally {
+      setLoading(false)
+    }
+
   }
   const fetchProducts = async () => {
     const query = {}
-    query.category_id = productsParent
+    query.category_id = selectedCategoryId
     const attributes = []
     for (const [key, value] of filterState.entries()) {
       if (key == 'Giá') {
@@ -378,6 +400,7 @@ const ItemCategories = props => {
     if (attributes.length > 0) query.attributes = attributes
     const queryString = qs.stringify(query)
     const res = await NewHTTP.getFilter(queryString)
+
     const { _attributes, _products } = res
     setproducts(_products)
   }
@@ -400,6 +423,7 @@ const ItemCategories = props => {
         <View style={styles.view_search}>
           <TouchableOpacity
             onPress={() => {
+              setFilterState(new Map())
               navigation.goBack()
             }}
           >
@@ -430,7 +454,7 @@ const ItemCategories = props => {
         <TouchableOpacity
           onPress={() =>
             navigation.navigate('Filter', {
-              category_id: productsParent
+              category_id: selectedCategoryId
             })
           }
           style={{
@@ -458,6 +482,7 @@ const ItemCategories = props => {
           >
             {attributesArr &&
               attributesArr.map((item, index) => {
+                const {value}=item
                 return (
                   <View
                     key={item.value} // Sử dụng giá trị item làm key cho mỗi View
@@ -468,7 +493,7 @@ const ItemCategories = props => {
                       backgroundColor: '#FFFFFF	'
                     }}
                   >
-                    <Text style={{ marginRight: 0, paddingHorizontal: 5 }}>{item.value}</Text>
+                    <Text style={{ marginRight: 0, paddingHorizontal: 5 }}>{Names[value]?Names[value]:value}</Text>
                     <TouchableOpacity
                       style={{ backgroundColor: '#FFE4E1', padding: 5 }}
                       onPress={() => removeAttribute(item, index)}

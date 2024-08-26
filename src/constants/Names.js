@@ -3,5 +3,9 @@ export default {
   white: 'Trắng',
   black: 'Đen',
   cream: 'Kem',
-  blue: 'Xanh dương'
+  blue: 'Xanh dương',
+  green:'Xanh lá',
+  variant:'Nhiều',
+  pink:'Hồng'
+
 }

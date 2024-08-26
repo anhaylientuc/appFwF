@@ -17,6 +17,7 @@ import Spinner from 'react-native-loading-spinner-overlay'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
+import Names from 'src/constants/Names'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import NewHTTP from 'src/utils/http/NewHTTP'
 const windowWith = Dimensions.get('window').width
@@ -68,9 +69,11 @@ const Filter = props => {
         if (attributes.length > 0) query.attributes = attributes
         query.category_id = category_id ? category_id : _category_id
         const queryString = qs.stringify(query)
+        console.log(queryString)
         setqueryStringState(queryString)
         const response = await NewHTTP.getFilter(queryString)
         const { _attributes, _products } = response
+        console.log(response)
         setFilterData(_attributes)
         const listPrice = _products.map(item => item.base_price)
         const min = Math.min(...listPrice)
@@ -162,7 +165,7 @@ const Filter = props => {
                 numberOfLines={1}
                 style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
               >
-                {item}
+                {Names[item]?Names[item]:item}
               </Text>
             ))
             : null}
