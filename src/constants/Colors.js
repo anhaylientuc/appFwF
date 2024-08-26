@@ -1,6 +1,7 @@
 export default {
   transparent08: 'rgba(255, 255, 255, 0.8)',
   transparent06: 'rgba(255, 255, 255, 0.6)',
+  turquoise: '#40E0D0',
   primary: '#637aff',
   primaryDark: '#2759ff',
   primaryLite: '#637aff99',

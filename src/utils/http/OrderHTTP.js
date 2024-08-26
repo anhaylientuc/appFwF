@@ -67,5 +67,17 @@ const remove = async id => {
     throw ToastAndroid.show('Có lỗi xảy ra xin vui lòng thử lại saussss', ToastAndroid.SHORT)
   }
 }
+const cancel = async body => {
+  try {
+    const url = `orders/cancel`
+    console.log(url)
+    const axiosInstance = AxiosInstance()
+    const response = await axiosInstance.post(url, body)
+    return response
+  } catch (error) {
+    console.log(error)
+    throw ToastAndroid.show('Có lỗi xảy ra xin vui lòng thử lại saussss', ToastAndroid.SHORT)
+  }
+}
 
-export default { insert, update, get, getById, remove }
+export default { insert, update, get, getById, remove, cancel }

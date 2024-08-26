@@ -1,7 +1,7 @@
-import { CommonActions, useNavigation } from '@react-navigation/native'
+import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import qs from 'qs'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import {
   ActivityIndicator,
   FlatList,
@@ -25,6 +25,21 @@ const MyOder = () => {
   const [myoder, setmyoder] = useState([])
   const [transportFee, setTransportFee] = useState()
   const [loading, setLoading] = useState(false)
+
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        navigation.getParent().setOptions({
+          tabBarStyle: {
+            backgroundColor: Colors.white,
+            bottom: 0,
+            paddingVertical: 8,
+            height: 54
+          }
+        })
+      }
+    }, [navigation])
+  )
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,20 +95,41 @@ const MyOder = () => {
       <View
         style={{ marginVertical: 8, padding: 16, backgroundColor: Colors.white, paddingBottom: 32 }}
       >
-        <Text>{created_at}</Text>
-        {status === '00' && <Text style={styles.txt_title}>Đã thanh toán</Text>}
+        {status === '00' && <Text style={[styles.txt_title, { fontSize: 16 }]}>Đã thanh toán</Text>}
+        {status === '04' && <Text style={[styles.txt_title, { fontSize: 16 }]}>Đã hủy</Text>}
         {status === '01' && (
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
           >
-            <Text style={styles.txt_title}>Đang chờ thanh toán</Text>
+            <Text style={[styles.txt_title, { fontSize: 14 }]}>Đang chờ thanh toán</Text>
+
             <TouchableOpacity onPress={() => handlePayPage(item)}>
               <Text style={[styles.txt_title, { borderBottomWidth: 1 }]}>Thanh toán ngay</Text>
             </TouchableOpacity>
           </View>
         )}
         <View style={{ marginVertical: 8 }}>
-          <Text style={styles.txt_description}>{formattedCurrency}</Text>
+          <Text
+            style={[
+              styles.txt_description,
+              status === '05'
+                ? { fontSize: 12, textDecorationLine: 'line-through' }
+                : { fontSize: 12, textDecorationLine: 'none' }
+            ]}
+          >
+            {created_at}
+          </Text>
+          <View style={{ height: 4 }} />
+          <Text
+            style={[
+              styles.txt_description,
+              status === '04'
+                ? { fontSize: 12, textDecorationLine: 'line-through' }
+                : { fontSize: 12, textDecorationLine: 'none' }
+            ]}
+          >
+            {formattedCurrency}
+          </Text>
         </View>
 
         <ScrollView
@@ -214,7 +250,7 @@ const MyOder = () => {
         </View>
       </View>
 
-      {!myoder ? (
+      {myoder.length == [] ? (
         noOrder()
       ) : loading ? (
         <LinearGradient
@@ -230,7 +266,7 @@ const MyOder = () => {
           }}
         >
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Colors.black} />
+            <ActivityIndicator size="large" color={Colors.red} />
             {/* <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text> */}
           </View>
         </LinearGradient>

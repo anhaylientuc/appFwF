@@ -6,7 +6,6 @@ import {
   FlatList,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from 'react-native'
@@ -97,8 +96,7 @@ const Categories = props => {
           }}
         >
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Colors.black} />
-            <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text>
+            <ActivityIndicator size="large" color={Colors.red} />
           </View>
         </LinearGradient>
       ) : (

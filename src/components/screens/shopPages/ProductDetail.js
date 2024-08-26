@@ -20,10 +20,10 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import { DaTaSale } from 'src/constants/Databases'
 import MyText from 'src/constants/FontFamily'
+import Names from 'src/constants/Names'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import { getProducts } from 'src/utils/http/NewHTTP'
 import ItemListNew from '../homePages/ItemListNews'
-import Names from 'src/constants/Names'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
@@ -62,6 +62,7 @@ const ProductDetail = props => {
   const [discount_price, setdiscount_price] = useState(null)
   const [category_id, setcategory_id] = useState(null)
   const [attributes, setattributes] = useState()
+  const [attributesMap, setattributesMap] = useState(new Map())
 
   useEffect(() => {
     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
@@ -94,12 +95,10 @@ const ProductDetail = props => {
     const fetchData = async () => {
       const version = 2
       const product_id = props.route.params.product_id
-      console.log(product_id)
 
       try {
         const thumb = await getProducts({ version, product_id })
         setthumbs(thumb)
-
         thumb.map(item => {
           if (item._id == _id) {
             var newAttrColor = item.attributes
@@ -117,6 +116,16 @@ const ProductDetail = props => {
             setwallPaper(item.images)
             setselectedId(item._id)
             setattributes(item.attributes)
+            const map = new Map()
+            item.attributes.map(attr => {
+              const { key, value } = attr
+              if (!map.has(key)) {
+                map.set(key, [value])
+              } else {
+                map.get(key).push(value)
+              }
+              setattributesMap(map)
+            })
           }
         })
       } catch (error) {
@@ -127,6 +136,7 @@ const ProductDetail = props => {
     fetchData()
     loadFavorites()
   }, [])
+  // console.log(JSON.stringify(attributes, null, 2))
 
   const showToastError = title => {
     Toast.show({
@@ -280,10 +290,21 @@ const ProductDetail = props => {
 
   const handelPresenProductId = item => {
     try {
+      const { attributes } = item
       const filteredData = item.attributes.filter(item => item.key === 'Kích cỡ')
       const filteredImages = item.images
       const filterName = item.attributes.filter(item => item.key === 'Màu sắc')
-      console.log('ok')
+
+      const map = new Map()
+      attributes.map(item => {
+        const { key, value } = item
+        if (!map.has(key)) {
+          map.set(key, [value])
+        } else {
+          map.get(key).push(value)
+        }
+        setattributesMap(map)
+      })
       setselectedId(item._id)
       setSelected(filteredData)
       setwallPaper(filteredImages)
@@ -420,72 +441,25 @@ const ProductDetail = props => {
 
   // thông tin sản phẩm
   const infoProduct = () => {
-    return (
-      <View style={{ marginHorizontal: 16 }}>
-        <MyText style={{ fontSize: 14 }}>{description}</MyText>
-        <View style={{ flexDirection: 'row', marginTop: 8 }}>
-          <MyText style={{ fontSize: 12, color: Colors.black }}>Mã số sản phẩm:</MyText>
-          <Text style={{ fontSize: 12, color: Colors.black }}>1012</Text>
-        </View>
-        <View style={{ marginTop: 16 }}>
-          <MyText
-            fontFamily={'Montserrat-SemiBold'}
-            style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
-          >
-            Kích cỡ:
-          </MyText>
-
-          <MyText style={{ fontSize: 14 }}>
-            Tay áo: Chiều dài: 66.5 cm (Kích cỡ L/L), Mặt sau: Chiều dài: 79.0 cm (Kích cỡ L/L)
-          </MyText>
-          <View style={{ flexDirection: 'row', marginTop: 4 }}>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
-              style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
-            >
-              Chiều cao:
-            </MyText>
-            <MyText> Chiều dài bình thường</MyText>
+    console.log(attributesMap)
+    return Array.from(attributesMap)
+      .filter(([key, value]) => key != 'Kích cỡ')
+      .map(([key, value], index) => {
+        const newValue = value.map(item => {
+          if (Names[item]) {
+            return Names[item]
+          } else {
+            return item
+          }
+        })
+        return (
+          <View key={index} style={{ flexDirection: 'row' }}>
+            <Text style={styles.txt_title}>{key}:</Text>
+            <View style={{ width: 8 }} />
+            <Text style={[styles.txt_description, { fontSize: 12 }]}>{newValue.join(', ')}</Text>
           </View>
-          <View style={{ flexDirection: 'row', marginTop: 4 }}>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
-              style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
-            >
-              Chiều dài tay áo:
-            </MyText>
-            <MyText> Tay dài</MyText>
-          </View>
-          <View style={{ flexDirection: 'row', marginTop: 4 }}>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
-              style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
-            >
-              Độ vừa vặn:
-            </MyText>
-            <MyText> Chiều dài bình thường</MyText>
-          </View>
-          <View style={{ flexDirection: 'row', marginTop: 4 }}>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
-              style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
-            >
-              Cổ cao:
-            </MyText>
-            <MyText> Cổ áo cài khuy</MyText>
-          </View>
-          <View style={{ flexDirection: 'row', marginTop: 4 }}>
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
-              style={{ fontSize: 15, fontWeight: '500', color: Colors.black }}
-            >
-              Mô tả:
-            </MyText>
-            <MyText> Màu be, Màu trơn</MyText>
-          </View>
-        </View>
-      </View>
-    )
+        )
+      })
   }
   const [isProductCare, setIsProductCare] = useState(false)
   const ProductCare = () => {
@@ -720,7 +694,17 @@ const ProductDetail = props => {
           {/**
            * Show info product
            */}
-          {isInfoProduct ? infoProduct() : null}
+          {isInfoProduct ? (
+            <View style={{ paddingHorizontal: 16 }}>
+              <MyText style={{ fontSize: 12 }}>{description}</MyText>
+
+              <View style={{ flexDirection: 'row', marginVertical: 16 }}>
+                <MyText style={{ fontSize: 12, color: Colors.black }}>Mã số sản phẩm: </MyText>
+                <Text style={styles.txt_title}> {code}</Text>
+              </View>
+              {infoProduct()}
+            </View>
+          ) : null}
 
           <View
             style={{
@@ -1257,5 +1241,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 50
+  },
+  txt_title: {
+    fontSize: 12,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.black2
+  },
+  txt_description: {
+    fontSize: 10,
+    fontFamily: 'Montserrat-Medium',
+    color: Colors.black2
   }
 })

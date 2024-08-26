@@ -19,6 +19,7 @@ import {
 import Toast from 'react-native-toast-message'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
+import Names from 'src/constants/Names'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import OrderHTTP from 'src/utils/http/OrderHTTP'
 import UserContext from '../../../contexts/UserContext'
@@ -540,7 +541,7 @@ const BagPage = props => {
                       fontSize: 12
                     }}
                   >
-                    {color}
+                    {Names[color]}
                   </Text>
                 </View>
                 <View style={{ height: 8 }} />
@@ -934,7 +935,7 @@ const BagPage = props => {
           }}
         >
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Colors.black} />
+            <ActivityIndicator size="large" color={Colors.red} />
             {/* <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text> */}
           </View>
         </LinearGradient>

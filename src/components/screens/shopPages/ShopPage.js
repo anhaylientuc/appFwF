@@ -97,7 +97,7 @@ const ShopPage = () => {
           }}
         >
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Colors.black} />
+            <ActivityIndicator size="large" color={Colors.red} />
             <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text>
           </View>
         </LinearGradient>

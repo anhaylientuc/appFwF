@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { useCallback, useContext } from 'react'
 import { View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
+
 import BagPage from 'src/components/screens/bagPages/BagPage'
 import MyChecks from 'src/components/screens/bagPages/MyChecks'
 import PayPage from 'src/components/screens/bagPages/PayPage'
@@ -43,23 +44,22 @@ const Stack = createStackNavigator()
 const Button = createBottomTabNavigator()
 
 function MainNavigator() {
-
   const { user } = useContext(UserContext)
   const navigation = useNavigation()
   const ShopStack = () => {
-    useFocusEffect(
-      useCallback(() => {
-        // Cleanup code nếu cần khi ProfileStack không còn focus
-        return () => {
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{ name: 'ShopPage' }]
-            })
-          )
-        }
-      }, [navigation])
-    )
+    // useFocusEffect(
+    //   useCallback(() => {
+    //     // Cleanup code nếu cần khi ProfileStack không còn focus
+    //     return () => {
+    //       navigation.dispatch(
+    //         CommonActions.reset({
+    //           index: 0,
+    //           routes: [{ name: 'ShopPage' }]
+    //         })
+    //       )
+    //     }
+    //   }, [navigation])
+    // )
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="ShopPage" component={ShopPage} options={{ title: 'Trang chủ Shop' }} />
@@ -190,6 +190,7 @@ function MainNavigator() {
           component={DetailMyOrder}
           options={{ title: 'DetailMyOrder' }}
         />
+
         <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }} />
         <Stack.Screen
           name="SettingProfile"
@@ -264,18 +265,16 @@ function MainNavigator() {
             component={ShopStack}
             options={{
               tabBarLabel: '',
-              tabBarIcon: ({ focused }) =>{
-                
-                return(
+              tabBarIcon: ({ focused }) => {
+                return (
                   <Icons.Ionicons
                     name={focused ? 'menu-outline' : 'menu-outline'}
                     color={!focused ? Colors.gray : Colors.red}
                     size={30}
                   />
                 )
-              } 
+              }
             }}
-            
           />
           <Button.Screen
             name="FavoriteStack"
@@ -299,15 +298,15 @@ function MainNavigator() {
               tabBarLabel: '',
               // tabBarStyle: { display: 'none' },
               tabBarColor: Colors.white,
-              tabBarIcon: ({ focused }) =>{
-                  return(
-                    <Icons.Ionicons
-                      name={focused ? 'bag-handle' : 'bag-handle-outline'}
-                      color={!focused ? Colors.gray : Colors.red}
-                      size={30}
-                    />
-                  )
-              } 
+              tabBarIcon: ({ focused }) => {
+                return (
+                  <Icons.Ionicons
+                    name={focused ? 'bag-handle' : 'bag-handle-outline'}
+                    color={!focused ? Colors.gray : Colors.red}
+                    size={30}
+                  />
+                )
+              }
             }}
           />
 

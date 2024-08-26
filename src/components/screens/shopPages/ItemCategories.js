@@ -3,9 +3,9 @@ import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/n
 import qs from 'qs'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
-  Image,
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
@@ -13,15 +13,14 @@ import {
   TouchableOpacity,
   View
 } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
+import Names from 'src/constants/Names'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import NewHTTP, { getCategoryById, getProducts } from 'src/utils/http/NewHTTP'
-import { ActivityIndicator } from 'react-native'
-import FastImage from 'react-native-fast-image';
-import Names from 'src/constants/Names'
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
@@ -121,11 +120,9 @@ const ItemCategories = props => {
         await fetchProducts()
       } catch (error) {
         console.log(error)
-      }
-      finally {
+      } finally {
         setLoading(false)
       }
-
     }
     fetchData()
   }, [filterState])
@@ -213,8 +210,7 @@ const ItemCategories = props => {
   }
 
   // Logic: onclick set product by category Id
-  const handlePressedCategoryId = async (_id) => {
-
+  const handlePressedCategoryId = async _id => {
     setselectedCategoryId(_id)
     console.log(selectedCategoryId)
     setLoading(true)
@@ -232,11 +228,9 @@ const ItemCategories = props => {
       const products = await getProducts({ version: 2, category_id: _id })
       //console.log(products.length)
       setproducts(products)
-
     } catch (error) {
       console.error('Error 1:', error)
-    }
-    finally {
+    } finally {
       setLoading(false)
     }
   }
@@ -274,7 +268,6 @@ const ItemCategories = props => {
   }
 
   const renderItems = ({ item }) => {
-
     const { _id, name, images, base_price, product_id } = item
     const formattedCurrency = formatCurrency(base_price)
 
@@ -307,7 +300,7 @@ const ItemCategories = props => {
                     }}
                     source={{
                       uri: image.url,
-                      priority: FastImage.priority.high,
+                      priority: FastImage.priority.high
                     }}
                   />
                 )
@@ -378,11 +371,9 @@ const ItemCategories = props => {
       setFilterState(newMap)
     } catch (error) {
       console.log(error)
-    }
-    finally {
+    } finally {
       setLoading(false)
     }
-
   }
   const fetchProducts = async () => {
     const query = {}
@@ -419,7 +410,6 @@ const ItemCategories = props => {
           shadowColor: Colors.gray
         }}
       >
-
         <View style={styles.view_search}>
           <TouchableOpacity
             onPress={() => {
@@ -482,7 +472,7 @@ const ItemCategories = props => {
           >
             {attributesArr &&
               attributesArr.map((item, index) => {
-                const {value}=item
+                const { value } = item
                 return (
                   <View
                     key={item.value} // Sử dụng giá trị item làm key cho mỗi View
@@ -493,7 +483,9 @@ const ItemCategories = props => {
                       backgroundColor: '#FFFFFF	'
                     }}
                   >
-                    <Text style={{ marginRight: 0, paddingHorizontal: 5 }}>{Names[value]?Names[value]:value}</Text>
+                    <Text style={{ marginRight: 0, paddingHorizontal: 5 }}>
+                      {Names[value] ? Names[value] : value}
+                    </Text>
                     <TouchableOpacity
                       style={{ backgroundColor: '#FFE4E1', padding: 5 }}
                       onPress={() => removeAttribute(item, index)}
@@ -542,32 +534,27 @@ const ItemCategories = props => {
             </TouchableOpacity>
           </View>
         </View>
-        {
-          loading ? (
-            <View style={{ alignItems: 'center', justifyContent: 'center', height: 400 }}>
-              <ActivityIndicator size="large" color={Colors.red} />
-            </View>
-          ) : (products && products.length > 0) ? (
-            <FlatList
-              // render Item Product by Category
-              style={{ marginBottom: '25%', paddingHorizontal: 16 }}
-              keyExtractor={item => item._id}
-              scrollEnabled={false}
-              numColumns={numColumns}
-              key={numColumns}
-              showsVerticalScrollIndicator={false} // thanh cuộn
-              data={products}
-              renderItem={renderItems}
-            />
-          ) : (
-            <View style={{ alignItems: 'center', justifyContent: 'center', height: 400 }}>
-              <Text style={{ fontSize: 18 }}>
-                Chưa có sản phẩm
-              </Text>
-            </View>
-          )
-        }
-
+        {loading ? (
+          <View style={{ alignItems: 'center', justifyContent: 'center', height: 400 }}>
+            <ActivityIndicator size="large" color={Colors.red} />
+          </View>
+        ) : products && products.length > 0 ? (
+          <FlatList
+            // render Item Product by Category
+            style={{ marginBottom: '25%', paddingHorizontal: 16 }}
+            keyExtractor={item => item._id}
+            scrollEnabled={false}
+            numColumns={numColumns}
+            key={numColumns}
+            showsVerticalScrollIndicator={false} // thanh cuộn
+            data={products}
+            renderItem={renderItems}
+          />
+        ) : (
+          <View style={{ alignItems: 'center', justifyContent: 'center', height: 400 }}>
+            <Text style={[styles.txt_title, { fontSize: 18 }]}>Chưa có sản phẩm</Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   )
