@@ -23,6 +23,7 @@ import MyText from 'src/constants/FontFamily'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import { getProducts } from 'src/utils/http/NewHTTP'
 import ItemListNew from '../homePages/ItemListNews'
+import Names from 'src/constants/Names'
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
@@ -625,7 +626,7 @@ const ProductDetail = props => {
           </View>
 
           <View style={styles.product.wrapper_container_size_color}>
-            <MyText style={styles.product.txt_size}>{selectedName}</MyText>
+            <MyText style={styles.product.txt_size}>{Names[selectedName]}</MyText>
 
             <FlatList
               keyExtractor={item => item._id}

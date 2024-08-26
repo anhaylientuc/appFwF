@@ -17,6 +17,7 @@ import Spinner from 'react-native-loading-spinner-overlay'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
+import Names from 'src/constants/Names'
 import { FilterContext } from 'src/contexts/FilterProvider'
 import NewHTTP from 'src/utils/http/NewHTTP'
 const windowWith = Dimensions.get('window').width
@@ -44,6 +45,8 @@ const Filter = props => {
   const [priceLeft, setpriceLeft] = useState(0)
   const [priceRight, setpriceRight] = useState(100)
   const [finishSlider, setfinishSlider] = useState(false)
+  const [checkQuantity, setcheckQuantity] = useState([])
+  const [step, setstep] = useState(null)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,19 +59,24 @@ const Filter = props => {
         const attributes = []
         for (const [key, value] of filterState.entries()) {
           if (key == 'Giá') {
+            console.log('ok')
             const listPrice = filterState.get('Giá')
             query.minPrice = listPrice[0]
             query.maxPrice = listPrice[1]
-          } else attributes.push({ key, value })
+          } 
+          else
+             attributes.push({ key, value })
         }
         if (attributes.length > 0) query.attributes = attributes
         query.category_id = category_id ? category_id : _category_id
         const queryString = qs.stringify(query)
+        console.log(queryString)
         setqueryStringState(queryString)
         const response = await NewHTTP.getFilter(queryString)
         const { _attributes, _products } = response
-        setFilterData(_attributes)
-
+        console.log(response)
+        setFilterData(_attributes)    
+        handleCheckQuantity(_attributes)
         setProducts(_products) // Ensure products are set here
       } catch (error) {
         console.log('Error fetching data:', error)
@@ -78,6 +86,7 @@ const Filter = props => {
     }
     fetchData()
   }, [filterState])
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -86,6 +95,7 @@ const Filter = props => {
         const listPrice = res.map(item => item.base_price)
         let min = Math.min(...listPrice)
         let max = Math.max(...listPrice)
+       
         setminPrice(min)
         setMaxPrice(max)
         if (filterState instanceof Map && filterState.has('Giá')) {
@@ -93,6 +103,14 @@ const Filter = props => {
           min = values[0]
           max = values[1]
         }
+        if(min==max){
+          setstep(0)
+          setminPrice(min)
+          setMaxPrice(max)
+        }
+         
+        else
+          setstep(100)
         setpriceLeft(min)
         setpriceRight(max)
         settwoWayValues([min, max])
@@ -102,6 +120,16 @@ const Filter = props => {
     }
     fetchData()
   }, [])
+  const handleCheckQuantity=(filter)=>{
+    const newCheckQuantity=filter.map(item=>{
+        const {child}=item
+        
+        const cnt=child.reduce((acc,item)=>acc+item.quantity,0)
+        return cnt?true:false
+    })
+    setcheckQuantity(newCheckQuantity)
+    console.log('checkQuan',newCheckQuantity)
+  }
   const toggleSlider = () => {
     setshowSlider(!showSlider)
   }
@@ -116,9 +144,9 @@ const Filter = props => {
     })
   }
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item,index }) => {
     const { key, child } = item
-
+    console.log(index)
     return (
       <Pressable
         onPress={() => {
@@ -128,12 +156,16 @@ const Filter = props => {
             queryString: queryStringState
           })
         }}
-        style={{
+        style={[{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          paddingVertical: 16
-        }}
+          paddingVertical: 16,
+
+        },
+        checkQuantity[index]== false? { opacity: 0.3, pointerEvents: 'none' } : null
+
+      ]}
       >
         <Spinner visible={loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle} />
         <MyText>{key}</MyText>
@@ -141,14 +173,14 @@ const Filter = props => {
         <View style={{ flexDirection: 'row' }}>
           {filterState instanceof Map && filterState.has(key)
             ? filterState.get(key).map((item, index) => (
-                <Text
-                  key={index}
-                  numberOfLines={1}
-                  style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
-                >
-                  {item}
-                </Text>
-              ))
+              <Text
+                key={index}
+                numberOfLines={1}
+                style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
+              >
+                {Names[item]?Names[item]:item}
+              </Text>
+            ))
             : null}
           <Icons.AntDesign name="arrowright" size={20} />
         </View>
@@ -159,9 +191,17 @@ const Filter = props => {
   const handleDeleteAllFilter = () => {
     if (filterState instanceof Map) {
       setFilterState(new Map())
+      settwoWayValues([minPrice,maxPrice])
+      setpriceLeft(minPrice)
+      setMaxPrice(maxPrice)
     }
   }
   const handleValuesChange = values => {
+    if(values[0]==values[1]){
+      console.log('cc')
+      return
+    }
+      
     console.log(values)
     setpriceLeft(values[0])
     setpriceRight(values[1])
@@ -183,24 +223,28 @@ const Filter = props => {
       // const res = await NewHTTP.getProducts(query)
       const min = twoWayValues[0]
       const max = twoWayValues[1]
-
+      console.log(twoWayValues)
       // const newProducts=res.filter(item=>(item['base_price']>=min&&item['base_price']<=max))
       // console.log(newProducts.length)
       // setProducts(newProducts)
       if (min != 0 && max != 100) {
         const map = new Map()
-
         map.set('Giá', [min, max])
-        console.log('>>>', map)
         setFilterState(map)
       }
     }
     fetchData()
   }, [finishSlider])
   const handleValuesChangeFinish = values => {
+    if(values[0]==values[1]){
+      console.log('dkm')
+      return
+    }
+      
     settwoWayValues(values)
     setfinishSlider(!finishSlider)
   }
+  
   return (
     <KeyboardAvoidingView>
       <View style={styles.container}>
@@ -289,7 +333,7 @@ const Filter = props => {
                       sliderLength={350}
                       allowOverlap={true}
                       onValuesChangeFinish={handleValuesChangeFinish}
-                      step={100}
+                      step={step}
                       onValuesChange={handleValuesChange}
                       selectedStyle={{
                         backgroundColor: 'black' // Màu của thanh trượt đã chọn
