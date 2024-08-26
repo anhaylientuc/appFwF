@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { useNavigation } from '@react-navigation/native'
+import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import { useContext } from 'react'
+import { useCallback, useContext } from 'react'
 import { View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 import BagPage from 'src/components/screens/bagPages/BagPage'
@@ -12,6 +12,7 @@ import SendOrders from 'src/components/screens/bagPages/SendOrders'
 import WebViewPayment from 'src/components/screens/bagPages/WebViewPayment'
 import Favorites from 'src/components/screens/favoritesPage/Favorites'
 import HomePage from 'src/components/screens/homePages/HomePage'
+import DetailMyOrder from 'src/components/screens/profilePages/DetailMyOrder'
 import EditAddress from 'src/components/screens/profilePages/EditAddress'
 import EditProfile from 'src/components/screens/profilePages/EditProfile'
 import GoogleMaps from 'src/components/screens/profilePages/GoogleMaps'
@@ -46,6 +47,19 @@ function MainNavigator() {
   const navigation = useNavigation()
 
   const ShopStack = () => {
+    useFocusEffect(
+      useCallback(() => {
+        // Cleanup code nếu cần khi ProfileStack không còn focus
+        return () => {
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: 'ShopPage' }]
+            })
+          )
+        }
+      }, [navigation])
+    )
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="ShopPage" component={ShopPage} options={{ title: 'Trang chủ Shop' }} />
@@ -101,6 +115,19 @@ function MainNavigator() {
   }
 
   const BagStack = () => {
+    useFocusEffect(
+      useCallback(() => {
+        // Cleanup code nếu cần khi ProfileStack không còn focus
+        return () => {
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: 'BagPage' }]
+            })
+          )
+        }
+      }, [navigation])
+    )
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="BagPage" component={BagPage} options={{ title: 'BagPage' }} />
@@ -129,7 +156,22 @@ function MainNavigator() {
     )
   }
 
-  const ProfileStack = () => {
+  const ProfileStack = ({ navigation }) => {
+    const { user } = useContext(UserContext)
+    useFocusEffect(
+      useCallback(() => {
+        // Cleanup code nếu cần khi ProfileStack không còn focus
+        return () => {
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: 'Profile' }]
+            })
+          )
+        }
+      }, [navigation])
+    )
+
     return user ? (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Profile" component={Profile} options={{ title: 'Profile' }} />
@@ -142,6 +184,11 @@ function MainNavigator() {
           name="WebViewPayment"
           component={WebViewPayment}
           options={{ title: 'WebViewPayment' }}
+        />
+        <Stack.Screen
+          name="DetailMyOrder"
+          component={DetailMyOrder}
+          options={{ title: 'DetailMyOrder' }}
         />
         <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }} />
         <Stack.Screen

@@ -598,6 +598,7 @@ const Favorites = () => {
               scrollEnabled={false}
               style={{ marginTop: 16 }}
               data={selected}
+              keyExtractor={(item, index) => `${item._id}-${index}`}
               numColumns={3}
               renderItem={({ item, index }) => {
                 const { cnt, value } = item

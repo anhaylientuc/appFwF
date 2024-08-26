@@ -84,7 +84,7 @@ const EditAddress = props => {
     }
 
     fetchData()
-  }, [user, idTinhThanh, idQuanHuyen])
+  }, [idTinhThanh, idQuanHuyen])
 
   const showToastSuccess = title => {
     setTimeout(() => {

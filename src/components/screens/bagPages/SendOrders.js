@@ -92,14 +92,15 @@ const SendOrders = props => {
           }
         } else if (payment.responseCode == '24') {
           payment.responseCode == '02'
-          await OrderHTTP.update(payment.orderInfo, { payment })
-          console.log('Đã xóa hóa đơn')
+          // await OrderHTTP.update(payment.orderInfo, { payment })
+          // console.log('Đã xóa hóa đơn')
           const res = await OrderHTTP.remove(payment.orderInfo)
-          const newOrder = { ...res.result }
+          console.log(JSON.stringify(res.order, null, 2))
+          const newOrder = { ...res.order }
           newOrder.status = '01'
           delete newOrder.payment
           delete newOrder._id
-          const newRes = await OrderHTTP.insert(newOrder)
+          await OrderHTTP.insert(newOrder)
         } else {
           throw new Error('Lỗi không xác định')
         }
@@ -175,14 +176,7 @@ const SendOrders = props => {
       })
     )
   }
-  function resetProfileStack(navigation) {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
-        routes: [{ name: 'Profile' }] // Tên của màn hình mà bạn muốn điều hướng đến
-      })
-    )
-  }
+
   const oder = () => {
     return (
       <View>
@@ -330,7 +324,7 @@ const SendOrders = props => {
               style={styles.container_setting}
               onPress={() => {
                 resetToScreen(navigation)
-                resetProfileStack(navigation)
+
                 navigation.navigate('ProfileStack', { screen: 'MyOrder' })
               }}
             >
@@ -387,7 +381,7 @@ const SendOrders = props => {
         <TouchableOpacity
           onPress={() => {
             resetToScreen(navigation)
-            resetProfileStack(navigation)
+
             navigation.navigate('ProfileStack', { screen: 'Profile' })
           }}
         >

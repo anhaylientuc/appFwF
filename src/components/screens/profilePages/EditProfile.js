@@ -184,6 +184,7 @@ const EditProfile = () => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
+            width:'100%',
             paddingHorizontal: 16,
             paddingTop: 16
           }}
@@ -574,9 +575,9 @@ const styles = StyleSheet.create({
   },
   txtHeader: {
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'Montserrat-SemiBold',
-    flex: 2
+    flex: 3
   },
   container: {
     backgroundColor: Colors.grayBg,

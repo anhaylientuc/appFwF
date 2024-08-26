@@ -133,11 +133,11 @@ const MyAddress = () => {
         !cityError &&
         !districtError &&
         !wardError &&
-        name &&
-        address &&
-        city &&
-        district &&
-        ward &&
+        name !== '' &&
+        address !== '' &&
+        city !== '' &&
+        district !== '' &&
+        ward !== '' &&
         zipCodeError == false
       ) {
         var arrShipping = shippingList
@@ -546,7 +546,7 @@ const MyAddress = () => {
       </View>
       {loading ? (
         <LinearGradient
-          colors={[Colors.transparent08, Colors.transparent06, Colors.transparent08]}
+          colors={[Colors.transparent08, Colors.transparent06, Colors.transparent06]}
           style={{
             position: 'absolute',
             width: '100%',
@@ -559,7 +559,6 @@ const MyAddress = () => {
         >
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Colors.black} />
-            <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text>
           </View>
         </LinearGradient>
       ) : (

@@ -74,12 +74,13 @@ const MyOder = () => {
   }
 
   const renderOrder = ({ item }) => {
-    const { carts, amount, status } = item
+    const { carts, amount, status, created_at } = item
     const formattedCurrency = formatCurrency(amount)
     return (
       <View
         style={{ marginVertical: 8, padding: 16, backgroundColor: Colors.white, paddingBottom: 32 }}
       >
+        <Text>{created_at}</Text>
         {status === '00' && <Text style={styles.txt_title}>Đã thanh toán</Text>}
         {status === '01' && (
           <View
@@ -112,7 +113,7 @@ const MyOder = () => {
         <Text style={[styles.txt_title, { fontSize: 12, marginVertical: 8 }]}>
           {carts.length} sản phẩm
         </Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('DetailMyOrder', { myOrder: item })}>
           <Text style={styles.txt_title}>XEM ĐƠN HÀNG</Text>
         </TouchableOpacity>
       </View>
@@ -204,10 +205,12 @@ const MyOder = () => {
             borderBlockColor: Colors.red
           }}
         >
-          <Text style={{ textAlign: 'center' }}>Trực tuyến ({myoder.length})</Text>
+          <Text style={[styles.txt_title, { textAlign: 'center' }]}>
+            Trực tuyến ({myoder.length})
+          </Text>
         </View>
         <View style={{ flex: 1, width: '100%', borderBottomWidth: 0, paddingVertical: 16 }}>
-          <Text style={{ textAlign: 'center' }}>Tại cửa hàng (0)</Text>
+          <Text style={[styles.txt_title, { textAlign: 'center' }]}>Tại cửa hàng (0)</Text>
         </View>
       </View>
 
@@ -228,7 +231,7 @@ const MyOder = () => {
         >
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Colors.black} />
-            <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text>
+            {/* <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text> */}
           </View>
         </LinearGradient>
       ) : (

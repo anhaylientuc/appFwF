@@ -1,8 +1,8 @@
 import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
@@ -43,16 +43,20 @@ const BagPage = props => {
   const [oderUser, setoderUser] = useState([])
   const [loading, setLoading] = useState(false)
 
-  const setBottomBar = () => {
-    navigation.getParent().setOptions({
-      tabBarStyle: {
-        backgroundColor: Colors.white,
-        bottom: 0,
-        paddingVertical: 8,
-        height: 54
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        navigation.getParent().setOptions({
+          tabBarStyle: {
+            backgroundColor: Colors.white,
+            bottom: 0,
+            paddingVertical: 8,
+            height: 54
+          }
+        })
       }
-    })
-  }
+    }, [navigation])
+  )
 
   useEffect(() => {
     const loadFavorites = async () => {
@@ -931,7 +935,7 @@ const BagPage = props => {
         >
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Colors.black} />
-            <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text>
+            {/* <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text> */}
           </View>
         </LinearGradient>
       ) : (
