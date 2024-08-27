@@ -580,7 +580,7 @@ const ProductDetail = props => {
                     : { color: Colors.gray, margin: 3 }
                 }
               >
-                ⬤
+                
               </Text>
             ))}
           </View>

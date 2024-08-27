@@ -42,9 +42,8 @@ export const getProducts = async query => {
     const axiosInstance = AxiosInstance()
     const url = `/products`
     const params = query
-
     const response = await axiosInstance.get(url, { params: params })
-
+    console.log(response)
     return response
   } catch (error) {
     console.log(error)
@@ -89,4 +88,4 @@ const search=async(query)=>{
     throw error
   }
 }
-export default { getProducts, getFilter,search }
+export default { getProducts, getFilter,search,getCategoryById }
