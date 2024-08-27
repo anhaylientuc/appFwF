@@ -27,10 +27,9 @@ const Filter = props => {
   const {
     navigation,
     route: {
-      params: { category_id }
+      params: { category_id, categories, listIdConst, action }
     }
   } = props
-
   const [filterData, setFilterData] = useState([]) // Renamed to avoid confusion with Filter component
   const { filterState, setFilterState } = useContext(FilterContext)
   const { _category_id, set_category_id } = useContext(FilterContext)
@@ -59,23 +58,25 @@ const Filter = props => {
         const attributes = []
         for (const [key, value] of filterState.entries()) {
           if (key == 'Giá') {
-            console.log('ok')
             const listPrice = filterState.get('Giá')
             query.minPrice = listPrice[0]
             query.maxPrice = listPrice[1]
-          } 
+          }
           else
-             attributes.push({ key, value })
+            attributes.push({ key, value })
         }
         if (attributes.length > 0) query.attributes = attributes
-        query.category_id = category_id ? category_id : _category_id
+        //query.category_id = category_id ? category_id : _category_id
+        if (categories)
+          query.categories = categories
+        if (listIdConst)
+          query.listId = listIdConst
+
         const queryString = qs.stringify(query)
-        console.log(queryString)
         setqueryStringState(queryString)
         const response = await NewHTTP.getFilter(queryString)
         const { _attributes, _products } = response
-        console.log(response)
-        setFilterData(_attributes)    
+        setFilterData(_attributes)
         handleCheckQuantity(_attributes)
         setProducts(_products) // Ensure products are set here
       } catch (error) {
@@ -86,16 +87,20 @@ const Filter = props => {
     }
     fetchData()
   }, [filterState])
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const query = { category_id: category_id, version: 2 }
+        const query = {  version: 2 }
+        if(action=='search')
+          query.listCategory=listIdConst
+        else
+          query.category_id= category_id
         const res = await NewHTTP.getProducts(query)
         const listPrice = res.map(item => item.base_price)
         let min = Math.min(...listPrice)
         let max = Math.max(...listPrice)
-       
+
         setminPrice(min)
         setMaxPrice(max)
         if (filterState instanceof Map && filterState.has('Giá')) {
@@ -103,12 +108,12 @@ const Filter = props => {
           min = values[0]
           max = values[1]
         }
-        if(min==max){
+        if (min == max) {
           setstep(0)
           setminPrice(min)
           setMaxPrice(max)
         }
-         
+
         else
           setstep(100)
         setpriceLeft(min)
@@ -120,15 +125,14 @@ const Filter = props => {
     }
     fetchData()
   }, [])
-  const handleCheckQuantity=(filter)=>{
-    const newCheckQuantity=filter.map(item=>{
-        const {child}=item
-        
-        const cnt=child.reduce((acc,item)=>acc+item.quantity,0)
-        return cnt?true:false
+  const handleCheckQuantity = (filter) => {
+    const newCheckQuantity = filter.map(item => {
+      const { child } = item
+
+      const cnt = child.reduce((acc, item) => acc + item.quantity, 0)
+      return cnt ? true : false
     })
     setcheckQuantity(newCheckQuantity)
-    console.log('checkQuan',newCheckQuantity)
   }
   const toggleSlider = () => {
     setshowSlider(!showSlider)
@@ -144,16 +148,16 @@ const Filter = props => {
     })
   }
 
-  const renderItem = ({ item,index }) => {
+  const renderItem = ({ item, index }) => {
     const { key, child } = item
-    console.log(index)
     return (
       <Pressable
         onPress={() => {
           props.navigation.navigate('DetailFilter', {
             child: item.child,
             keySelected: key,
-            queryString: queryStringState
+            queryString: queryStringState,
+            action: action
           })
         }}
         style={[{
@@ -163,9 +167,9 @@ const Filter = props => {
           paddingVertical: 16,
 
         },
-        checkQuantity[index]== false? { opacity: 0.3, pointerEvents: 'none' } : null
+        checkQuantity[index] == false ? { opacity: 0.3, pointerEvents: 'none' } : null
 
-      ]}
+        ]}
       >
         <Spinner visible={loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle} />
         <MyText>{key}</MyText>
@@ -178,7 +182,7 @@ const Filter = props => {
                 numberOfLines={1}
                 style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
               >
-                {Names[item]?Names[item]:item}
+                {Names[item] ? Names[item] : item}
               </Text>
             ))
             : null}
@@ -191,18 +195,17 @@ const Filter = props => {
   const handleDeleteAllFilter = () => {
     if (filterState instanceof Map) {
       setFilterState(new Map())
-      settwoWayValues([minPrice,maxPrice])
+      settwoWayValues([minPrice, maxPrice])
       setpriceLeft(minPrice)
       setMaxPrice(maxPrice)
     }
   }
   const handleValuesChange = values => {
-    if(values[0]==values[1]){
+    if (values[0] == values[1]) {
       console.log('cc')
       return
     }
-      
-    console.log(values)
+
     setpriceLeft(values[0])
     setpriceRight(values[1])
   }
@@ -219,14 +222,10 @@ const Filter = props => {
   useEffect(() => {
     const fetchData = async () => {
       console.log('on finish', twoWayValues)
-      // const query = { category_id: category_id, version: 2 }
-      // const res = await NewHTTP.getProducts(query)
+
       const min = twoWayValues[0]
       const max = twoWayValues[1]
-      console.log(twoWayValues)
-      // const newProducts=res.filter(item=>(item['base_price']>=min&&item['base_price']<=max))
-      // console.log(newProducts.length)
-      // setProducts(newProducts)
+
       if (min != 0 && max != 100) {
         const map = new Map()
         map.set('Giá', [min, max])
@@ -236,15 +235,15 @@ const Filter = props => {
     fetchData()
   }, [finishSlider])
   const handleValuesChangeFinish = values => {
-    if(values[0]==values[1]){
+    if (values[0] == values[1]) {
       console.log('dkm')
       return
     }
-      
+
     settwoWayValues(values)
     setfinishSlider(!finishSlider)
   }
-  
+
   return (
     <KeyboardAvoidingView>
       <View style={styles.container}>
@@ -371,7 +370,10 @@ const Filter = props => {
           onPress={() => {
             if (Array.isArray(products) && products.length > 0) {
               console.log(products.length)
-              navigation.navigate('ItemCategories', { _products: products })
+              if (action == 'search')
+                navigation.navigate('SearchDetail', { productsNe: products })
+              else
+                navigation.navigate('ItemCategories', { _products: products })
             } else {
               console.log('No products to display')
             }

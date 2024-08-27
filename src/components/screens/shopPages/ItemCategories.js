@@ -39,11 +39,9 @@ const ItemCategories = props => {
   const [products, setproducts] = useState([])
   const [addFavorite, setAddFavorite] = useState(false)
   const [numColumns, setNumColumns] = useState(2)
-  const [selected, setSelected] = useState()
   const [nameCategoryById, setnameCategoryById] = useState('')
   const [selectedProductId, setselectedProductId] = useState(null)
   const { filterState, setFilterState } = useContext(FilterContext)
-  const isFocusScreen = useIsFocused()
   const [isShowProducts, setIsShowProducts] = useState(false)
   const [productsParent, setproductsParent] = useState([])
   const [favoritesIds, setFavoritesIds] = useState([])
@@ -52,6 +50,7 @@ const ItemCategories = props => {
   const [price, setprice] = useState([])
   const [loading, setLoading] = useState(false) // Add loading state
   const [selectedCategoryId, setselectedCategoryId] = useState(undefined)
+  const [categories, setcategories] = useState([])
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -83,9 +82,11 @@ const ItemCategories = props => {
     const fetchData = async () => {
       try {
         //setproducts(products)
+
         const response = await getCategoryById(categoryById)
         setnameCategoryById(response.name)
         const { _id, name, parentID, image } = response
+        handlePressedCategoryId(_id)
         const arr = response.child
         set_id(response._id)
         setCategoriesById([{ _id: _id, name: name, parentID: parentID, image: image }, ...arr])
@@ -115,7 +116,6 @@ const ItemCategories = props => {
             })
           }
         }
-        console.log(newArr)
         setattributesArr(newArr)
         await fetchProducts()
       } catch (error) {
@@ -211,23 +211,23 @@ const ItemCategories = props => {
 
   // Logic: onclick set product by category Id
   const handlePressedCategoryId = async _id => {
+    setcategories([])
     setselectedCategoryId(_id)
-    console.log(selectedCategoryId)
     setLoading(true)
 
-    // const version = 2
-    // const category_id = _id
+    
     try {
-      //if(filterState instanceof Map && filterState.size()>0)
-      setFilterState([])
+      if(filterState instanceof Map){
+        setFilterState([])
+      }
+      const category=await NewHTTP.getCategoryById(_id)
+      setnameCategoryById(category.name)
       setselectedProductId(_id)
-      // const productsParent = await getProducts({ version: 1, category_id:_id })
-      // if (productsParent && productsParent.length > 0) {
-      //   setproductsParent(productsParent[0].category_id)
-      // }
-      const products = await getProducts({ version: 2, category_id: _id })
-      //console.log(products.length)
-      setproducts(products)
+      
+      const productsNe = await getProducts({ version: 2, category_id: _id })
+      const categoriesNe=productsNe.map(item=>item.category_id)
+      setcategories(categoriesNe)
+      setproducts(productsNe)
     } catch (error) {
       console.error('Error 1:', error)
     } finally {
@@ -367,7 +367,6 @@ const ItemCategories = props => {
         if (key == 'Giá') newMap.set(key, price)
         else newMap.get(key).push(value)
       })
-      console.log(newMap)
       setFilterState(newMap)
     } catch (error) {
       console.log(error)
@@ -377,7 +376,7 @@ const ItemCategories = props => {
   }
   const fetchProducts = async () => {
     const query = {}
-    query.category_id = selectedCategoryId
+    query.categories = categories
     const attributes = []
     for (const [key, value] of filterState.entries()) {
       if (key == 'Giá') {
@@ -391,8 +390,8 @@ const ItemCategories = props => {
     if (attributes.length > 0) query.attributes = attributes
     const queryString = qs.stringify(query)
     const res = await NewHTTP.getFilter(queryString)
-
     const { _attributes, _products } = res
+
     setproducts(_products)
   }
   return (
@@ -442,10 +441,16 @@ const ItemCategories = props => {
         showsVerticalScrollIndicator={false}
       >
         <TouchableOpacity
-          onPress={() =>
+          onPress={() => {
+           const set=new Set()
+           categories.map(item=>set.add(item))
             navigation.navigate('Filter', {
-              category_id: selectedCategoryId
+              category_id: selectedCategoryId,
+              categories: Array.from(set)
             })
+          }
+
+
           }
           style={{
             flexDirection: 'row',
