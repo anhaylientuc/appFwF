@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import {
@@ -29,8 +30,21 @@ const DetailMyOrder = ({ route }) => {
   const [isShowModal, setisShowModal] = useState(false)
   const [isHuy, setisHuy] = useState(false)
   const { storageData, setStorageData } = useStorage()
-
+  const [toDay, settoDay] = useState('')
   const [selectedId, setSelectedId] = useState()
+
+  const showDatePicker = () => {
+    DateTimePickerAndroid.open({
+      value: toDay,
+      onChange: (event, selectedDate) => {
+        settoDay(selectedDate)
+
+        setdateOfBirth(toDay.toLocaleDateString())
+      },
+      mode: 'date',
+      is24Hour: true
+    })
+  }
 
   const showToastSuccess = title => {
     setTimeout(() => {
@@ -47,6 +61,7 @@ const DetailMyOrder = ({ route }) => {
       })
     }, 1500)
   }
+  console.log('toDay: >>>', toDay)
 
   useFocusEffect(
     useCallback(() => {
@@ -145,7 +160,6 @@ const DetailMyOrder = ({ route }) => {
     const selectedButton = radioButtons.find(button => button.id === selectedId)
     return selectedButton ? selectedButton.value : null
   }
-  console.log(getSelectedValue())
 
   const handleCancel = async () => {
     if (getSelectedValue() != null) {
@@ -154,6 +168,8 @@ const DetailMyOrder = ({ route }) => {
         status: '04',
         messageCancel: getSelectedValue()
       })
+      console.log(res)
+      settoDay(new Date())
       handleGoBack()
     } else {
       console.log('Chưa chọn lý do hủy')
@@ -205,7 +221,7 @@ const DetailMyOrder = ({ route }) => {
             let title = 'Số lượng tồn kho không đủ'
             // showToastError(title)
             console.log(title)
-            console.log(JSON.stringify(obj,null,2))
+            console.log(JSON.stringify(obj, null, 2))
 
             return obj // Return unchanged if stock limit reached
           }
@@ -341,9 +357,7 @@ const DetailMyOrder = ({ route }) => {
         </View>
         {myOrder.status == '04' ? (
           <View style={{ backgroundColor: Colors.skyBlue, padding: 28 }}>
-            <Text style={styles.txt_title}>
-              Đơn hàng của bạn đã bị hủy vào {myOrder.created_at}
-            </Text>
+            <Text style={styles.txt_title}>Đơn hàng của bạn đã bị hủy vào {toDay}</Text>
             <Text
               style={[styles.txt_description, { marginTop: 4, fontSize: 12, textAlign: 'justify' }]}
             >

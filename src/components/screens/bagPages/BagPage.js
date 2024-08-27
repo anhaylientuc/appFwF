@@ -481,7 +481,6 @@ const BagPage = props => {
 
   const ItemCart = ({ item, index }) => {
     const { product_Name, base_price, size, color, image, quantity, attributes_id } = item
-    const priceProduct = base_price
     const newPrice = { ...item, newPrice: base_price * quantity }
     const formattedPriceProduct = formatCurrency(newPrice.newPrice)
 

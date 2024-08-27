@@ -6599,6 +6599,11 @@ react-native-vector-icons@^10.1.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
+react-native-video@^6.4.5:
+  version "6.4.5"
+  resolved "https://registry.npmjs.org/react-native-video/-/react-native-video-6.4.5.tgz"
+  integrity sha512-pq0oD/lm0NZv/nkQtNy2Bq1eG1+nlb9vVNgdeIz7twDhxLpqiwv4ef39UQlUHfPdnTa9fDyAke6VBc+0ogNjfA==
+
 "react-native-vnpay-merchant@file:./path/to/react-native-vnpay-merchant":
   resolved "file:path/to/react-native-vnpay-merchant"
 
