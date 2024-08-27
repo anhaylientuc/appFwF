@@ -91,15 +91,15 @@ const BagPage = props => {
         } else {
           setTransportFee(0)
         }
-        const filteredData = storageData.map(item => {
-          const { attributes, ...rest } = item // Loại bỏ thuộc tính 'attributes'
-          return rest // Trả về đối tượng mới mà không có 'attributes'
-        })
+        // const filteredData = storageData.map(item => {
+        //   const { attributes, ...rest } = item // Loại bỏ thuộc tính 'attributes'
+        //   return rest // Trả về đối tượng mới mà không có 'attributes'
+        // })
 
         setMyOrder({
           ...myOrder,
           user: oderUser,
-          carts: filteredData,
+          carts: storageData,
           amount: totalPrices
         })
       } catch (error) {
@@ -175,14 +175,14 @@ const BagPage = props => {
   const handlePayPage = async () => {
     try {
       setLoading(true)
-      const filteredData = storageData.map(item => {
-        const { attributes, ...rest } = item // Loại bỏ thuộc tính 'attributes'
-        return rest // Trả về đối tượng mới mà không có 'attributes'
-      })
+      // const filteredData = storageData.map(item => {
+      //   const { attributes, ...rest } = item // Loại bỏ thuộc tính 'attributes'
+      //   return rest // Trả về đối tượng mới mà không có 'attributes'
+      // })
 
       const body = {
         user: oderUser,
-        carts: filteredData,
+        carts: storageData,
         amount: totalPrices
       }
       const res = await OrderHTTP.insert(body)
@@ -432,7 +432,7 @@ const BagPage = props => {
   const handlePlus = item => {
     const { quantity, attributes_id, cnt, base_price } = item
     const newQuantity = quantity + 1
-    const newPrice = base_price * newQuantity
+    let newPrice = base_price * newQuantity
     const newStorageData = storageData.map((val, index) => {
       if (val.attributes_id === attributes_id && newQuantity < val.cnt) {
         return {
@@ -579,7 +579,7 @@ const BagPage = props => {
                   }}
                 >
                   <TouchableOpacity
-                    onPress={() => handlePlus(item, priceProduct)}
+                    onPress={() => handlePlus(item)}
                     style={{
                       padding: 6,
                       backgroundColor: Colors.white,

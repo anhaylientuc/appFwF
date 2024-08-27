@@ -377,12 +377,9 @@ const Favorites = () => {
 
   const handleClickItem = item => {
     const { _id, product_id } = item
-    navigation.navigate('ShopStack', {
-      screen: 'ProductDetail',
-      params: {
-        _id: _id,
-        product_id: product_id
-      }
+    navigation.navigate('ProductDetail', {
+      _id: _id,
+      product_id: product_id
     })
   }
 

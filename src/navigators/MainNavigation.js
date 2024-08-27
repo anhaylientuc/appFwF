@@ -107,9 +107,27 @@ function MainNavigator() {
   )
 
   const FavoriteStack = () => {
+    useFocusEffect(
+      useCallback(() => {
+        // Cleanup code nếu cần khi ProfileStack không còn focus
+        return () => {
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: 'Favorites' }]
+            })
+          )
+        }
+      }, [navigation])
+    )
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Favorites" component={Favorites} options={{ title: 'Favorite' }} />
+        <Stack.Screen
+          name="ProductDetail"
+          component={ProductDetail}
+          options={{ title: 'ProductDetail' }}
+        />
       </Stack.Navigator>
     )
   }
@@ -190,7 +208,11 @@ function MainNavigator() {
           component={DetailMyOrder}
           options={{ title: 'DetailMyOrder' }}
         />
-
+        <Stack.Screen
+          name="ProductDetail"
+          component={ProductDetail}
+          options={{ title: 'ProductDetail' }}
+        />
         <Stack.Screen name="MyOder" component={MyOder} options={{ title: 'MyOder' }} />
         <Stack.Screen
           name="SettingProfile"

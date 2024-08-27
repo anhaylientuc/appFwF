@@ -1,14 +1,13 @@
 import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useNavigation } from '@react-navigation/native'
-import { useEffect, useRef, useState } from 'react'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Animated,
   Dimensions,
   FlatList,
   Image,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -18,12 +17,11 @@ import Modal from 'react-native-modal'
 import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import { DaTaSale } from 'src/constants/Databases'
 import MyText from 'src/constants/FontFamily'
 import Names from 'src/constants/Names'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import { getProducts } from 'src/utils/http/NewHTTP'
-import ItemListNew from '../homePages/ItemListNews'
+
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
@@ -64,10 +62,21 @@ const ProductDetail = props => {
   const [attributes, setattributes] = useState()
   const [attributesMap, setattributesMap] = useState(new Map())
 
-  useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-  }, [navigation])
-
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+      }
+      const loadFavorites = async () => {
+        const storedFavorites = await AsyncStorage.getItem('my-favorites')
+        if (storedFavorites) {
+          const favorites = JSON.parse(storedFavorites)
+          setFavoritesIds(favorites.map(favorite => favorite._id))
+        }
+      }
+      loadFavorites()
+    }, [navigation, storageFavorites])
+  )
   useEffect(() => {
     const listener = scrollY.addListener(({ value }) => {
       if (value > windowHeight / 2) {
@@ -85,13 +94,6 @@ const ProductDetail = props => {
   }, [scrollY])
 
   useEffect(() => {
-    const loadFavorites = async () => {
-      const storedFavorites = await AsyncStorage.getItem('my-favorites')
-      if (storedFavorites) {
-        const favorites = JSON.parse(storedFavorites)
-        setFavoritesIds(favorites.map(favorite => favorite._id))
-      }
-    }
     const fetchData = async () => {
       const version = 2
       const product_id = props.route.params.product_id
@@ -134,7 +136,6 @@ const ProductDetail = props => {
     }
 
     fetchData()
-    loadFavorites()
   }, [])
   // console.log(JSON.stringify(attributes, null, 2))
 
@@ -838,11 +839,6 @@ const ProductDetail = props => {
               <MyText style={styles.txt_review}>12 items</MyText>
             </View>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {DaTaSale.map((item, index) => (
-              <ItemListNew key={item._id} data={item} />
-            ))}
-          </ScrollView>
         </View>
         <View style={{ height: 50 }} />
       </Animated.ScrollView>

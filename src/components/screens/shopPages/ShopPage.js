@@ -72,15 +72,9 @@ const ShopPage = () => {
   return (
     <View style={{ backgroundColor: '#fff', width: '100%', height: '100%' }}>
       <View style={styles.view_search}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icons.Ionicons name={'chevron-back'} size={24} />
-        </TouchableOpacity>
         <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_search}>
           Danh mục thời trang
         </MyText>
-        <TouchableOpacity onPress={() => navigation.navigate('SearchPage')}>
-          <Icons.Ionicons name={'search'} size={24} />
-        </TouchableOpacity>
       </View>
 
       {loading ? (
@@ -102,7 +96,27 @@ const ShopPage = () => {
           </View>
         </LinearGradient>
       ) : (
-        <FlatList renderItem={renderListCategory} data={categories} />
+        <View>
+          <FlatList renderItem={renderListCategory} data={categories} />
+          <View style={{ paddingHorizontal: 16, marginTop: 16 }}>
+            <View style={styles.container_email}>
+              <Text style={styles.txt_description}>Hộp thư đến</Text>
+              <Icons.AntDesign name={'arrowright'} size={20} />
+            </View>
+            <View style={styles.container_email}>
+              <Text style={styles.txt_description}>Dịch vụ khách hàng</Text>
+              <Icons.AntDesign name={'arrowright'} size={20} />
+            </View>
+            <View style={styles.container_email}>
+              <Text style={styles.txt_description}>Các trang mạng xã hội của FwF</Text>
+              <Icons.AntDesign name={'arrowright'} size={20} />
+            </View>
+            <View style={styles.container_email}>
+              <Text style={styles.txt_description}>Cài đặt ứng dụng</Text>
+              <Icons.AntDesign name={'arrowright'} size={20} />
+            </View>
+          </View>
+        </View>
       )}
     </View>
   )
@@ -111,13 +125,20 @@ const ShopPage = () => {
 export default ShopPage
 
 const styles = StyleSheet.create({
+  container_email: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 24
+  },
   txt_title: {
     fontSize: 12,
     fontFamily: 'Montserrat-SemiBold',
     color: Colors.black2
   },
   txt_description: {
-    fontSize: 10,
+    marginTop: 4,
+    fontSize: 12,
     fontFamily: 'Montserrat-Medium',
     color: Colors.black2
   },
@@ -130,12 +151,11 @@ const styles = StyleSheet.create({
   txt_search: {
     color: Colors.black,
     textAlign: 'center',
-    fontSize: 18,
-    fontWeight: '400'
+    fontSize: 18
   },
   view_search: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 16
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    alignItems: 'center'
   }
 })

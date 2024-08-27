@@ -1,4 +1,9 @@
-import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native'
+import {
+  CommonActions,
+  useFocusEffect,
+  useIsFocused,
+  useNavigation
+} from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import qs from 'qs'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
@@ -21,10 +26,17 @@ import OrderHTTP from 'src/utils/http/OrderHTTP'
 
 const MyOder = () => {
   const navigation = useNavigation()
+
   const { user } = useContext(UserContext)
-  const [myoder, setmyoder] = useState([])
+  const [myoder, setMyoder] = useState([])
   const [transportFee, setTransportFee] = useState()
   const [loading, setLoading] = useState(false)
+  const isFocused = useIsFocused()
+  const [refresh, setRefresh] = useState(false)
+
+  const handleRefresh = useCallback(() => {
+    setRefresh(prev => !prev)
+  }, [])
 
   useFocusEffect(
     useCallback(() => {
@@ -45,12 +57,12 @@ const MyOder = () => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const query = {}
-        query.user_id = user._id
+        const query = { user_id: user._id }
         const queryString = qs.stringify(query)
         const res = await OrderHTTP.get(queryString)
-        console.log(res.length)
-        setmyoder(res)
+        const reversedArray = res.reverse()
+        setMyoder(reversedArray)
+
         if (res.amount <= 499000) {
           setTransportFee(49000)
         } else {
@@ -62,29 +74,25 @@ const MyOder = () => {
         setLoading(false)
       }
     }
-    fetchData()
-  }, [navigation])
+    if (isFocused || refresh) {
+      fetchData()
+    }
+  }, [isFocused, refresh, user._id])
 
   function resetToScreen(navigation, item) {
     navigation.dispatch(
       CommonActions.reset({
-        index: 0, // Vị trí của màn hình bạn muốn hiển thị sau khi reset
-        routes: [
-          {
-            name: 'Profile' // Đặt tên cho stack chứa PayPage
-          }
-        ]
+        index: 0,
+        routes: [{ name: 'Profile' }]
       })
     )
   }
 
-  const handlePayPage = async item => {
+  const handlePayPage = item => {
     resetToScreen(navigation, item)
     navigation.navigate('BagStack', {
       screen: 'PayPage',
-      params: {
-        orders: item // Truyền tham số 'orders'
-      }
+      params: { orders: item }
     })
   }
 
@@ -102,7 +110,6 @@ const MyOder = () => {
             style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
           >
             <Text style={[styles.txt_title, { fontSize: 14 }]}>Đang chờ thanh toán</Text>
-
             <TouchableOpacity onPress={() => handlePayPage(item)}>
               <Text style={[styles.txt_title, { borderBottomWidth: 1 }]}>Thanh toán ngay</Text>
             </TouchableOpacity>
@@ -112,7 +119,7 @@ const MyOder = () => {
           <Text
             style={[
               styles.txt_description,
-              status === '05'
+              status === '04'
                 ? { fontSize: 12, textDecorationLine: 'line-through' }
                 : { fontSize: 12, textDecorationLine: 'none' }
             ]}
@@ -131,17 +138,16 @@ const MyOder = () => {
             {formattedCurrency}
           </Text>
         </View>
-
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           style={{ marginVertical: 16 }}
         >
-          {carts.map((ordercarts, index) => (
+          {carts.map((orderCarts, index) => (
             <View key={index}>
               <Image
                 style={{ width: 104, height: 144, resizeMode: 'cover', marginStart: 8 }}
-                source={{ uri: ordercarts.image }}
+                source={{ uri: orderCarts.image }}
               />
             </View>
           ))}
@@ -156,50 +162,41 @@ const MyOder = () => {
     )
   }
 
-  const noOrder = () => {
-    return (
-      <View>
-        <View style={{ paddingHorizontal: 20 }}>
-          <Text
-            style={{
-              fontFamily: 'Montserrat-SemiBold',
-              fontSize: 24,
-              textAlign: 'center',
-              padding: 16
-            }}
-          >
-            Hiện tại không có lượt mua sắm nào để hiển thị
-          </Text>
-          <MyText
-            style={{
-              textAlign: 'center',
-              fontSize: 14,
-              textAlign: 'center',
-              padding: 16
-            }}
-          >
-            Khi mua một sản phẩm trực tuyến, bạn sẽ thấy sản phẩm đó ở đây.
-          </MyText>
-        </View>
-        <TouchableOpacity
-          style={{ backgroundColor: Colors.black, margin: 24 }}
-          onPress={() => navigation.navigate('HomeStack')}
+  const noOrder = () => (
+    <View>
+      <View style={{ paddingHorizontal: 20 }}>
+        <Text
+          style={{
+            fontFamily: 'Montserrat-SemiBold',
+            fontSize: 24,
+            textAlign: 'center',
+            padding: 16
+          }}
         >
-          <Text
-            style={{
-              fontFamily: 'Montserrat-SemiBold',
-              fontSize: 16,
-              textAlign: 'center',
-              padding: 16,
-              color: Colors.white
-            }}
-          >
-            Bắt đầu khám phá
-          </Text>
-        </TouchableOpacity>
+          Hiện tại không có lượt mua sắm nào để hiển thị
+        </Text>
+        <MyText style={{ textAlign: 'center', fontSize: 14, padding: 16 }}>
+          Khi mua một sản phẩm trực tuyến, bạn sẽ thấy sản phẩm đó ở đây.
+        </MyText>
       </View>
-    )
-  }
+      <TouchableOpacity
+        style={{ backgroundColor: Colors.black, margin: 24 }}
+        onPress={() => navigation.navigate('HomeStack')}
+      >
+        <Text
+          style={{
+            fontFamily: 'Montserrat-SemiBold',
+            fontSize: 16,
+            textAlign: 'center',
+            padding: 16,
+            color: Colors.white
+          }}
+        >
+          Bắt đầu khám phá
+        </Text>
+      </TouchableOpacity>
+    </View>
+  )
 
   return (
     <View style={styles.container}>
@@ -210,7 +207,8 @@ const MyOder = () => {
           paddingHorizontal: 16,
           paddingVertical: 16,
           alignItems: 'center',
-          width: '100%'
+          width: '100%',
+          backgroundColor: Colors.grayBg
         }}
       >
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -229,7 +227,8 @@ const MyOder = () => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           paddingHorizontal: 16,
-          width: '100%'
+          width: '100%',
+          backgroundColor: Colors.white
         }}
       >
         <View
@@ -250,9 +249,7 @@ const MyOder = () => {
         </View>
       </View>
 
-      {myoder.length == [] ? (
-        noOrder()
-      ) : loading ? (
+      {loading ? (
         <LinearGradient
           colors={[Colors.transparent08, Colors.transparent06, Colors.transparent08]}
           style={{
@@ -267,12 +264,15 @@ const MyOder = () => {
         >
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Colors.red} />
-            {/* <Text style={[styles.txt_title, { marginTop: 8 }]}>Vui lòng chờ trong giây lát...</Text> */}
           </View>
         </LinearGradient>
       ) : (
         <View style={{ padding: 16, height: '100%' }}>
-          <FlatList data={myoder} renderItem={renderOrder} showsVerticalScrollIndicator={false} />
+          {myoder.length > 0 ? (
+            <FlatList data={myoder} renderItem={renderOrder} showsVerticalScrollIndicator={false} />
+          ) : (
+            noOrder()
+          )}
           <View style={{ height: 94 }} />
         </View>
       )}
@@ -299,8 +299,7 @@ const styles = StyleSheet.create({
     color: Colors.black2
   },
   container: {
-    width: '100%',
-    height: '100%',
+    flex: 1,
     backgroundColor: Colors.grayBg
   }
 })

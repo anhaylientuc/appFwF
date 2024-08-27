@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import {
@@ -11,25 +12,41 @@ import {
 } from 'react-native'
 import Modal from 'react-native-modal'
 import RadioGroup from 'react-native-radio-buttons-group'
+import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import Names from 'src/constants/Names'
-import { formatCurrency } from 'src/contexts/StorageProvider'
+import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import UserContext from 'src/contexts/UserContext'
 import OrderHTTP from 'src/utils/http/OrderHTTP'
 const DetailMyOrder = ({ route }) => {
   const navigation = useNavigation()
   const { user } = useContext(UserContext)
-  const { myOrder } = route.params || {}
+  const { myOrder, onGoBack } = route.params || {}
   const [transportFee, setTransportFee] = useState('')
   const [shipping, setshipping] = useState({})
   const [carts, setCarts] = useState([])
-  const [status, setstatus] = useState(false)
   const [isShowModal, setisShowModal] = useState(false)
   const [isHuy, setisHuy] = useState(false)
-  const [cancelMessage, setcancelMessage] = useState(null)
-  const [selectedValue, setSelectedValue] = useState(null)
+  const { storageData, setStorageData } = useStorage()
+
   const [selectedId, setSelectedId] = useState()
+
+  const showToastSuccess = title => {
+    setTimeout(() => {
+      Toast.show({
+        type: 'success', // 'info' | 'error' | 'success'
+        text1: 'Đã thêm vào giỏ hàng ✔',
+        text2: '' + title.product_Name,
+        text1Style: { fontSize: 16, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
+        text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' },
+
+        onPress: () => {
+          navigation.navigate('BagStack')
+        }
+      })
+    }, 1500)
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -38,6 +55,13 @@ const DetailMyOrder = ({ route }) => {
       }
     }, [navigation])
   )
+
+  const handleGoBack = () => {
+    if (onGoBack) {
+      onGoBack() // Trigger the callback to re-render MyOrder
+    }
+    navigation.goBack()
+  }
   useEffect(() => {
     const fetchData = () => {
       try {
@@ -130,10 +154,88 @@ const DetailMyOrder = ({ route }) => {
         status: '04',
         messageCancel: getSelectedValue()
       })
-      console.log(JSON.stringify(res, null, 2))
-      navigation.goBack()
+      handleGoBack()
     } else {
       console.log('Chưa chọn lý do hủy')
+    }
+  }
+
+  const handleGoDetailProduct = item => {
+    const { _id, product_id } = item
+
+    navigation.navigate('ProductDetail', {
+      _id: _id,
+      product_id: product_id
+    })
+  }
+  const handleAddToCart = async item => {
+    const {
+      _id,
+      product_Name,
+      product_id,
+      quantity,
+      color,
+      base_price,
+      image,
+      size,
+      code,
+      discount_price,
+      attributes,
+      attributes_id
+    } = item
+
+    const existingProductIndex = storageData.findIndex(obj => obj.attributes_id === attributes_id)
+    if (existingProductIndex !== -1) {
+      const updatedStorage = storageData.map((obj, index) => {
+        if (index === existingProductIndex) {
+          console.log(obj.quantity + quantity)
+          console.log(JSON.stringify('obj: >>>', obj, null, 2))
+
+          if (obj.quantity + quantity <= 5) {
+            const newQuantity = obj.quantity + quantity
+            const newPrice = base_price * newQuantity
+            const title = { product_Name }
+            showToastSuccess(title)
+            return {
+              ...obj,
+              quantity: newQuantity,
+              newPrice: newPrice
+            }
+          } else {
+            let title = 'Số lượng tồn kho không đủ'
+            // showToastError(title)
+            console.log(title)
+            console.log(JSON.stringify(obj,null,2))
+
+            return obj // Return unchanged if stock limit reached
+          }
+        } else {
+          return obj // Return other items unchanged
+        }
+      })
+      await setStorageData(updatedStorage)
+    } else {
+      const newProduct = {
+        _id: _id,
+        product_Name: product_Name,
+        product_id: product_id,
+        base_price: base_price,
+        color: color,
+        size: size,
+        image: image,
+        code: code,
+        discount_price: discount_price,
+        attributes_id: attributes_id,
+        attributes: attributes,
+        newPrice: base_price * quantity,
+        quantity: quantity
+      }
+      const updatedStorage = [...storageData, newProduct]
+      setStorageData(updatedStorage)
+      await AsyncStorage.setItem('my-cart', JSON.stringify(updatedStorage))
+
+      const title = { product_Name: product_Name }
+      showToastSuccess(title)
     }
   }
 
@@ -228,17 +330,8 @@ const DetailMyOrder = ({ route }) => {
   return (
     <KeyboardAvoidingView>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-        {/* <View style={{ backgroundColor: Colors.skyBlue, padding: 28 }}>
-        <Text style={styles.txt_title}>Đơn hàng của bạn đã bị hủy vào {'date..'} </Text>
-        <Text
-          style={[styles.txt_description, { marginTop: 4, fontSize: 12, textAlign: 'justify' }]}
-        >
-          Bạn sẽ được hoàn tiền theo phương thức thanh toán ban đầu. Nếu bạn thanh toán qua các cổng
-          thanh toán online thì khoản tiền hoàn sẽ được chuyển vào tài khoản ngân hàng của bạn.
-        </Text>
-      </View> */}
         <View style={{ flexDirection: 'row', padding: 16 }}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ flex: 1 }}>
+          <TouchableOpacity onPress={() => handleGoBack()} style={{ flex: 1 }}>
             <Icons.Ionicons name={'arrow-back-sharp'} size={24} color={Colors.black} />
           </TouchableOpacity>
           <Text style={[styles.txt_title, { fontSize: 18, flex: 3, textAlign: 'center' }]}>
@@ -246,10 +339,24 @@ const DetailMyOrder = ({ route }) => {
           </Text>
           <View style={{ flex: 1 }} />
         </View>
+        {myOrder.status == '04' ? (
+          <View style={{ backgroundColor: Colors.skyBlue, padding: 28 }}>
+            <Text style={styles.txt_title}>
+              Đơn hàng của bạn đã bị hủy vào {myOrder.created_at}
+            </Text>
+            <Text
+              style={[styles.txt_description, { marginTop: 4, fontSize: 12, textAlign: 'justify' }]}
+            >
+              Bạn sẽ được hoàn tiền theo phương thức thanh toán ban đầu. Nếu bạn thanh toán qua các
+              cổng thanh toán online thì khoản tiền hoàn sẽ được chuyển vào tài khoản ngân hàng của
+              bạn.
+            </Text>
+          </View>
+        ) : null}
         <View
           style={{
             padding: 16,
-            backgroundColor: Colors.greenAlpha
+            backgroundColor: myOrder.status == '04' ? Colors.grayBg : Colors.greenAlpha
           }}
         >
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -291,7 +398,10 @@ const DetailMyOrder = ({ route }) => {
             const formattedNewPrice = formatCurrency(item.base_price * item.quantity)
             return (
               <View key={index}>
-                <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity
+                  style={{ flexDirection: 'row' }}
+                  onPress={() => handleGoDetailProduct(item)}
+                >
                   <Image
                     source={{ uri: item.image }}
                     style={{ width: '100%', height: 176, flex: 2, resizeMode: 'cover' }}
@@ -329,8 +439,9 @@ const DetailMyOrder = ({ route }) => {
                     </View>
                     <View style={{ height: 4 }} />
                   </View>
-                </View>
+                </TouchableOpacity>
                 <TouchableOpacity
+                  onPress={() => handleAddToCart(item)}
                   style={{ paddingVertical: 16, marginVertical: 16, borderWidth: 1 }}
                 >
                   <Text style={[styles.txt_title, { textAlign: 'center' }]}>Thêm vào giỏ hàng</Text>

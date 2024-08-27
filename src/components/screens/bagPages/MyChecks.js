@@ -16,7 +16,7 @@ const MyChecks = props => {
     }
   } = props
 
-  const check = async () => {
+  const handleCheckAtm = async () => {
     try {
       const body = {
         amount: order.amount,
@@ -28,6 +28,16 @@ const MyChecks = props => {
       }
       const res = await PaymentHTTP.create_url(body)
       navigation.navigate('WebViewPayment', { res: res })
+    } catch (error) {
+      console.log('Error response:', error)
+    }
+  }
+  const handleCheck = async () => {
+    try {
+      const newOrder = { ...order }
+      newOrder.status = '00'
+
+      navigation.navigate('SendOrders', { order: newOrder })
     } catch (error) {
       console.log('Error response:', error)
     }
@@ -49,7 +59,7 @@ const MyChecks = props => {
           source={require('@assets/images/logo_primary.png')}
         />
         <TouchableOpacity
-          onPress={() => check()}
+          onPress={() => handleCheckAtm()}
           style={{ flexDirection: 'row', alignItems: 'center' }}
         >
           <Text style={styles.txt_description}>Thanh toán thẻ</Text>
@@ -63,10 +73,7 @@ const MyChecks = props => {
       </View>
       <View style={[styles.container_method, { marginTop: 16 }]}>
         <View />
-        <TouchableOpacity
-          // onPress={() => navigation.navigate('SendOrders', { order: order })}
-          style={{ flexDirection: 'row', alignItems: 'center' }}
-        >
+        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={styles.txt_description}>Thanh toán khi nhận hàng</Text>
           <Icons.Feather
             name={'arrow-right'}
@@ -76,18 +83,6 @@ const MyChecks = props => {
           />
         </TouchableOpacity>
       </View>
-      {/* <TouchableOpacity
-        onPress={() => {
-          try {
-            console.log('ok2')
-            Linking.openURL('myapp://app/PaymentResult')
-          } catch (error) {
-            console.log(error)
-          }
-        }}
-      >
-        <Text>ok</Text>
-      </TouchableOpacity> */}
       <View
         style={{
           flexDirection: 'row',
