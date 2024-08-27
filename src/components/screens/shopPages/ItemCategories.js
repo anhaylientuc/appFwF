@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import qs from 'qs'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import {
@@ -201,7 +201,7 @@ const ItemCategories = props => {
     if (numColumns) {
       setNumColumns(null)
       setwindowWith(width)
-      setwindowHeight(height / 1.6)
+      setwindowHeight(height)
     } else {
       setNumColumns(2)
       setwindowWith(width / 2)
@@ -215,17 +215,16 @@ const ItemCategories = props => {
     setselectedCategoryId(_id)
     setLoading(true)
 
-    
     try {
-      if(filterState instanceof Map){
+      if (filterState instanceof Map) {
         setFilterState([])
       }
-      const category=await NewHTTP.getCategoryById(_id)
+      const category = await NewHTTP.getCategoryById(_id)
       setnameCategoryById(category.name)
       setselectedProductId(_id)
-      
+
       const productsNe = await getProducts({ version: 2, category_id: _id })
-      const categoriesNe=productsNe.map(item=>item.category_id)
+      const categoriesNe = productsNe.map(item => item.category_id)
       setcategories(categoriesNe)
       setproducts(productsNe)
     } catch (error) {
@@ -442,16 +441,13 @@ const ItemCategories = props => {
       >
         <TouchableOpacity
           onPress={() => {
-           const set=new Set()
-           categories.map(item=>set.add(item))
+            const set = new Set()
+            categories.map(item => set.add(item))
             navigation.navigate('Filter', {
               category_id: selectedCategoryId,
               categories: Array.from(set)
             })
-          }
-
-
-          }
+          }}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -533,7 +529,7 @@ const ItemCategories = props => {
             <TouchableOpacity onPress={() => handleColum()} style={{ marginStart: 16 }}>
               <Icons.MaterialCommunityIcons
                 name={!numColumns ? 'view-module' : 'view-list'}
-                size={28}
+                size={24}
                 color={Colors.red}
               />
             </TouchableOpacity>

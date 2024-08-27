@@ -23,7 +23,7 @@ const DetailFilter = props => {
   const {
     navigation,
     route: {
-      params: { child, keySelected, queryString,action }
+      params: { child, keySelected, queryString, action }
     }
   } = props
 
@@ -220,7 +220,7 @@ const DetailFilter = props => {
               onPress={() => {
                 navigation.navigate('Filter', {
                   map: map,
-                  action:action
+                  action: action
                 })
               }}
             >
@@ -298,10 +298,9 @@ const DetailFilter = props => {
         <TouchableOpacity
           onPress={() => {
             console.log(action)
-            if(action=='search')
-              navigation.navigate('SearchDetail',{keyword:"",productsNe:products})
-            else
-              navigation.navigate('ItemCategories', { _products: products })
+            if (action == 'search')
+              navigation.navigate('SearchDetail', { keyword: '', productsNe: products })
+            else navigation.navigate('ItemCategories', { _products: products })
             //navigation.goBack()
           }}
           style={{

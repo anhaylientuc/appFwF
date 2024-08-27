@@ -22,7 +22,6 @@ const SearchPage = props => {
   const [keyword, setkeyword] = useState('')
   const [debouncedKeyword, setdebouncedKeyword] = useState(keyword)
   const [suggest, setsuggest] = useState([])
-
   const position = new Animated.ValueXY({ x: 0, y: 0 })
 
   // Chỉ thực hiện hoạt ảnh khi màn hình được hiển thị lần đầu tiên
@@ -79,9 +78,10 @@ const SearchPage = props => {
   return (
     <Animated.View
       style={{
-        backgroundColor: Colors.grayBg,
         width: windowWith,
         height: windowHeight,
+        flex: 1,
+
         transform: [{ translateX: position.x }, { translateY: position.y }]
       }}
     >
@@ -89,9 +89,8 @@ const SearchPage = props => {
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          paddingHorizontal: 16,
-          backgroundColor: Colors.white,
-          paddingVertical: 8
+          padding: 16,
+          backgroundColor: Colors.white
         }}
       >
         <TouchableOpacity onPress={() => props.navigation.goBack() & setBottomBar()}>
@@ -110,71 +109,74 @@ const SearchPage = props => {
           onChangeText={text => setkeyword(text)}
         />
       </View>
-      <View
-        style={{
-          backgroundColor: Colors.white,
-          marginTop: 32,
-          paddingHorizontal: 16,
-          paddingVertical: 16
-        }}
-      >
+      <View style={{ justifyContent: 'space-between', flex: 1, backgroundColor: Colors.grayBg }}>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
-          }}
-        >
-          <Text style={{ color: Colors.black, fontFamily: 'Montserrat-SemiBold' }}>
-            Lịch sử tìm kiếm
-          </Text>
-          <Text style={{ color: Colors.black, fontFamily: 'Montserrat-SemiBold' }}>Xóa</Text>
-        </View>
-        {suggest.map((item, index) => {
-          const { keyword } = item
-          return (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.replace('SearchDetail', { keyword: keyword })
-              }}
-              key={index}
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: 32
-              }}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Icons.EvilIcons name="search" size={32} />
-                <MyText fontFamily="Montserrat-SemiBold" style={{ marginStart: 16 }}>
-                  {keyword}
-                </MyText>
-              </View>
-              <Icons.AntDesign name="arrowright" size={24} />
-            </TouchableOpacity>
-          )
-        })}
-      </View>
-      <View style={{ position: 'absolute', bottom: 32 }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
+            backgroundColor: Colors.white,
+            marginTop: 32,
             paddingHorizontal: 16,
-            width: '100%'
+            paddingVertical: 16
           }}
         >
-          <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-            <Icons.Ionicons name="camera-outline" size={32} />
-            <Text style={{ textAlign: 'center' }}>Chụp ảnh</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between'
+            }}
+          >
+            <Text style={{ color: Colors.black, fontFamily: 'Montserrat-SemiBold' }}>
+              Lịch sử tìm kiếm
+            </Text>
+            <Text style={{ color: Colors.black, fontFamily: 'Montserrat-SemiBold' }}>Xóa</Text>
           </View>
-          <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-            <Icons.MaterialIcons name="qr-code-scanner" size={32} />
-            <Text style={{ textAlign: 'center' }}>Quét mã</Text>
-          </View>
-          <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-            <Icons.Ionicons name="location-outline" size={32} />
-            <Text style={{ textAlign: 'center' }}>Tìm cửa hàng</Text>
+          {suggest.map((item, index) => {
+            const { keyword } = item
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.replace('SearchDetail', { keyword: keyword })
+                }}
+                key={index}
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: 32
+                }}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Icons.EvilIcons name="search" size={32} />
+                  <MyText fontFamily="Montserrat-SemiBold" style={{ marginStart: 16 }}>
+                    {keyword}
+                  </MyText>
+                </View>
+                <Icons.AntDesign name="arrowright" size={24} />
+              </TouchableOpacity>
+            )
+          })}
+        </View>
+        <View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingHorizontal: 16,
+              paddingBottom: 16,
+              width: '100%'
+            }}
+          >
+            <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+              <Icons.Ionicons name="camera-outline" size={32} />
+              <Text style={{ textAlign: 'center' }}>Chụp ảnh</Text>
+            </View>
+            <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+              <Icons.MaterialIcons name="qr-code-scanner" size={32} />
+              <Text style={{ textAlign: 'center' }}>Quét mã</Text>
+            </View>
+            <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+              <Icons.Ionicons name="location-outline" size={32} />
+              <Text style={{ textAlign: 'center' }}>Tìm cửa hàng</Text>
+            </View>
           </View>
         </View>
       </View>

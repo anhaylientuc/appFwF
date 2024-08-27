@@ -1,6 +1,6 @@
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
@@ -44,6 +44,21 @@ const Categories = props => {
     }
     fetchData()
   }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        navigation.getParent().setOptions({
+          tabBarStyle: {
+            backgroundColor: Colors.white,
+            bottom: 0,
+            paddingVertical: 8,
+            height: 54
+          }
+        })
+      }
+    }, [navigation])
+  )
   // renderItemList Category Women
   const renderItem = ({ item }) => {
     const { _id, name } = item

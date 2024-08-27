@@ -8,7 +8,7 @@ const windowHeight = Dimensions.get('window').height
 const HomePage = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={{ paddingVertical: 16 }}>
+      <View style={{ paddingVertical: 32 }}>
         <Text style={[styles.txt_description, { fontSize: 12, textAlign: 'center' }]}>
           Miễn phí giao hàng cho Member với đơn từ 499k
         </Text>
