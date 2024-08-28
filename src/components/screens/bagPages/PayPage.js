@@ -40,6 +40,8 @@ const PayPage = props => {
       })
     )
   }
+  console.log(orders)
+
   const goBack = async () => {
     if (orders.status === '03') {
       const res = await OrderHTTP.remove(orders._id)

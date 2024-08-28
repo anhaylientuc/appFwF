@@ -184,7 +184,7 @@ const EditProfile = () => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            width:'100%',
+            width: '100%',
             paddingHorizontal: 16,
             paddingTop: 16
           }}

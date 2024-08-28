@@ -1,6 +1,9 @@
 import { CommonActions } from '@react-navigation/native'
+import { LinearGradient } from 'expo-linear-gradient'
 import React, { useContext, useEffect, useState } from 'react'
 import {
+  ActivityIndicator,
+  Dimensions,
   FlatList,
   Image,
   Pressable,
@@ -32,9 +35,17 @@ const SendOrders = props => {
   const [amount, setamount] = useState('')
   const [transportFee, setTransportFee] = useState('')
   const [orderSuccess, setorderSuccess] = useState(false)
+  const [loading, setloading] = useState(false)
+  const [orders, setorders] = useState(null)
+  const [code, setcode] = useState('')
+  const [responseCode, setresponseCode] = useState('')
+  const width = Dimensions.get('window').width
+  const height = Dimensions.get('window').height
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setloading(true)
         const {
           vnp_Amount,
           vnp_BankCode,
@@ -63,18 +74,18 @@ const SendOrders = props => {
           transactionStatus: vnp_TransactionStatus,
           txnRef: vnp_TxnRef
         }
-        setStorageData([])
+
         // TH thành công
         if (payment.responseCode == '00') {
-          console.log('====================================')
-          console.log('Thanh toán thành công')
+          setStorageData([])
           const res = await OrderHTTP.update(payment.orderInfo, { payment })
-          console.log(JSON.stringify(res, null, 2))
           setvnp_CardType(payment.cardType)
           setvnp_OrderInfo(payment.orderInfo)
           setvnp_TransactionNo(payment.transactionNo)
           setvnp_PayDate(payment.payDate)
           setamount(res.amount)
+          setresponseCode(payment.responseCode)
+          setcode(res.code)
           if (res.amount <= 499000) {
             setTransportFee(49000)
           } else {
@@ -87,25 +98,36 @@ const SendOrders = props => {
               setshipping(item)
             }
           })
+          console.log(JSON.stringify(res, null, 2))
           if (order) {
             setoderCarts(res.carts)
           }
         } else if (payment.responseCode == '24') {
+          setStorageData([])
           payment.responseCode == '02'
           // await OrderHTTP.update(payment.orderInfo, { payment })
           // console.log('Đã xóa hóa đơn')
           const res = await OrderHTTP.remove(payment.orderInfo)
-          console.log(JSON.stringify(res.order, null, 2))
+          console.log('cc', JSON.stringify(res, null, 2))
+          setamount(res.order.amount)
+          setcode(res.order.code)
+          setresponseCode(payment.responseCode)
           const newOrder = { ...res.order }
           newOrder.status = '01'
           delete newOrder.payment
           delete newOrder._id
           await OrderHTTP.insert(newOrder)
+        } else if (order.status == '00') {
+          console.log(order.carts)
+
+          setoderCarts(order.carts)
         } else {
           throw new Error('Lỗi không xác định')
         }
       } catch (error) {
         console.log('error', error)
+      } finally {
+        setloading(false)
       }
     }
     fetchData()
@@ -182,13 +204,19 @@ const SendOrders = props => {
       <View>
         <View style={{ backgroundColor: Colors.white, padding: 16, marginTop: 32 }}>
           <Text style={[styles.txt_title, { textAlign: 'center' }]}>
-            Chi tiết đơn hàng - {vnp_TransactionNo}
+            Chi tiết đơn hàng - {code}
           </Text>
           <Text style={styles.txtTitleProfile}>Email</Text>
           <Text style={styles.txtUserName}>{user.email}</Text>
           <Text style={styles.txtTitleProfile}>Phương thức thanh toán</Text>
           {vnp_CardType ? (
-            <Text style={styles.txtUserName}>Thanh toán bằng thẻ {vnp_CardType}</Text>
+            <View style={{ paddingTop: 8 }}>
+              {/* <Text style={styles.txtUserName}>Thanh toán bằng thẻ {vnp_CardType}</Text> */}
+              <Image
+                style={{ width: 100, height: 30 }}
+                source={require('@assets/images/logo_primary.png')}
+              />
+            </View>
           ) : (
             <Text style={styles.txtUserName}>Thanh toán bằng tiền mặt</Text>
           )}
@@ -212,9 +240,7 @@ const SendOrders = props => {
           </View>
         </View>
         <View style={{ marginTop: 32, backgroundColor: Colors.grayBg }}>
-          <Text style={[styles.txt_title, { textAlign: 'center' }]}>
-            Tóm tắt đơn hàng - {vnp_TransactionNo}
-          </Text>
+          <Text style={[styles.txt_title, { textAlign: 'center' }]}>Tóm tắt đơn hàng - {code}</Text>
           <Text style={[styles.txt_description, { textAlign: 'center', marginTop: 4 }]}>
             Thời gian giao hàng: 3-7 NGÀY LÀM VIỆC
           </Text>
@@ -271,7 +297,14 @@ const SendOrders = props => {
   const paymentSuccessful = () => {
     return (
       <View style={{ paddingHorizontal: 16, backgroundColor: Colors.grayBg }}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginVertical: 16 }}>
+        <TouchableOpacity
+          onPress={() => {
+            resetToScreen(navigation)
+
+            navigation.navigate('ProfileStack', { screen: 'MyOrder' })
+          }}
+          style={{ marginVertical: 16 }}
+        >
           <MyText style={{ color: Colors.black2, fontSize: 12 }}>Đóng</MyText>
         </TouchableOpacity>
         <Text style={[styles.txt_title, { fontSize: 24, textAlign: 'center' }]}>Cảm ơn bạn!</Text>
@@ -365,35 +398,126 @@ const SendOrders = props => {
           paddingHorizontal: 16,
           backgroundColor: Colors.white,
           width: '100%',
-          height: '100%',
-          justifyContent: 'center',
-          alignItems: 'center'
+          height: '100%'
         }}
       >
-        <Text style={[styles.txt_title, { marginVertical: 16, fontSize: 18 }]}>Thanh toán</Text>
-        <Image
-          source={require('../../../assets/images/ic_error.png')}
-          style={{ width: 104, height: 104, marginBottom: 16 }}
-        />
+        <Text style={[styles.txt_title, { marginVertical: 16, fontSize: 18, textAlign: 'center' }]}>
+          Thông báo đơn hàng
+        </Text>
+        <View style={{ alignItems: 'center', marginBottom: 16 }}>
+          <Image
+            source={require('../../../assets/images/ic_error.png')}
+            style={{ width: 104, height: 104 }}
+          />
+        </View>
         <Text style={[styles.txt_title, { textAlign: 'center', color: Colors.red, fontSize: 16 }]}>
           Thanh toán không thành công
         </Text>
+        <View style={{ marginVertical: 16, backgroundColor: Colors.redAlpha, padding: 16 }}>
+          <Text style={[styles.txt_description, { fontSize: 12 }]}>
+            <Text style={{ color: Colors.red }}>
+              Xác thực thẻ thất bại vì liên quan đến mã OTP hoặc bạn đã hủy xác thực.
+            </Text>{' '}
+            Vui lòng thanh toán lại đảm bảo mã OTP và thông tin thẻ chính xác. Bạn có thể sử dụng
+            thẻ khác hoặc chọn phương thức thanh toán khác
+          </Text>
+        </View>
+        <View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 }}>
+            <Text style={[styles.txt_description, { fontSize: 12 }]}>Mã đơn hàng</Text>
+            <Text style={[styles.txt_description, { fontSize: 12 }]}>{code}</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginTop: 8,
+              alignItems: 'center'
+            }}
+          >
+            <Text style={[styles.txt_description, { fontSize: 12 }]}>Hình thức thanh toán</Text>
+            <View style={{ width: 100, height: 30 }}>
+              <Image
+                style={{ width: '100%', height: '100%' }}
+                source={require('@assets/images/logo_primary.png')}
+              />
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 }}>
+            <Text style={styles.txt_title}>Tổng tiền</Text>
+            <Text style={styles.txt_title}>{formattedAmount}</Text>
+          </View>
+        </View>
+        <View style={{ height: 16 }} />
+        {/* <TouchableOpacity
+          style={{ paddingVertical: 20, backgroundColor: Colors.black2 }}
+          onPress={() => {
+            navigation.navigate('BagStack', {
+              screen: 'PayPage',
+              params: {
+                orders: orders // Truyền tham số 'orders'
+              }
+            })
+          }}
+        >
+          <Text
+            style={[styles.txt_title, { textAlign: 'center', color: Colors.white, borderWidth: 1 }]}
+          >
+            Thanh toán lại
+          </Text>
+        </TouchableOpacity> */}
+        <View style={{ height: 16 }} />
         <TouchableOpacity
+          style={{ paddingVertical: 20, backgroundColor: Colors.white, borderWidth: 1 }}
           onPress={() => {
             resetToScreen(navigation)
 
-            navigation.navigate('ProfileStack', { screen: 'Profile' })
+            navigation.navigate('HomeStack', { screen: 'HomePage' })
           }}
         >
-          <Text style={styles.txt_title}>Đơn hàng đã bị hủy</Text>
+          <Text style={[styles.txt_title, { textAlign: 'center' }]}>Quay lại mua sắm</Text>
         </TouchableOpacity>
+        <View style={{ height: 500 }} />
       </View>
     )
   }
 
   return (
     <ScrollView styles={styles.container} showsVerticalScrollIndicator={false}>
-      {orderSuccess ? paymentSuccessful() : paymentFailed()}
+      {responseCode == '00' ? (
+        paymentSuccessful()
+      ) : loading ? (
+        <LinearGradient
+          colors={[Colors.transparent08, Colors.transparent06, Colors.transparent08]}
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: height
+          }}
+        >
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.red} />
+          </View>
+        </LinearGradient>
+      ) : null}
+      {responseCode == '24' ? (
+        paymentFailed()
+      ) : loading ? (
+        <LinearGradient
+          colors={[Colors.transparent08, Colors.transparent06, Colors.transparent08]}
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: height
+          }}
+        >
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.red} />
+          </View>
+        </LinearGradient>
+      ) : null}
     </ScrollView>
   )
 }
@@ -401,6 +525,11 @@ const SendOrders = props => {
 export default SendOrders
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   txtSetting: {
     marginTop: 8,
     fontSize: 10,
@@ -453,6 +582,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    height: '100%'
+    height: '100%',
+    backgroundColor: Colors.grayBg
   }
 })

@@ -61,6 +61,8 @@ const ReviewProduct = props => {
     transform: [{ scale: animatedButtonScale }]
   }
 
+  console.log(JSON.stringify(imagess, null, 2))
+
   const [TextInputRv, setTextInputRv] = useState('')
   const ImageRv = () => {
     return (
