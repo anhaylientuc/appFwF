@@ -65,6 +65,8 @@ const ProductDetail = props => {
   const [visible, setVisible] = useState(false)
   const showModelImageRv = () => setVisible(true)
   const [validWallPaper, setvalidWallPaper] = useState([])
+  const scaleAnim = useRef(new Animated.Value(1)).current
+  const [animatedItemId, setAnimatedItemId] = useState(null)
 
   useFocusEffect(
     useCallback(() => {
@@ -155,6 +157,35 @@ const ProductDetail = props => {
       setvalidWallPaper(imagesWithUri)
     }
   }, [wallPaper])
+
+  const triggerJumpAnimation = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 2, // Phóng to
+        duration: 400,
+        useNativeDriver: true
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1, // Thu nhỏ về kích thước ban đầu
+        duration: 400,
+        useNativeDriver: true
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 2, // Phóng to lần 2
+        duration: 400,
+        useNativeDriver: true
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1, // Thu nhỏ về kích thước ban đầu lần 2
+        duration: 400,
+        useNativeDriver: true
+      })
+    ]).start()
+  }
+
+  const handleFavoriteToggle = () => {
+    triggerJumpAnimation()
+  }
 
   const showToastError = title => {
     Toast.show({
@@ -398,6 +429,8 @@ const ProductDetail = props => {
   }
 
   const handleAddFavorite = async () => {
+    console.log(JSON.stringify(thumbs._id, null, 2))
+
     const newFavoritesProduct = {
       _id: _id,
       image: wallPaper[0].url,
@@ -411,6 +444,8 @@ const ProductDetail = props => {
       nameCategoryById: nameCategoryById,
       attributes: attributes
     }
+    setAnimatedItemId(_id)
+    handleFavoriteToggle()
     // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích chưa
     const isDuplicate = storageFavorites.some(favorite => favorite._id === _id)
     if (!isDuplicate) {
@@ -579,9 +614,7 @@ const ProductDetail = props => {
                     ? { color: Colors.white, margin: 3 }
                     : { color: Colors.gray, margin: 3 }
                 }
-              >
-                
-              </Text>
+              ></Text>
             ))}
           </View>
         </View>
@@ -871,14 +904,17 @@ const ProductDetail = props => {
         style={styles.product.container_ic_add_favorite}
         onPress={() => handleAddFavorite(thumbs)}
       >
-        <Icons.MaterialIcons
-          style={{
-            textAlign: 'center'
-          }}
-          name={favoritesIds.includes(_id) ? 'favorite' : 'favorite-outline'}
-          size={24}
-          color={favoritesIds.includes(_id) ? Colors.red : Colors.gray}
-        />
+        <View>
+          {favoritesIds.includes(_id) ? (
+            <Animated.View
+              style={{ transform: [{ scale: _id === animatedItemId ? scaleAnim : 1 }] }}
+            >
+              <Icons.MaterialIcons name="favorite" size={24} color="red" />
+            </Animated.View>
+          ) : (
+            <Icons.MaterialIcons name="favorite-border" size={24} color="gray" />
+          )}
+        </View>
       </TouchableOpacity>
 
       <View

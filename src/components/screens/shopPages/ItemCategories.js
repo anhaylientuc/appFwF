@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import qs from 'qs'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import {
   ActivityIndicator,
+  Animated,
   Dimensions,
   FlatList,
   KeyboardAvoidingView,
@@ -51,6 +52,9 @@ const ItemCategories = props => {
   const [loading, setLoading] = useState(false) // Add loading state
   const [selectedCategoryId, setselectedCategoryId] = useState(undefined)
   const [categories, setcategories] = useState([])
+  const scaleAnim = useRef(new Animated.Value(1)).current
+
+  const [animatedItemId, setAnimatedItemId] = useState(null)
   const setBottomBar = () => {
     navigation.getParent().setOptions({
       tabBarStyle: {
@@ -149,6 +153,35 @@ const ItemCategories = props => {
     }
   }
 
+  const triggerJumpAnimation = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 2, // Phóng to
+        duration: 400,
+        useNativeDriver: true
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1, // Thu nhỏ về kích thước ban đầu
+        duration: 400,
+        useNativeDriver: true
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 2, // Phóng to lần 2
+        duration: 400,
+        useNativeDriver: true
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1, // Thu nhỏ về kích thước ban đầu lần 2
+        duration: 400,
+        useNativeDriver: true
+      })
+    ]).start()
+  }
+
+  const handleFavoriteToggle = () => {
+    triggerJumpAnimation()
+  }
+
   // Logic AddFavorites
   const handleAddFavorite = async item => {
     const {
@@ -162,6 +195,8 @@ const ItemCategories = props => {
       product_id,
       code
     } = item
+    setAnimatedItemId(_id)
+    handleFavoriteToggle()
 
     const name_filter = attributes.filter(params => params.key === 'Màu sắc')
     const newFavoritesProduct = {
@@ -316,14 +351,17 @@ const ItemCategories = props => {
               { height: numColumns ? 32 : 40 }
             ]}
           >
-            <Icons.MaterialIcons
-              style={{
-                textAlign: 'center'
-              }}
-              name={favoritesIds.includes(_id) ? 'favorite' : 'favorite-outline'}
-              size={numColumns ? 20 : 28}
-              color={favoritesIds.includes(_id) ? Colors.red : Colors.gray}
-            />
+            <View>
+              {favoritesIds.includes(item._id) ? (
+                <Animated.View
+                  style={{ transform: [{ scale: item._id === animatedItemId ? scaleAnim : 1 }] }}
+                >
+                  <Icons.MaterialIcons name="favorite" size={24} color="red" />
+                </Animated.View>
+              ) : (
+                <Icons.MaterialIcons name="favorite-border" size={24} color="gray" />
+              )}
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
