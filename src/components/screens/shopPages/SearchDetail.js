@@ -161,11 +161,12 @@ export const SearchDetail = props => {
           style={{ margin: 5 }}
         >
           {images.map((image, index) => (
+            image.url?
             <Image
               key={index}
               source={{ uri: image.url }}
               style={{ width: itemWidth - 10, height: 300 }} // Adjusted height for better appearance
-            />
+            />:null
           ))}
         </ScrollView>
         <TouchableOpacity onPress={() => handleClickItem(item)} style={{ padding: 16 }}>

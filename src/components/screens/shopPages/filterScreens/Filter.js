@@ -236,7 +236,6 @@ const Filter = props => {
   }, [finishSlider])
   const handleValuesChangeFinish = values => {
     if (values[0] == values[1]) {
-      console.log('dkm')
       return
     }
 
@@ -369,7 +368,6 @@ const Filter = props => {
           }}
           onPress={() => {
             if (Array.isArray(products) && products.length > 0) {
-              console.log(products.length)
               if (action == 'search')
                 navigation.navigate('SearchDetail', { productsNe: products })
               else
