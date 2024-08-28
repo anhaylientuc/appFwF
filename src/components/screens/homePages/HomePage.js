@@ -1,188 +1,149 @@
-import React, { useState } from 'react'
-import {
-  Image,
-  KeyboardAvoidingView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
+import React from 'react'
+import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 import Colors from 'src/constants/Colors'
-import { DaTaNews, DaTaSale } from 'src/constants/Databases'
-import MyText from 'src/constants/FontFamily'
-import ItemListNew from './ItemListNews'
-import ItemListSale from './ItemListSales'
+const windowWith = Dimensions.get('window').width
+const windowHeight = Dimensions.get('window').height
 
-const ListSale = () => {
+const HomePage = () => {
   return (
-    <KeyboardAvoidingView>
-      <View>
-        <View>
-          <Image
-            style={{ width: '100%', height: 250 }}
-            source={require('@assets/images/pexel_911677.png')}
-          />
-          <View
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View style={{ paddingVertical: 32 }}>
+        <Text style={[styles.txt_description, { fontSize: 12, textAlign: 'center' }]}>
+          Miễn phí giao hàng cho Member với đơn từ 499k
+        </Text>
+      </View>
+      <View style={{ marginHorizontal: 16 }}>
+        <Image
+          style={{ width: '100%', height: windowHeight / 2 }}
+          source={require('@assets/images/fwfBackgroud.jpg')}
+        />
+        <View style={{ position: 'absolute', left: 0, bottom: 0, right: 0 }}>
+          <LinearGradient
+            colors={[Colors.transparent0, Colors.black]}
             style={{
-              position: 'absolute'
+              width: '100%',
+              height: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: 16
             }}
           >
             <Text
-              style={{
-                fontWeight: '900',
-                top: 180,
-                left: 21,
-                color: Colors.white,
-                fontSize: 34
-              }}
+              style={[
+                styles.txt_description,
+                { color: Colors.white, fontSize: 16, textAlign: 'center' }
+              ]}
             >
-              Street clothes
+              Hàng mới về
             </Text>
-          </View>
-        </View>
-
-        <View style={{ padding: 20 }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}
-          >
-            <MyText
-              fontFamily={'Montserrat-SemiBold'}
-              style={{
-                color: Colors.black,
-
-                fontSize: 34,
-                fontWeight: '700',
-                fontStyle: 'normal'
-              }}
+            <Text
+              style={[styles.txt_title, { color: Colors.white, fontSize: 20, textAlign: 'center' }]}
             >
-              Sale
-            </MyText>
-
-            <MyText style={{ textAlign: 'center' }}>View all</MyText>
-          </View>
-
-          <MyText style={{ color: Colors.red, fontWeight: 400 }}>Super summer sale</MyText>
+              Phong cách đón thu
+            </Text>
+          </LinearGradient>
         </View>
       </View>
-
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false} // thanh cuộn
-        showsVerticalScrollIndicator={false} // thanh cuộn
-      >
-        {DaTaSale.map(item => (
-          <ItemListSale key={item._id} data={item} />
-        ))}
-      </ScrollView>
-    </KeyboardAvoidingView>
-  )
-}
-
-const HomePage = props => {
-  const [isShowSale, setIsShowSale] = useState(false)
-  return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View>
+      <View style={{ height: 36 }} />
+      <View style={{ marginHorizontal: 16 }}>
         <Image
-          style={{ width: '100%', height: 628, position: 'relative' }}
-          source={require('@assets/images/image.png')}
+          style={{ width: '100%', height: windowHeight / 2 }}
+          source={require('@assets/images/fwfBackgroud2.jpg')}
         />
-        <View style={{ position: 'absolute', left: 15, bottom: 40 }}>
-          <Text style={styles.txt_fashion_sale}>Fashion</Text>
-          <Text style={styles.txt_fashion_sale}>sale</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setIsShowSale(!isShowSale)
+        <View style={{ position: 'absolute', left: 0, bottom: 0, right: 0 }}>
+          <LinearGradient
+            colors={[Colors.transparent0, Colors.black]}
+            style={{
+              width: '100%',
+              height: '100%',
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+              paddingVertical: 32,
+              paddingHorizontal: 16
             }}
           >
-            <View style={styles.btn_check}>
-              <Text style={{ color: Colors.white, fontWeight: '500' }}>Check</Text>
-            </View>
-          </TouchableOpacity>
+            <Text
+              style={[
+                styles.txt_description,
+                { color: Colors.white, fontSize: 14, textAlign: 'left' }
+              ]}
+            >
+              HÀNG MỚI VỀ
+            </Text>
+            <Text
+              style={[
+                styles.txt_title,
+                { color: Colors.white, fontSize: 20, textAlign: 'left', marginTop: 8 }
+              ]}
+            >
+              Nâng cấp phong cách thể thao
+            </Text>
+            <Text
+              style={[
+                styles.txt_description,
+                { color: Colors.white, fontSize: 12, textAlign: 'left', marginTop: 8 }
+              ]}
+            >
+              Trang phục thường ngày với cảm hứng thể thao
+            </Text>
+          </LinearGradient>
         </View>
       </View>
-
-      {isShowSale ? ListSale() : null}
-      <View style={{ padding: 20 }}>
+      <View style={{ height: 36 }} />
+      <View style={{ padding: 16, backgroundColor: Colors.grayBg, marginHorizontal: 16 }}>
+        <Text style={[styles.txt_title, { textAlign: 'center', fontSize: 20 }]}>
+          Trang phục basic cho ngày giao mùa
+        </Text>
+        <Text style={[styles.txt_description, { fontSize: 14, textAlign: 'center', marginTop: 4 }]}>
+          Từ áo thun tới áo nỉ, khám phá ngay
+        </Text>
+      </View>
+      <View style={{ height: 36 }} />
+      <View style={{ marginHorizontal: 16 }}>
+        <Image
+          style={{ width: '100%', height: windowHeight / 2 }}
+          source={require('@assets/images/fwfBackgroud3.jpg')}
+        />
+        <View style={{ position: 'absolute', left: 0, bottom: 0, right: 0 }}>
+          <LinearGradient
+            colors={[Colors.transparent0, Colors.black]}
+            style={{
+              width: '100%',
+              height: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingVertical: 32,
+              paddingHorizontal: 16
+            }}
+          >
+            <Text
+              style={[styles.txt_title, { color: Colors.white, fontSize: 20, textAlign: 'center' }]}
+            >
+              New Season
+            </Text>
+          </LinearGradient>
+        </View>
+      </View>
+      <View style={{ height: 36 }} />
+      <View style={{ backgroundColor: '#EEE8AA', padding: 24, marginHorizontal: 16 }}>
+        <Text style={[styles.txt_description, { fontSize: 12, textAlign: 'center' }]}>
+          Công ty TNHH FwF Fashion with Freedom Việt Nam - Trụ sở chính: 139 Chiến Lược, Phường Bình
+          Trị Đông, Quận Bình Tân, Thành Phố Hồ Chí Minh, Việt Nam
+        </Text>
         <View
           style={{
             flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
+            marginTop: 4,
+            justifyContent: 'center'
           }}
         >
-          <MyText
-            style={{
-              color: Colors.black,
-              fontSize: 34,
-              fontWeight: '700',
-              fontStyle: 'normal'
-            }}
-          >
-            News
-          </MyText>
-          <MyText style={{ textAlign: 'center' }}>View all</MyText>
-        </View>
-        <MyText style={{ color: Colors.red, fontWeight: '400' }}>
-          You’ve never seen it before!
-        </MyText>
-      </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false} // thanh cuộn
-        showsVerticalScrollIndicator={false} // thanh cuộn
-      >
-        {DaTaNews.map(item => (
-          <ItemListNew key={item._id} data={item} />
-        ))}
-      </ScrollView>
-
-      <View style={{ marginTop: 20, marginBottom: '20%' }}>
-        <View>
-          <Image
-            style={{ height: 366, width: '100%' }}
-            source={require('@assets/images/image5.png')}
-          />
-          <Text style={styles.txt_new_collection}>New collection</Text>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ flex: 1 }}>
-            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-              <Text style={styles.txt_Summer_sale}>Summer</Text>
-              <Text style={styles.txt_Summer_sale}>sale</Text>
-            </View>
-            <View>
-              <Image
-                style={{ width: '100%', height: 187 }}
-                source={require('@assets/images/image7.png')}
-              />
-              <Text style={[styles.txt_new_collection, styles.txt_black]}>Black</Text>
-            </View>
-          </View>
-
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Image
-              style={{ height: 374, width: '100%' }}
-              source={require('@assets/images/image6.png')}
-            />
-            <Text
-              style={{
-                position: 'absolute',
-                fontSize: 34,
-                color: Colors.white,
-                fontWeight: 700
-              }}
-            >
-              Men’s hoodies
-            </Text>
-          </View>
+          <Text style={[styles.txt_description, { fontSize: 12 }]}>Số hotline: </Text>
+          <Text style={styles.txt_title}>1800 678 789</Text>
         </View>
       </View>
+      <View style={{ height: 36 }} />
     </ScrollView>
   )
 }
@@ -228,5 +189,15 @@ const styles = StyleSheet.create({
     height: '100%',
     flex: 1,
     backgroundColor: Colors.white
+  },
+  txt_title: {
+    fontSize: 12,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.black2
+  },
+  txt_description: {
+    fontSize: 10,
+    fontFamily: 'Montserrat-Medium',
+    color: Colors.black2
   }
 })

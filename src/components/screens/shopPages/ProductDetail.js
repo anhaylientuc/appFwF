@@ -1,29 +1,28 @@
 import BottomSheet from '@devvie/bottom-sheet'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useNavigation } from '@react-navigation/native'
-import { useEffect, useRef, useState } from 'react'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Animated,
   Dimensions,
   FlatList,
   Image,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native'
+import ImageView from 'react-native-image-viewing'
 import Modal from 'react-native-modal'
 import Toast from 'react-native-toast-message'
 import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
-import { DaTaSale } from 'src/constants/Databases'
 import MyText from 'src/constants/FontFamily'
 import Names from 'src/constants/Names'
 import { formatCurrency, useStorage } from 'src/contexts/StorageProvider'
 import { getProducts } from 'src/utils/http/NewHTTP'
-import ItemListNew from '../homePages/ItemListNews'
+
 const windowWith = Dimensions.get('window').width
 const windowHeight = Dimensions.get('window').height
 
@@ -63,11 +62,27 @@ const ProductDetail = props => {
   const [category_id, setcategory_id] = useState(null)
   const [attributes, setattributes] = useState()
   const [attributesMap, setattributesMap] = useState(new Map())
+  const [visible, setVisible] = useState(false)
+  const showModelImageRv = () => setVisible(true)
+  const [validWallPaper, setvalidWallPaper] = useState([])
+  const scaleAnim = useRef(new Animated.Value(1)).current
+  const [animatedItemId, setAnimatedItemId] = useState(null)
 
-  useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-  }, [navigation])
-
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+      }
+      const loadFavorites = async () => {
+        const storedFavorites = await AsyncStorage.getItem('my-favorites')
+        if (storedFavorites) {
+          const favorites = JSON.parse(storedFavorites)
+          setFavoritesIds(favorites.map(favorite => favorite._id))
+        }
+      }
+      loadFavorites()
+    }, [navigation, storageFavorites])
+  )
   useEffect(() => {
     const listener = scrollY.addListener(({ value }) => {
       if (value > windowHeight / 2) {
@@ -85,13 +100,6 @@ const ProductDetail = props => {
   }, [scrollY])
 
   useEffect(() => {
-    const loadFavorites = async () => {
-      const storedFavorites = await AsyncStorage.getItem('my-favorites')
-      if (storedFavorites) {
-        const favorites = JSON.parse(storedFavorites)
-        setFavoritesIds(favorites.map(favorite => favorite._id))
-      }
-    }
     const fetchData = async () => {
       const version = 2
       const product_id = props.route.params.product_id
@@ -116,6 +124,7 @@ const ProductDetail = props => {
             setwallPaper(item.images)
             setselectedId(item._id)
             setattributes(item.attributes)
+
             const map = new Map()
             item.attributes.map(attr => {
               const { key, value } = attr
@@ -134,9 +143,49 @@ const ProductDetail = props => {
     }
 
     fetchData()
-    loadFavorites()
   }, [])
-  // console.log(JSON.stringify(attributes, null, 2))
+
+  useEffect(() => {
+    if (wallPaper) {
+      const imagesWithUri = wallPaper
+        .filter(item => item.url && item.url.trim() !== '') // Ensure the URL is not empty or null
+        .map(item => ({
+          id: item.id,
+          uri: item.url
+        }))
+
+      setvalidWallPaper(imagesWithUri)
+    }
+  }, [wallPaper])
+
+  const triggerJumpAnimation = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 2, // Phóng to
+        duration: 400,
+        useNativeDriver: true
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1, // Thu nhỏ về kích thước ban đầu
+        duration: 400,
+        useNativeDriver: true
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 2, // Phóng to lần 2
+        duration: 400,
+        useNativeDriver: true
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1, // Thu nhỏ về kích thước ban đầu lần 2
+        duration: 400,
+        useNativeDriver: true
+      })
+    ]).start()
+  }
+
+  const handleFavoriteToggle = () => {
+    triggerJumpAnimation()
+  }
 
   const showToastError = title => {
     Toast.show({
@@ -318,17 +367,6 @@ const ProductDetail = props => {
     }
   }
 
-  const setBottomBar = () => {
-    navigation.getParent().setOptions({
-      tabBarStyle: {
-        backgroundColor: Colors.white,
-        bottom: 0,
-        paddingVertical: 8,
-        height: 54
-      }
-    })
-  }
-
   const handleGoBag = () => {
     navigation.navigate('BagStack', {
       screen: 'BagPage'
@@ -391,6 +429,8 @@ const ProductDetail = props => {
   }
 
   const handleAddFavorite = async () => {
+    console.log(JSON.stringify(thumbs._id, null, 2))
+
     const newFavoritesProduct = {
       _id: _id,
       image: wallPaper[0].url,
@@ -404,6 +444,8 @@ const ProductDetail = props => {
       nameCategoryById: nameCategoryById,
       attributes: attributes
     }
+    setAnimatedItemId(_id)
+    handleFavoriteToggle()
     // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích chưa
     const isDuplicate = storageFavorites.some(favorite => favorite._id === _id)
     if (!isDuplicate) {
@@ -441,7 +483,6 @@ const ProductDetail = props => {
 
   // thông tin sản phẩm
   const infoProduct = () => {
-    console.log(attributesMap)
     return Array.from(attributesMap)
       .filter(([key, value]) => key != 'Kích cỡ')
       .map(([key, value], index) => {
@@ -542,7 +583,7 @@ const ProductDetail = props => {
             renderItem={({ item, index }) => {
               return (
                 item.url != '' && (
-                  <Pressable>
+                  <Pressable onPress={showModelImageRv}>
                     <Image
                       resizeMode="cover"
                       style={{ width: windowWith, height: windowHeight / 1.2 }}
@@ -573,9 +614,7 @@ const ProductDetail = props => {
                     ? { color: Colors.white, margin: 3 }
                     : { color: Colors.gray, margin: 3 }
                 }
-              >
-                
-              </Text>
+              ></Text>
             ))}
           </View>
         </View>
@@ -740,17 +779,17 @@ const ProductDetail = props => {
           <View>
             {wallPaper[0] && wallPaper[0].url ? (
               <Image
-                style={{ width: '100%', height: 600 }}
+                style={{ width: '100%', height: windowHeight }}
                 source={{
                   uri: wallPaper[0].url
                 }}
               />
             ) : null}
 
-            <View style={{ flexDirection: 'row', marginTop: 4, height: 300 }}>
+            <View style={{ flexDirection: 'row', marginTop: 4, height: windowHeight / 2 }}>
               {wallPaper[1] && wallPaper[1].url ? (
                 <Image
-                  style={{ width: '100%', height: 300, flex: 1 }}
+                  style={{ width: '100%', height: windowHeight / 2, flex: 1 }}
                   source={{
                     uri: wallPaper[1].url
                   }}
@@ -759,7 +798,7 @@ const ProductDetail = props => {
               <View style={{ width: 4 }} />
               {wallPaper[2] && wallPaper[2].url ? (
                 <Image
-                  style={{ width: '100%', height: 300, flex: 1 }}
+                  style={{ width: '100%', height: windowHeight / 2, flex: 1 }}
                   source={{
                     uri: wallPaper[2].url
                   }}
@@ -768,7 +807,7 @@ const ProductDetail = props => {
             </View>
             {wallPaper[3] && wallPaper[3].url ? (
               <Image
-                style={{ width: '100%', height: 600, marginTop: 4 }}
+                style={{ width: '100%', height: windowHeight, marginTop: 4 }}
                 source={{
                   uri: wallPaper[3].url
                 }}
@@ -777,7 +816,7 @@ const ProductDetail = props => {
             <View style={{ flexDirection: 'row', marginTop: 4 }}>
               {wallPaper[4] && wallPaper[4].url ? (
                 <Image
-                  style={{ width: '100%', height: 300, flex: 1 }}
+                  style={{ width: '100%', height: windowHeight / 2, flex: 1 }}
                   source={{
                     uri: wallPaper[4].url
                   }}
@@ -786,7 +825,7 @@ const ProductDetail = props => {
               <View style={{ width: 4 }} />
               {wallPaper[5] && wallPaper[5].url ? (
                 <Image
-                  style={{ width: '100%', height: 300, flex: 1 }}
+                  style={{ width: '100%', height: windowHeight / 2, flex: 1 }}
                   source={{
                     uri: wallPaper[5].url
                   }}
@@ -795,7 +834,7 @@ const ProductDetail = props => {
             </View>
             {wallPaper[6] && wallPaper[6].url ? (
               <Image
-                style={{ width: '100%', height: 600, marginTop: 4 }}
+                style={{ width: '100%', height: windowHeight / 2, marginTop: 4 }}
                 source={{
                   uri: wallPaper[6].url
                 }}
@@ -804,7 +843,7 @@ const ProductDetail = props => {
             <View style={{ flexDirection: 'row', marginTop: 4 }}>
               {wallPaper[7] && wallPaper[7].url ? (
                 <Image
-                  style={{ width: '100%', height: 300, flex: 1 }}
+                  style={{ width: '100%', height: windowHeight / 2, flex: 1 }}
                   source={{
                     uri: wallPaper[7].url
                   }}
@@ -813,7 +852,7 @@ const ProductDetail = props => {
               <View style={{ width: 4 }} />
               {wallPaper[8] && wallPaper[8].url ? (
                 <Image
-                  style={{ width: '100%', height: 300, flex: 1 }}
+                  style={{ width: '100%', height: windowHeight / 2, flex: 1 }}
                   source={{
                     uri: wallPaper[8].url
                   }}
@@ -821,28 +860,6 @@ const ProductDetail = props => {
               ) : null}
             </View>
           </View>
-
-          <View style={{ marginHorizontal: 16, marginTop: 16 }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between'
-              }}
-            >
-              <MyText
-                fontFamily={'Montserrat-SemiBold'}
-                style={{ fontSize: 18, fontWeight: '500', lineHeight: 22 }}
-              >
-                You can also like this
-              </MyText>
-              <MyText style={styles.txt_review}>12 items</MyText>
-            </View>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {DaTaSale.map((item, index) => (
-              <ItemListNew key={item._id} data={item} />
-            ))}
-          </ScrollView>
         </View>
         <View style={{ height: 50 }} />
       </Animated.ScrollView>
@@ -887,14 +904,17 @@ const ProductDetail = props => {
         style={styles.product.container_ic_add_favorite}
         onPress={() => handleAddFavorite(thumbs)}
       >
-        <Icons.MaterialIcons
-          style={{
-            textAlign: 'center'
-          }}
-          name={favoritesIds.includes(_id) ? 'favorite' : 'favorite-outline'}
-          size={24}
-          color={favoritesIds.includes(_id) ? Colors.red : Colors.gray}
-        />
+        <View>
+          {favoritesIds.includes(_id) ? (
+            <Animated.View
+              style={{ transform: [{ scale: _id === animatedItemId ? scaleAnim : 1 }] }}
+            >
+              <Icons.MaterialIcons name="favorite" size={24} color="red" />
+            </Animated.View>
+          ) : (
+            <Icons.MaterialIcons name="favorite-border" size={24} color="gray" />
+          )}
+        </View>
       </TouchableOpacity>
 
       <View
@@ -927,6 +947,16 @@ const ProductDetail = props => {
           <Icons.SimpleLineIcons name={'handbag'} size={16} color={Colors.white} />
           <Text style={styles.txt_addToCart}>Thêm</Text>
         </TouchableOpacity>
+      </View>
+
+      <View style={{ backgroundColor: '#000' }}>
+        <ImageView
+          animationType="slide"
+          images={validWallPaper}
+          imageIndex={0}
+          visible={visible}
+          onRequestClose={() => setVisible(false)}
+        />
       </View>
 
       <BottomSheet
@@ -1215,6 +1245,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: 28.8
   },
+
   txt_header: {
     fontSize: 18,
     fontWeight: '500',

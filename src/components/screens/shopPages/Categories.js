@@ -1,11 +1,14 @@
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
+  Image,
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View
 } from 'react-native'
@@ -13,6 +16,8 @@ import Icons from 'src/components/icons/Icon'
 import Colors from 'src/constants/Colors'
 import MyText from 'src/constants/FontFamily'
 import { getCategoryById } from 'src/utils/http/NewHTTP'
+const windowWith = Dimensions.get('window').width
+const windowHeight = Dimensions.get('window').height
 
 const Categories = props => {
   const {
@@ -39,13 +44,33 @@ const Categories = props => {
     }
     fetchData()
   }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        navigation.getParent().setOptions({
+          tabBarStyle: {
+            backgroundColor: Colors.white,
+            bottom: 0,
+            paddingVertical: 8,
+            height: 54
+          }
+        })
+      }
+    }, [navigation])
+  )
   // renderItemList Category Women
   const renderItem = ({ item }) => {
     const { _id, name } = item
     return (
       // onClick to ItemCategory Women
       <TouchableOpacity
-        style={{ marginBottom: 15 }}
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 24
+        }}
         onPress={() =>
           props.navigation.navigate('ItemCategories', {
             categoryById: _id
@@ -55,15 +80,12 @@ const Categories = props => {
         <MyText
           style={{
             color: Colors.black,
-            fontSize: 12,
-            fontWeight: '400',
-            left: 40,
-            bottom: 17
+            fontSize: 12
           }}
         >
           {name}
         </MyText>
-        <View style={{ backgroundColor: Colors.gray }}></View>
+        <Icons.AntDesign name={'arrowright'} size={18} />
       </TouchableOpacity>
     )
   }
@@ -101,45 +123,89 @@ const Categories = props => {
         </LinearGradient>
       ) : (
         <ScrollView
-          style={{ backgroundColor: Colors.grayBg, width: '100%', height: '100%' }}
+          style={{ backgroundColor: Colors.white, width: '100%', height: '100%' }}
           showsVerticalScrollIndicator={false}
         >
-          <TouchableOpacity
-            style={{
-              backgroundColor: Colors.red,
-              borderRadius: 25,
-              marginStart: 16,
-              marginEnd: 16,
-              marginTop: 21,
-              elevation: 8,
-              shadowColor: Colors.gray
-            }}
-          >
-            <MyText fontFamily={'Montserrat-SemiBold'} style={styles.txt_VIEW_ALL_ITEMS}>
-              XEM TẤT CẢ THỂ LOẠI
-            </MyText>
-          </TouchableOpacity>
-          <MyText
-            fontFamily={'Montserrat-SemiBold'}
-            style={{
-              marginStart: 16,
-              marginTop: 16,
-              color: Colors.gray,
-              fontSize: 12,
-              fontWeight: '500'
-            }}
-          >
-            Thể loại thời trang
-          </MyText>
+          {nameCategories == 'Nữ' ? (
+            <View>
+              <View style={{ marginHorizontal: 16 }}>
+                <Image
+                  style={{ width: '100%', height: windowHeight / 2 }}
+                  source={require('@assets/images/fwfBackgroud.jpg')}
+                />
 
+                <View style={{ position: 'absolute', left: 0, bottom: 0, right: 0 }}>
+                  <LinearGradient
+                    colors={[Colors.transparent0, Colors.black]}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      paddingVertical: 32,
+                      paddingHorizontal: 16
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.txt_description,
+                        { color: Colors.white, fontSize: 16, textAlign: 'center' }
+                      ]}
+                    >
+                      Hàng mới về
+                    </Text>
+                    <Text
+                      style={[
+                        styles.txt_title,
+                        { color: Colors.white, fontSize: 20, textAlign: 'center' }
+                      ]}
+                    >
+                      Phong cách đón thu
+                    </Text>
+                  </LinearGradient>
+                </View>
+              </View>
+              <View style={{ height: 16 }} />
+              <View style={{ marginHorizontal: 16 }}>
+                <Image
+                  style={{ width: '100%', height: windowHeight / 2 }}
+                  source={require('@assets/images/hmgoepprod.jpg')}
+                />
+                <View style={{ position: 'absolute', left: 0, bottom: 0, right: 0 }}>
+                  <LinearGradient
+                    colors={[Colors.transparent0, Colors.black]}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      paddingVertical: 32,
+                      paddingHorizontal: 16
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.txt_title,
+                        { color: Colors.white, fontSize: 20, textAlign: 'center' }
+                      ]}
+                    >
+                      Khỏe khoắn & Thời thượng
+                    </Text>
+                  </LinearGradient>
+                </View>
+              </View>
+            </View>
+          ) : null}
+          <View style={{ height: 36 }} />
           <FlatList
-            style={{ marginBottom: '5%' }}
+            style={{ padding: 16 }}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false} // thanh cuộn
             showsHorizontalScrollIndicator={false}
             data={categoriesId}
             renderItem={renderItem}
           />
+          <View style={{ height: 36 }} />
         </ScrollView>
       )}
     </View>
