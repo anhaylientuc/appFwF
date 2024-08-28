@@ -355,7 +355,7 @@ const DetailMyOrder = ({ route }) => {
           </Text>
           <View style={{ flex: 1 }} />
         </View>
-        {myOrder.status == '04' ? (
+        {myOrder.status == '05' ? (
           <View style={{ backgroundColor: Colors.skyBlue, padding: 28 }}>
             <Text style={styles.txt_title}>Đơn hàng của bạn đã bị hủy vào {toDay}</Text>
             <Text

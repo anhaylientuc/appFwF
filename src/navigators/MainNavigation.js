@@ -176,19 +176,19 @@ function MainNavigator() {
 
   const ProfileStack = ({ navigation }) => {
     const { user } = useContext(UserContext)
-    useFocusEffect(
-      useCallback(() => {
-        // Cleanup code nếu cần khi ProfileStack không còn focus
-        return () => {
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{ name: 'Profile' }]
-            })
-          )
-        }
-      }, [navigation])
-    )
+    // useFocusEffect(
+    //   useCallback(() => {
+    //     // Cleanup code nếu cần khi ProfileStack không còn focus
+    //     return () => {
+    //       navigation.dispatch(
+    //         CommonActions.reset({
+    //           index: 0,
+    //           routes: [{ name: 'Profile' }]
+    //         })
+    //       )
+    //     }
+    //   }, [navigation])
+    // )
 
     return user ? (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -231,6 +231,7 @@ function MainNavigator() {
           component={EditAddress}
           options={{ title: 'EditAddress' }}
         />
+        <Stack.Screen name="Login" component={Login} options={{ title: 'Login' }} />
         <Stack.Screen name="GoogleMaps" component={GoogleMaps} options={{ title: 'GoogleMaps' }} />
         <Stack.Screen name="UserNavigation" component={UserNavigation} />
         <Stack.Screen name="PayPage" component={PayPage} />

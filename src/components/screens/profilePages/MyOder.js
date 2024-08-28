@@ -104,7 +104,10 @@ const MyOder = () => {
         style={{ marginVertical: 8, padding: 16, backgroundColor: Colors.white, paddingBottom: 32 }}
       >
         {status === '00' && <Text style={[styles.txt_title, { fontSize: 16 }]}>Đã thanh toán</Text>}
-        {status === '04' && <Text style={[styles.txt_title, { fontSize: 16 }]}>Đã hủy</Text>}
+        {status === '04' && (
+          <Text style={[styles.txt_title, { fontSize: 16 }]}>Chờ xác nhận hủy...</Text>
+        )}
+        {status === '05' && <Text style={[styles.txt_title, { fontSize: 16 }]}>Đã hủy</Text>}
         {status === '01' && (
           <View
             style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
@@ -119,7 +122,7 @@ const MyOder = () => {
           <Text
             style={[
               styles.txt_description,
-              status === '04'
+              status === '05'
                 ? { fontSize: 12, textDecorationLine: 'line-through' }
                 : { fontSize: 12, textDecorationLine: 'none' }
             ]}
@@ -130,7 +133,7 @@ const MyOder = () => {
           <Text
             style={[
               styles.txt_description,
-              status === '04'
+              status === '05'
                 ? { fontSize: 12, textDecorationLine: 'line-through' }
                 : { fontSize: 12, textDecorationLine: 'none' }
             ]}
