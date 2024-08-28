@@ -61,16 +61,12 @@ const Filter = props => {
             const listPrice = filterState.get('Giá')
             query.minPrice = listPrice[0]
             query.maxPrice = listPrice[1]
-          }
-          else
-            attributes.push({ key, value })
+          } else attributes.push({ key, value })
         }
         if (attributes.length > 0) query.attributes = attributes
         //query.category_id = category_id ? category_id : _category_id
-        if (categories)
-          query.categories = categories
-        if (listIdConst)
-          query.listId = listIdConst
+        if (categories) query.categories = categories
+        if (listIdConst) query.listId = listIdConst
 
         const queryString = qs.stringify(query)
         setqueryStringState(queryString)
@@ -91,11 +87,9 @@ const Filter = props => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const query = {  version: 2 }
-        if(action=='search')
-          query.listCategory=listIdConst
-        else
-          query.category_id= category_id
+        const query = { version: 2 }
+        if (action == 'search') query.listCategory = listIdConst
+        else query.category_id = category_id
         const res = await NewHTTP.getProducts(query)
         const listPrice = res.map(item => item.base_price)
         let min = Math.min(...listPrice)
@@ -112,10 +106,7 @@ const Filter = props => {
           setstep(0)
           setminPrice(min)
           setMaxPrice(max)
-        }
-
-        else
-          setstep(100)
+        } else setstep(100)
         setpriceLeft(min)
         setpriceRight(max)
         settwoWayValues([min, max])
@@ -125,7 +116,7 @@ const Filter = props => {
     }
     fetchData()
   }, [])
-  const handleCheckQuantity = (filter) => {
+  const handleCheckQuantity = filter => {
     const newCheckQuantity = filter.map(item => {
       const { child } = item
 
@@ -160,15 +151,14 @@ const Filter = props => {
             action: action
           })
         }}
-        style={[{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingVertical: 16,
-
-        },
-        checkQuantity[index] == false ? { opacity: 0.3, pointerEvents: 'none' } : null
-
+        style={[
+          {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingVertical: 16
+          },
+          checkQuantity[index] == false ? { opacity: 0.3, pointerEvents: 'none' } : null
         ]}
       >
         <Spinner visible={loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle} />
@@ -177,14 +167,14 @@ const Filter = props => {
         <View style={{ flexDirection: 'row' }}>
           {filterState instanceof Map && filterState.has(key)
             ? filterState.get(key).map((item, index) => (
-              <Text
-                key={index}
-                numberOfLines={1}
-                style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
-              >
-                {Names[item] ? Names[item] : item}
-              </Text>
-            ))
+                <Text
+                  key={index}
+                  numberOfLines={1}
+                  style={{ marginEnd: 16, maxWidth: windowWith / 1.5 }}
+                >
+                  {Names[item] ? Names[item] : item}
+                </Text>
+              ))
             : null}
           <Icons.AntDesign name="arrowright" size={20} />
         </View>
@@ -236,6 +226,7 @@ const Filter = props => {
   }, [finishSlider])
   const handleValuesChangeFinish = values => {
     if (values[0] == values[1]) {
+      console.log('dkm')
       return
     }
 
@@ -347,7 +338,12 @@ const Filter = props => {
                 </View>
               }
             </View>
-            <FlatList data={filterData} renderItem={renderItem} keyExtractor={item => item.key} />
+            <FlatList
+              data={filterData}
+              renderItem={renderItem}
+              keyExtractor={item => item.key}
+              showsVerticalScrollIndicator={false}
+            />
           </>
         )}
       </View>
@@ -368,10 +364,9 @@ const Filter = props => {
           }}
           onPress={() => {
             if (Array.isArray(products) && products.length > 0) {
-              if (action == 'search')
-                navigation.navigate('SearchDetail', { productsNe: products })
-              else
-                navigation.navigate('ItemCategories', { _products: products })
+              console.log(products.length)
+              if (action == 'search') navigation.navigate('SearchDetail', { productsNe: products })
+              else navigation.navigate('ItemCategories', { _products: products })
             } else {
               console.log('No products to display')
             }
