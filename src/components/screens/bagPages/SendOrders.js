@@ -86,7 +86,7 @@ const SendOrders = props => {
           setamount(res.amount)
           setresponseCode(payment.responseCode)
           setcode(res.code)
-          if (res.amount < 499000) {
+          if (res.amount || payment.amount < 499000) {
             setTransportFee(49000)
           } else {
             setTransportFee(0)

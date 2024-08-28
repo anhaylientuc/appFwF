@@ -36,6 +36,7 @@ const SearchDetail = props => {
   const [numColumns, setNumColumns] = useState(2)
   const [loading, setLoading] = useState(false) // Add loading state
   console.log(JSON.stringify(productsNe, null, 2))
+  const [title, settitle] = useState('')
 
   useEffect(() => {
     navigation.getParent().setOptions({
@@ -54,6 +55,7 @@ const SearchDetail = props => {
           setproducts(response)
           setwindowWith(width / 2)
           setwindowHeight(height / 2.4)
+          settitle(keyword)
         }
       } catch (error) {}
     }
@@ -236,7 +238,7 @@ const SearchDetail = props => {
         >
           <Icons.MaterialIcons name="arrow-back" size={24} />
         </TouchableOpacity>
-        <Text style={[styles.txt_title, { fontSize: 18 }]}>{keyword}</Text>
+        <Text style={[styles.txt_title, { fontSize: 18 }]}>{keyword ? keyword : title}</Text>
         <View style={{ width: 20 }}></View>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
