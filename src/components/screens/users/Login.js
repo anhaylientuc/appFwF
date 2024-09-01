@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native'
-import React, { useContext, useEffect, useState } from 'react'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import React, { useCallback, useContext, useState } from 'react'
 import {
   ActivityIndicator,
   Keyboard,
@@ -31,9 +31,13 @@ const Login = () => {
 
   const userError = email === '' || password === '' || !password || !email
 
-  useEffect(() => {
-    navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
-  }, [navigation])
+  useFocusEffect(
+    useCallback(() => {
+      if (navigation) {
+        navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } })
+      }
+    }, [navigation])
+  )
   const handleBack = () => {
     setisShowError(false)
     setisShowErrorPass(false)

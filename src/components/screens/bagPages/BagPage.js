@@ -356,7 +356,7 @@ const BagPage = props => {
           {!user ? (
             <TouchableOpacity
               style={{ backgroundColor: Colors.black2, paddingVertical: 16 }}
-              onPress={() => navigation.navigate('UserNavigation', { screen: 'Login' })}
+              onPress={() => navigation.navigate('Login')}
             >
               <Text
                 style={{
@@ -404,7 +404,7 @@ const BagPage = props => {
               />
             </View>
             <TouchableOpacity
-              onPress={() => navigation.navigate('UserNavigation', { screen: 'Register' })}
+              onPress={() => navigation.navigate('Register')}
               style={{
                 backgroundColor: Colors.white,
                 paddingVertical: 16,
@@ -733,7 +733,7 @@ const BagPage = props => {
               Đăng nhập để sử dụng các ưu đãi cá nhân!
             </MyText>
             <TouchableOpacity
-              onPress={() => navigation.navigate('UserNavigation', { screen: 'Login' })}
+              onPress={() => navigation.navigate('Login')}
               style={{
                 backgroundColor: Colors.white,
                 paddingVertical: 16,

@@ -30,13 +30,10 @@ const SendOrders = props => {
   const [oderCarts, setoderCarts] = useState([])
   const [vnp_CardType, setvnp_CardType] = useState('')
   const [vnp_PayDate, setvnp_PayDate] = useState('')
-  const [vnp_OrderInfo, setvnp_OrderInfo] = useState('')
-  const [vnp_TransactionNo, setvnp_TransactionNo] = useState('')
   const [amount, setamount] = useState('')
   const [transportFee, setTransportFee] = useState('')
   const [orderSuccess, setorderSuccess] = useState(false)
   const [loading, setloading] = useState(false)
-  const [orders, setorders] = useState(null)
   const [code, setcode] = useState('')
   const [responseCode, setresponseCode] = useState('')
   const width = Dimensions.get('window').width
@@ -80,13 +77,11 @@ const SendOrders = props => {
           setStorageData([])
           const res = await OrderHTTP.update(payment.orderInfo, { payment })
           setvnp_CardType(payment.cardType)
-          setvnp_OrderInfo(payment.orderInfo)
-          setvnp_TransactionNo(payment.transactionNo)
           setvnp_PayDate(payment.payDate)
           setamount(res.amount)
           setresponseCode(payment.responseCode)
           setcode(res.code)
-          if (res.amount || payment.amount < 499000) {
+          if (res.amount < 499000) {
             setTransportFee(49000)
           } else {
             setTransportFee(0)
@@ -99,14 +94,15 @@ const SendOrders = props => {
             }
           })
           console.log(JSON.stringify(res, null, 2))
+          console.log(res.amount)
+          console.log(transportFee)
+
           if (order) {
             setoderCarts(res.carts)
           }
         } else if (payment.responseCode == '24') {
           setStorageData([])
           payment.responseCode == '02'
-          // await OrderHTTP.update(payment.orderInfo, { payment })
-          // console.log('Đã xóa hóa đơn')
           const res = await OrderHTTP.remove(payment.orderInfo)
           console.log('cc', JSON.stringify(res, null, 2))
           setamount(res.order.amount)

@@ -112,55 +112,10 @@ const PayPage = props => {
   // format thành tiền
   const formattedTotalPrices = formatCurrency(orders.amount)
 
-  const showToastDeleted = title => {
-    Toast.show({
-      type: 'info', // 'info' | 'error' | 'success'
-      text1: 'Xóa thành công ✔',
-      text2: title,
-      text1Style: { fontSize: 14, fontFamily: 'Montserrat-SemiBold', color: Colors.green },
-      text2Style: { fontSize: 12, color: Colors.black, fontFamily: 'Montserrat-SemiBold' }
-      //  text2: 'Đây là một cái gì đó '
-    })
-  }
 
-  // Logic: onClick delete Item from List
-  const handleDeleteFromList = async (attributes_id, product_Name, item) => {
-    // if (storageData) {
-    //   const result = await AsyncStorage.getItem('my-cart')
-    //   let storage = []
-    //   if (result !== null) {
-    //     storage = JSON.parse(result)
-    //   }
-
-    //   const newStorage = storage.filter(s => s.attributes_id !== attributes_id)
-    //   setStorageData(newStorage)
-    //   await AsyncStorage.setItem('my-cart', JSON.stringify(newStorage))
-    //   let title = product_Name
-    //   showToastDeleted(title)
-    // } else {
-    // }
-    if (item) {
-    }
-  }
 
   const handleCheck = async () => {
-    // try {
-    //   const body = {
-    //     user: user,
-    //     amount: amount ? amount : totalPrices,
-    //     carts: cart ? cart : storageData
-    //   }
-    //   const res = await OrderHTTP.insert(body)
-    //   setOrder(res)
-
-    //   return res
-    // } catch (error) {
-    //   // Kiểm tra phản hồi lỗi từ server
-    //   console.log('Error response:', error)
-    // }
     navigation.navigate('MyChecks', { order: orders, orderId: orders._id })
-    console.log('order: ', orders)
-    console.log('orderId: ', orders._id)
   }
 
   const itemShortList = ({ item, index }) => {

@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import { useCallback, useContext } from 'react'
+import { useCallback, useContext, useEffect } from 'react'
 import { View } from 'react-native'
 import Icons from 'src/components/icons/Icon'
 
@@ -154,6 +154,9 @@ function MainNavigator() {
           component={ReturnMethod}
           options={{ title: 'ReturnMethod' }}
         />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="MyChecks" component={MyChecks} options={{ title: 'MyChecks' }} />
         <Stack.Screen name="PayPage" component={PayPage} options={{ title: 'PayPage' }} />
         <Stack.Screen
@@ -176,19 +179,25 @@ function MainNavigator() {
 
   const ProfileStack = ({ navigation }) => {
     const { user } = useContext(UserContext)
-    // useFocusEffect(
-    //   useCallback(() => {
-    //     // Cleanup code nếu cần khi ProfileStack không còn focus
-    //     return () => {
-    //       navigation.dispatch(
-    //         CommonActions.reset({
-    //           index: 0,
-    //           routes: [{ name: 'Profile' }]
-    //         })
-    //       )
-    //     }
-    //   }, [navigation])
-    // )
+
+    // Only navigate to 'Login' when the user logs out
+    useEffect(() => {
+      if (user) {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'Profile' }]
+          })
+        )
+      } else {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'Login' }]
+          })
+        )
+      }
+    }, [user, navigation])
 
     return user ? (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -238,7 +247,7 @@ function MainNavigator() {
         <Stack.Screen name="PaymentResult" component={PaymentResult} />
       </Stack.Navigator>
     ) : (
-      UserNavigation()
+      <UserNavigation />
     )
   }
 
@@ -249,7 +258,6 @@ function MainNavigator() {
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
     </Stack.Navigator>
   )
-
   return (
     <StorageProvider>
       <FilterProvider>
