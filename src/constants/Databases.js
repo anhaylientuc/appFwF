@@ -27,7 +27,7 @@ export const DaTaSale = [
       'https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2F7f%2F01%2F7f01170092efe9f45a621a207c09c972e026608d.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5Bladies_lingerie_briefsknickers_brazilian%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/main]',
 
     cost: 15,
-    reduced_price: 12
+    reduced_price: 13
   },
   {
     _id: '4',
